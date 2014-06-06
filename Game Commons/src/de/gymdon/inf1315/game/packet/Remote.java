@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.util.*;
 
 import de.gymdon.inf1315.game.Translation;
-import de.gymdon.inf1315.game.client.Client;
 
 public abstract class Remote {
 
@@ -19,14 +18,16 @@ public abstract class Remote {
     protected DataOutputStream out;
     protected long lastPacket;
     protected boolean left = false;
-    public Map<String,Object> properties = new HashMap<String,Object>();
+    public Map<String, Object> properties = new HashMap<String, Object>();
     private Set<PacketListener> listeners = new HashSet<PacketListener>();
     protected boolean ping;
 
     public Remote(Socket s) throws IOException {
 	this.socket = s;
-	out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-	in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+	out = new DataOutputStream(new BufferedOutputStream(
+		socket.getOutputStream()));
+	in = new DataInputStream(new BufferedInputStream(
+		socket.getInputStream()));
     }
 
     public Socket getSocket() {
@@ -53,28 +54,29 @@ public abstract class Remote {
 	if (left)
 	    return;
 	left = true;
-	if(properties.containsKey("translation") && !ping) {
-	    Translation t = (Translation)properties.get("translation");
+	if (properties.containsKey("translation")) {
+	    Translation t = (Translation) properties.get("translation");
 	    System.out.println(t.translate("client.left", message));
 	}
-	if(message == null)
+	if (message == null)
 	    throw new NullPointerException();
 	try {
 	    socket.close();
 	} catch (IOException e) {
 	}
-	Client.instance.remotes.remove(this);
     }
-    
+
     public void kick(String message, Object... args) {
 	if (left)
 	    return;
 	PacketKick kick = new PacketKick(this);
 	kick.message = message;
 	kick.args = args;
-	if(properties.containsKey("translation")) {
-	    Translation t = (Translation)properties.get("translation");
-	    System.out.println(t.translate("client.kicked", socket.getInetAddress().getCanonicalHostName(), t.translate(message, args)));
+	if (properties.containsKey("translation")) {
+	    Translation t = (Translation) properties.get("translation");
+	    System.out.println(t.translate("client.kicked", socket
+		    .getInetAddress().getCanonicalHostName(), t.translate(
+		    message, args)));
 	}
 	try {
 	    kick.send();
@@ -86,21 +88,19 @@ public abstract class Remote {
 	}
 	left = true;
     }
-    
-    public void notifyPacket(Packet p, boolean in) {
+
+    public void notifyPacket() {
 	lastPacket = System.currentTimeMillis();
-	for(PacketListener l : listeners)
-	    l.handlePacket(this, p, in);
     }
-    
+
     public long getLastPacketTime() {
 	return lastPacket;
     }
-    
+
     public void addPacketListener(PacketListener l) {
 	listeners.add(l);
     }
-    
+
     public void removePacketListener(PacketListener l) {
 	listeners.remove(l);
     }

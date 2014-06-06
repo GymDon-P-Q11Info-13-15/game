@@ -4,6 +4,8 @@ import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import de.gymdon.inf1315.game.Self;
+
 public class PacketHello extends Packet {
 
     public static final short ID = 0;
@@ -23,6 +25,13 @@ public class PacketHello extends Packet {
 	serverHello = in.readBoolean();
 	if (serverHello)
 	    serverName = in.readUTF();
+	else {
+	    PacketHello resp = new PacketHello(remote);
+	    resp.serverHello = true;
+	    resp.serverName = Self.instance.getName();
+	    resp.ping = false;
+	    resp.send();
+	}
 	protocolVersion = in.readInt();
 	ping = in.readBoolean();
 	remote.setPing(ping);
