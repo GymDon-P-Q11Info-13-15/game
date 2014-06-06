@@ -27,6 +27,8 @@ public class GuiPauseMenu extends GuiScreen {
     @Override
     public void render(Graphics2D g2d, int width, int height) {
 
+	if(this.width != width || this.height != height)
+	    Client.instance.mapren.render(g2d, width, height);
 	g2d.drawImage(Client.instance.mapren.getMapBackground(), 0, 0, null);
 	Font f = Client.instance.translation.font.deriveFont(Font.BOLD, 120F);
 	g2d.setFont(f);
