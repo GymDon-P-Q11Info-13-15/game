@@ -326,5 +326,11 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	    scrollX = 0;
 	if (scrollY < 0)
 	    scrollY = 0;
+	int mapWidth = mapCache.length;
+	int mapHeight = mapCache[0].length;
+	if (scrollX > (int) (mapWidth * tileSize * zoom - width) && scrollX > 0)
+	    scrollX = (int) (mapWidth * tileSize * zoom - width);
+	if (scrollY > (int) (mapHeight * tileSize * zoom - height) && scrollY > 0)
+	    scrollY = (int) (mapHeight * tileSize * zoom - height);
     }
 }
