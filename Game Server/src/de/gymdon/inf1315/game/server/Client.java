@@ -14,7 +14,7 @@ public class Client extends Remote {
 	super(s);
     }
 
-    public Client getOtherClient() {
+    public Remote getOtherClient() {
 	if (game == null)
 	    return null;
 	if (game.hasBothClients())

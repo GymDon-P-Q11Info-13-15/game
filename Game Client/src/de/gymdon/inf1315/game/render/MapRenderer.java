@@ -85,7 +85,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	for (int x = 0; x < buildings.length; x++) {
 	    for (int y = 0; y < buildings[x].length; y++) {
 		if (buildings[x][y] != null) {
-		    Texture tex = buildings[x][y].getTexture();
+		    Texture tex = BuildingRenderMap.getTexture(buildings[x][y]);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
 		}
