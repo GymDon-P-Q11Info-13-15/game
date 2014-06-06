@@ -92,24 +92,42 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	    }
 	}
 
+	// Rendering Units
+	Unit[][] units = Client.instance.units;
+	for (int x = 0; x < units.length; x++) {
+	    for (int y = 0; y < units[x].length; y++) {
+		if (units[x][y] != null) {
+		    Texture tex = UnitRenderMap.getTexture(units[x][y]);
+		    if (tex != null)
+			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
+		}
+	    }
+	}
+
 	if (fieldHover == null || fieldHover.length != mapWidth || fieldHover[0].length != mapHeight)
 	    fieldHover = new boolean[mapWidth][mapHeight];
 	if (field == null || field.length != mapWidth || field[0].length != mapHeight)
 	    field = new boolean[mapWidth][mapHeight];
-	
+
 	// Rendering Click and Hover
 	for (int x = 0; x < fieldHover.length; x++) {
 	    for (int y = 0; y < fieldHover[x].length; y++) {
 		if (fieldHover[x][y]) {
 		    Texture tex = StandardTexture.get("hover");
 		    Building b = buildings[x][y];
-		    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * b.getSizeX(), tileSize * b.getSizeY(), tex);
+		    if(b != null)
+			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * b.getSizeX(), tileSize * b.getSizeY(), tex);
+		    else
+			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
 		}
 
 		if (field[x][y]) {
 		    Texture tex = StandardTexture.get("hover_clicked");
 		    Building b = buildings[x][y];
-		    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * b.getSizeX(), tileSize * b.getSizeY(), tex);
+		    if(b != null)
+			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * b.getSizeX(), tileSize * b.getSizeY(), tex);
+		    else
+			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
 		}
 	    }
 	}
@@ -161,6 +179,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	    if (x < 0 || x >= field.length || y < 0 || y >= field[x].length)
 		return;
 	    Building[][] buildings = Client.instance.buildings;
+	    Unit[][] units = Client.instance.units;
 
 	    field = new boolean[mapWidth][mapHeight];
 	    for (int x1 = x; x1 > x1 - 6 && x1 >= 0; x1--) {
@@ -171,6 +190,11 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 			return;
 		    }
 		}
+	    }
+
+	    if (units[x][y] != null) {
+		field[x][y] = true;
+		return;
 	    }
 	}
 	firstClick = false;
@@ -194,6 +218,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	if (x < 0 || x >= fieldHover.length || y < 0 || y >= fieldHover[x].length)
 	    return;
 	Building[][] buildings = Client.instance.buildings;
+	Unit[][] units = Client.instance.units;
 
 	fieldHover = new boolean[mapWidth][mapHeight];
 	for (int x1 = x; x1 > x1 - 6 && x1 >= 0; x1--) {
@@ -204,6 +229,11 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 		    return;
 		}
 	    }
+	}
+
+	if (units[x][y] != null) {
+	    fieldHover[x][y] = true;
+	    return;
 	}
     }
 
@@ -313,8 +343,8 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
 	double z = zoom;
-	
-	zoom *= Math.pow(1.1, (Client.instance.preferences.game.invertZoom ? 1 : -1)*e.getWheelRotation());
+
+	zoom *= Math.pow(1.1, (Client.instance.preferences.game.invertZoom ? 1 : -1) * e.getWheelRotation());
 	if (zoom < 0.2)
 	    zoom = 0.2;
 	if (zoom > 5)
