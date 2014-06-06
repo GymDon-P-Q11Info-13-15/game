@@ -17,6 +17,7 @@ import javax.swing.event.MouseInputListener;
 
 import de.gymdon.inf1315.game.*;
 import de.gymdon.inf1315.game.client.*;
+import de.gymdon.inf1315.game.render.gui.GuiBuildingMenu;
 import de.gymdon.inf1315.game.render.gui.GuiControl;
 import de.gymdon.inf1315.game.render.gui.GuiPauseMenu;
 
@@ -40,6 +41,8 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
     private int diffY = 0;
     private boolean[][] fieldHover;
     private boolean[][] field;
+    private GuiBuildingMenu guiBuilding;
+    private int guiPosX, guiPosY;
 
     @Override
     public void render(Graphics2D g2do, int width, int height) {
@@ -131,6 +134,19 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 		}
 	    }
 	}
+	
+	if(guiBuilding != null) {
+	    BufferedImage img = guiBuilding.render();
+	    int x = guiPosX;
+	    int y = guiPosY;
+	    if(x + img.getWidth() > width)
+		x = width - img.getWidth();
+	    if(y + img.getHeight() > height)
+		y = height - img.getHeight();
+	    g2d.scale(1/zoom, 1/zoom);
+	    g2d.translate(x, y);
+	    g2d.drawImage(img, 0, 0, null);
+	}
 
 	g2d.setTransform(tx);
 
@@ -181,12 +197,16 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	    Building[][] buildings = Client.instance.buildings;
 	    Unit[][] units = Client.instance.units;
 
+
 	    field = new boolean[mapWidth][mapHeight];
 	    for (int x1 = x; x1 > x1 - 6 && x1 >= 0; x1--) {
 		for (int y1 = y; y1 > y1 - 6 && y1 >= 0; y1--) {
 		    Building b = buildings[x1][y1];
 		    if (b != null && b.getSizeX() + x1 > x && b.getSizeY() + y1 > y) {
 			field[x1][y1] = true;
+			guiBuilding = new GuiBuildingMenu(b);
+			guiPosX = (int) ((e.getX() + scrollX) / zoom);
+			guiPosY = (int) ((e.getY() + scrollY) / zoom);
 			return;
 		    }
 		}
@@ -198,6 +218,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	    }
 	}
 	firstClick = false;
+	guiBuilding = null;
     }
 
     @Override

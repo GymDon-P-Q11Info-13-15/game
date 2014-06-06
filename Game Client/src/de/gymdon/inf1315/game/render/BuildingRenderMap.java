@@ -12,7 +12,7 @@ public class BuildingRenderMap {
 	if(b instanceof Barracks)
 	    return StandardTexture.get("sand_old");
 	if (b instanceof Castle)
-	    return b.owner == null ? StandardTexture.get("castle_big_neutral") : StandardTexture.get("castle_small_" + b.owner.color.name().toLowerCase() + "");
+	    return b.owner == null ? StandardTexture.get("castle_big_neutral") : StandardTexture.get("castle_small_" + b.owner.color.name().toLowerCase());
 	if (b instanceof Mine)
 	    return ((Mine) b).superior ? StandardTexture.get("mine_superior") : b.owner == null ? StandardTexture.get("mine_neutral") : StandardTexture.get("mine_" + b.owner.color.name().toLowerCase());
 	return null;

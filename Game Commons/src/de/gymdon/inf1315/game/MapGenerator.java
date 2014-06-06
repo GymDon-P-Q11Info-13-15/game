@@ -2,6 +2,8 @@ package de.gymdon.inf1315.game;
 
 import java.util.Random;
 
+import de.gymdon.inf1315.game.Player.Color;
+
 public class MapGenerator {
 
     private int mapWidth = 48;
@@ -233,8 +235,12 @@ public class MapGenerator {
 	buildings = new Building[mapWidth][mapHeight];
 
 	// Generate Castles
-	buildings[1][mapHeight / 2 - 1] = new Castle(null, 1, mapHeight / 2 - 1);
-	buildings[mapWidth - 3][mapHeight / 2 - 1] = new Castle(null, mapWidth - 3, mapHeight / 2 - 1);
+	Player red = new Player();
+	red.color = Color.RED;
+	Player blue = new Player();
+	blue.color = Color.BLUE;
+	buildings[1][mapHeight / 2 - 1] = new Castle(red, 1, mapHeight / 2 - 1);
+	buildings[mapWidth - 3][mapHeight / 2 - 1] = new Castle(blue, mapWidth - 3, mapHeight / 2 - 1);
 
 	// Generate Mines
 
