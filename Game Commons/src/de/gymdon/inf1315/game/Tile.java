@@ -1,5 +1,8 @@
 package de.gymdon.inf1315.game;
 
+import java.awt.Point;
+import java.util.List;
+
 public class Tile implements Comparable<Tile>{
     public double groundFactor;
     private boolean walkable;
@@ -28,7 +31,16 @@ public class Tile implements Comparable<Tile>{
     	
     }
     
-    public Tile setGroundFactor(int groundFactor) {
+    public List<Point> getParent(List<Point> list) {
+ 
+    	if(parent == null) ;
+    	else list = parent.getParent(list);
+    	list.add(new Point(x,y));
+    	return list;
+    	
+    }
+    
+    public Tile setGroundFactor(double groundFactor) {
 	this.groundFactor = groundFactor;
 	g = groundFactor;
 	return this;

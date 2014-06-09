@@ -20,8 +20,8 @@ public class MapGenerator {
 	public long seed;
 	public Random random;
 
-	int distancesLeft = 0;
-	int distancesRight = 0;
+	double distancesLeft = 0;
+	double distancesRight = 0;
 	double fairness = 1;
 
 	boolean advantageLeft;
@@ -402,6 +402,7 @@ public class MapGenerator {
 		return false;
 	}
 
+	@SuppressWarnings("unused")
 	private boolean marginWaterAndSand(int x, int y, int m) {
 		for (int i = x - m; i < x + m; i++) {
 
@@ -419,9 +420,12 @@ public class MapGenerator {
 
 	}
 
-	private int giveDistance(Building castle, Building mine) {
+	private double giveDistance(Building castle, Building mine) {
 
-		return Math.abs(castle.x - mine.x) + Math.abs(castle.y - mine.y);
+		PathFinder pf = new PathFinder(map);
+		pf.findPath(castle.x, castle.y, mine.x, mine.y);
+		
+		return pf.lengthOfLastPath();
 
 	}
 }
