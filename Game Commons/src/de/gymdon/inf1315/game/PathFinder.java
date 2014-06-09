@@ -92,7 +92,7 @@ public class PathFinder {
 			}
 		}
 
-		if (!(xStart == mapA.length)) {
+		if (!(xStart == mapA.length - 1)) {
 
 			if (!(mapA[xStart + 1][yStart].name == "water")) {
 				open.add(mapA[xStart + 1][yStart]);
@@ -114,7 +114,7 @@ public class PathFinder {
 			}
 		}
 
-		if (!(yStart == mapA[0].length)) {
+		if (!(yStart == mapA[0].length - 1)) {
 
 			if (!(mapA[xStart][yStart + 1].name == "water")) {
 				open.add(mapA[xStart][yStart + 1]);
@@ -156,7 +156,7 @@ public class PathFinder {
 				}
 			}
 
-			if (!(xF == mapA.length)) {
+			if (!(xF == mapA.length - 1)) {
 
 				if (!(mapA[xF + 1][yF].name == "water")
 						&& !(closed.contains(mapA[xF + 1][yF]))) {
@@ -192,7 +192,7 @@ public class PathFinder {
 				}
 			}
 
-			if (!(yF == map[0].length)) {
+			if (!(yF == map[0].length - 1)) {
 
 				if (!(mapA[xF][yF + 1].name == "water")
 						&& !(closed.contains(mapA[xF][yF + 1]))) {
