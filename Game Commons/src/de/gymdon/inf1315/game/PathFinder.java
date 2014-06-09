@@ -69,8 +69,8 @@ public class PathFinder {
 		 * more precise. A more realistic value will be added later. TODO: Add
 		 * more precise H value
 		 */
-
-		return Math.abs(xEnd - xStart) + Math.abs(yEnd - yStart);
+		return 0;
+		//return Math.abs(xEnd - xStart) + Math.abs(yEnd - yStart);
 
 	}
 
