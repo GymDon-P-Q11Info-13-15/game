@@ -115,7 +115,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 		if (fieldHover[x][y]) {
 		    Texture tex = StandardTexture.get("hover");
 		    Building b = buildings[x][y];
-		    if(b != null)
+		    if (b != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * b.getSizeX(), tileSize * b.getSizeY(), tex);
 		    else
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
@@ -124,7 +124,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 		if (field[x][y]) {
 		    Texture tex = StandardTexture.get("hover_clicked");
 		    Building b = buildings[x][y];
-		    if(b != null)
+		    if (b != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * b.getSizeX(), tileSize * b.getSizeY(), tex);
 		    else
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
@@ -133,6 +133,11 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	}
 
 	g2d.setTransform(tx);
+	
+	if (scrollX > (int) (mapWidth * tileSize * zoom - this.width))
+	    scrollX = (int) (mapWidth * tileSize * zoom - this.width);
+	if (scrollY > (int) (mapHeight * tileSize * zoom - this.height))
+	    scrollY = (int) (mapHeight * tileSize * zoom - this.height);
 
 	int[] x = new int[] { width / 2, width - tileSize / 2, width / 2, tileSize / 2 };
 	int[] y = new int[] { tileSize / 2, height / 2, height - tileSize / 2, height / 2 };
@@ -151,7 +156,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	    g2d.drawImage(tex.getImage(), -tileSize / 2, -tileSize / 2, tex);
 	    g2d.setTransform(tx);
 	}
-
+	
 	g2d.dispose();
 	g2do.drawImage(cache, 0, 0, null);
     }
