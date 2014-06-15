@@ -149,40 +149,50 @@ public class GuiOptions extends GuiScreen {
     @Override
     public void actionPerformed(ActionEvent e) {
 	if (e.getID() == ActionEvent.ACTION_PERFORMED) {
-	    GuiButton button = (GuiButton) e.getSource();
-	    if (button == backButton) {
-		setSection(sectionStack.isEmpty() ? null : sectionStack.peek(), true);
-	    } else if (button == videoButton) {
-		setSection(Section.VIDEO);
-	    } else if (button == videoVsyncButton) {
-		Client.instance.preferences.video.vsync = !Client.instance.preferences.video.vsync;
-		videoVsyncButton.setText("gui.options.video.vsync." + (Client.instance.preferences.video.vsync ? "on" : "off"));
-	    } else if (button == videoFullscreenButton) {
-		Client.instance.preferences.video.fullscreen = !Client.instance.preferences.video.fullscreen;
-		videoFullscreenButton.setText("gui.options.video.fullscreen." + (Client.instance.preferences.video.fullscreen ? "on" : "off"));
-		Client.instance.setFullscreen(Client.instance.preferences.video.fullscreen);
-	    } else if (button == languageButton) {
-		setSection(Section.LANGUAGE);
-	    } else if (languageButtons.contains(button)) {
-		String lang = (String) button.getTextData()[0];
-		Client.instance.preferences.language = lang;
-		Client.instance.translation.reload("en_US");
-		Client.instance.translation.load(lang);
-		this.rebuild();
-		if (last != null)
-		    last.rebuild();
-	    } else if (button == gameButton) {
-		setSection(Section.GAME);
-	    } else if (button == gameArrowButton) {
-		setSection(Section.ARROWS);
-	    } else if (button == gameZoomButton) {
-		Client.instance.preferences.game.invertZoom = !Client.instance.preferences.game.invertZoom;
-		gameZoomButton.setText("gui.options.game.zoom." + (Client.instance.preferences.game.invertZoom ? "inverted" : "normal"));
-	    } else if (arrowButtons.contains(button)) {
-		Client.instance.preferences.game.arrow = button.getId();
-		this.rebuild();
-		if (last != null)
-		    last.rebuild();
+	    // Buttons
+	    if (e.getSource() instanceof GuiButton) {
+		GuiButton button = (GuiButton) e.getSource();
+		if (button == backButton) {
+		    setSection(sectionStack.isEmpty() ? null : sectionStack.peek(), true);
+		} else if (button == videoButton) {
+		    setSection(Section.VIDEO);
+		} else if (button == videoVsyncButton) {
+		    Client.instance.preferences.video.vsync = !Client.instance.preferences.video.vsync;
+		    videoVsyncButton.setText("gui.options.video.vsync." + (Client.instance.preferences.video.vsync ? "on" : "off"));
+		} else if (button == videoFullscreenButton) {
+		    Client.instance.preferences.video.fullscreen = !Client.instance.preferences.video.fullscreen;
+		    videoFullscreenButton.setText("gui.options.video.fullscreen." + (Client.instance.preferences.video.fullscreen ? "on" : "off"));
+		    Client.instance.setFullscreen(Client.instance.preferences.video.fullscreen);
+		} else if (button == languageButton) {
+		    setSection(Section.LANGUAGE);
+		} else if (languageButtons.contains(button)) {
+		    String lang = (String) button.getTextData()[0];
+		    Client.instance.preferences.language = lang;
+		    Client.instance.translation.reload("en_US");
+		    Client.instance.translation.load(lang);
+		    this.rebuild();
+		    if (last != null)
+			last.rebuild();
+		} else if (button == gameButton) {
+		    setSection(Section.GAME);
+		} else if (button == gameArrowButton) {
+		    setSection(Section.ARROWS);
+		} else if (button == gameZoomButton) {
+		    Client.instance.preferences.game.invertZoom = !Client.instance.preferences.game.invertZoom;
+		    gameZoomButton.setText("gui.options.game.zoom." + (Client.instance.preferences.game.invertZoom ? "inverted" : "normal"));
+		} else if (arrowButtons.contains(button)) {
+		    Client.instance.preferences.game.arrow = button.getId();
+		    this.rebuild();
+		    if (last != null)
+			last.rebuild();
+		}
+	    }
+
+	    // Keys
+	    if (e.getSource() instanceof KeyEvent) {
+		int key = ((KeyEvent) e.getSource()).getKeyCode();
+		if (key == KeyEvent.VK_ESCAPE)
+		    actionPerformed(new ActionEvent(backButton, ActionEvent.ACTION_PERFORMED, null));
 	    }
 	}
     }
@@ -259,24 +269,5 @@ public class GuiOptions extends GuiScreen {
 
     private enum Section {
 	MAIN, VIDEO, LANGUAGE, GAME, ARROWS;
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-	int key = e.getKeyCode();
-	if (key == KeyEvent.VK_ESCAPE)
-	    actionPerformed(new ActionEvent(backButton, ActionEvent.ACTION_PERFORMED, null));
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-	// TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-	// TODO Auto-generated method stub
-
     }
 }
