@@ -30,6 +30,7 @@ public class Client implements Runnable, WindowListener {
     public static final boolean DEBUG = true;
     public static final String TITLE = "Game Title";
     public static final String VERSION = "Alpha 0.0.1";
+    public static final String COMMIT = "$Id$";
     public static Client instance;
     private boolean running = false;
     private JFrame frame;
