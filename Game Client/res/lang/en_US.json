@@ -10,6 +10,7 @@
 		"game.title": "Game Title",
 		"game.ended": "Game ended: %s",
 		"gui.game.new": "New Game",
+		"gui.game.endRound": "End Round",
 		"gui.game.continue": "Continue Game",
 		"gui.credits": "Credits",
 		"gui.credits.lead": "Lead",

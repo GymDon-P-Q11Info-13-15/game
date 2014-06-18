@@ -1,6 +1,7 @@
 package de.gymdon.inf1315.game.render;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -10,21 +11,18 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.event.MouseInputListener;
 
 import de.gymdon.inf1315.game.*;
 import de.gymdon.inf1315.game.client.*;
-import de.gymdon.inf1315.game.render.gui.GuiControl;
+import de.gymdon.inf1315.game.render.gui.GuiButton;
 import de.gymdon.inf1315.game.render.gui.GuiPauseMenu;
+import de.gymdon.inf1315.game.render.gui.GuiScreen;
 
-public class MapRenderer implements Renderable, ActionListener, MouseInputListener, MouseWheelListener, KeyListener {
+public class MapRenderer extends GuiScreen implements Renderable, ActionListener, MouseInputListener, MouseWheelListener, KeyListener {
 
-    public List<GuiControl> controlList = new ArrayList<GuiControl>();
-    protected int width;
-    protected int height;
+    private GuiButton endRound = new GuiButton(this, 0, 20, 20, "gui.game.endRound");
     public static final int TILE_SIZE_SMALL = 32;
     public static final int TILE_SIZE_NORMAL = 64;
     public static final int TILE_SIZE_BIG = 128;
@@ -41,14 +39,14 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
     private boolean[][] fieldHover;
     private boolean[][] field;
 
+    public MapRenderer() {
+	controlList.add(endRound);
+    }
+
     @Override
     public void render(Graphics2D g2do, int width, int height) {
-	this.width = width;
-	this.height = height;
 	cache = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = cache.createGraphics();
-	for (GuiControl c : controlList)
-	    c.render(g2d, width, height);
 
 	Tile[][] map = Client.instance.map;
 	int mapWidth = map.length;
@@ -62,6 +60,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	AffineTransform tx = g2d.getTransform();
 	g2d.translate(-scrollX, -scrollY);
 	g2d.scale(zoom, zoom);
+
 	// Rendering Map
 	if (this.map == null || !map.equals(mapCache)) {
 	    this.map = new BufferedImage(map.length * tileSize, map[0].length * tileSize, BufferedImage.TYPE_INT_ARGB);
@@ -115,7 +114,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 		if (fieldHover[x][y]) {
 		    Texture tex = StandardTexture.get("hover");
 		    Building b = buildings[x][y];
-		    if(b != null)
+		    if (b != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * b.getSizeX(), tileSize * b.getSizeY(), tex);
 		    else
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
@@ -124,7 +123,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 		if (field[x][y]) {
 		    Texture tex = StandardTexture.get("hover_clicked");
 		    Building b = buildings[x][y];
-		    if(b != null)
+		    if (b != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * b.getSizeX(), tileSize * b.getSizeY(), tex);
 		    else
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
@@ -133,6 +132,11 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	}
 
 	g2d.setTransform(tx);
+
+	if (scrollX > (int) (mapWidth * tileSize * zoom - this.width))
+	    scrollX = (int) (mapWidth * tileSize * zoom - this.width);
+	if (scrollY > (int) (mapHeight * tileSize * zoom - this.height))
+	    scrollY = (int) (mapHeight * tileSize * zoom - this.height);
 
 	int[] x = new int[] { width / 2, width - tileSize / 2, width / 2, tileSize / 2 };
 	int[] y = new int[] { tileSize / 2, height / 2, height - tileSize / 2, height / 2 };
@@ -154,6 +158,19 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 
 	g2d.dispose();
 	g2do.drawImage(cache, 0, 0, null);
+
+	int botMargin = height / 32;
+	int buttonWidth = width - width / 4;
+	int buttonHeight = height / 10;
+	int buttonSpacing = buttonHeight / 4;
+	int rightMargin = width / 32;
+	int buttonWidthSmall = (buttonWidth - buttonSpacing) / 2;
+	int buttonWidthVerySmall = (buttonWidthSmall - buttonSpacing) / 2;
+	endRound.setX(width - rightMargin - buttonWidthVerySmall);
+	endRound.setY(height - botMargin - buttonHeight);
+	endRound.setWidth(buttonWidthVerySmall);
+	endRound.setHeight(buttonHeight);
+	super.render(g2do, width, height);
     }
 
     public BufferedImage getMapBackground() {
@@ -162,10 +179,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 
     @Override
     public void mouseClicked(MouseEvent e) {
-	List<GuiControl> controlList = new ArrayList<GuiControl>();
-	controlList.addAll(this.controlList);
-	for (GuiControl c : controlList)
-	    c.mouseClicked(e);
+	super.mouseClicked(e);
 
 	if (mapCache == null)
 	    return;
@@ -187,6 +201,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 		    Building b = buildings[x1][y1];
 		    if (b != null && b.getSizeX() + x1 > x && b.getSizeY() + y1 > y) {
 			field[x1][y1] = true;
+			actionPerformed(new ActionEvent(new Point(x, y), ActionEvent.ACTION_PERFORMED, "Building"));
 			return;
 		    }
 		}
@@ -194,6 +209,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 
 	    if (units[x][y] != null) {
 		field[x][y] = true;
+		actionPerformed(new ActionEvent(new Point(x, y), ActionEvent.ACTION_PERFORMED, "Unit"));
 		return;
 	    }
 	}
@@ -202,10 +218,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 
     @Override
     public void mouseMoved(MouseEvent e) {
-	List<GuiControl> controlList = new ArrayList<GuiControl>();
-	controlList.addAll(this.controlList);
-	for (GuiControl c : controlList)
-	    c.mouseMoved(e);
+	super.mouseMoved(e);
 
 	if (mapCache == null)
 	    return;
@@ -239,10 +252,7 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 
     @Override
     public void mousePressed(MouseEvent e) {
-	List<GuiControl> controlList = new ArrayList<GuiControl>();
-	controlList.addAll(this.controlList);
-	for (GuiControl c : controlList)
-	    c.mousePressed(e);
+	super.mousePressed(e);
 
 	if (e.getButton() == MouseEvent.BUTTON3) {
 	    diffX = e.getX();
@@ -252,10 +262,8 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 
     @Override
     public void mouseDragged(MouseEvent e) {
-	List<GuiControl> controlList = new ArrayList<GuiControl>();
-	controlList.addAll(this.controlList);
-	for (GuiControl c : controlList)
-	    c.mouseDragged(e);
+	super.mouseDragged(e);
+
 	if (e.getModifiersEx() == MouseEvent.BUTTON3_DOWN_MASK) {
 	    scrollX -= e.getX() - diffX;
 	    scrollY -= e.getY() - diffY;
@@ -274,56 +282,44 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	}
     }
 
-    @Override
-    public void mouseEntered(MouseEvent e) {
-	List<GuiControl> controlList = new ArrayList<GuiControl>();
-	controlList.addAll(this.controlList);
-	for (GuiControl c : controlList)
-	    c.mouseEntered(e);
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-	List<GuiControl> controlList = new ArrayList<GuiControl>();
-	controlList.addAll(this.controlList);
-	for (GuiControl c : controlList)
-	    c.mouseExited(e);
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-	List<GuiControl> controlList = new ArrayList<GuiControl>();
-	controlList.addAll(this.controlList);
-	for (GuiControl c : controlList)
-	    c.mouseReleased(e);
-    }
-
     public void actionPerformed(ActionEvent e) {
 	if (e.getID() == ActionEvent.ACTION_PERFORMED) {
-	    // System.out.println(e.getActionCommand());
-	}
-    }
+	    // Buttons
+	    if (e.getSource() instanceof GuiButton) {
+		GuiButton button = (GuiButton) e.getSource();
+		if (button == endRound)
+		    System.out.println(button.getText());
+	    }
 
-    @Override
-    public void keyReleased(KeyEvent e) {
+	    // Keys
+	    if (e.getSource() instanceof KeyEvent) {
+		int key = ((KeyEvent) e.getSource()).getKeyCode();
+		if (key == KeyEvent.VK_LEFT)
+		    scrollX -= tileSize / 4;
+		else if (key == KeyEvent.VK_RIGHT)
+		    scrollX += tileSize / 4;
+		else if (key == KeyEvent.VK_UP)
+		    scrollY -= tileSize / 4;
+		else if (key == KeyEvent.VK_DOWN)
+		    scrollY += tileSize / 4;
+		else if (key == KeyEvent.VK_ESCAPE) {
+		    Client.instance.setGuiScreen(new GuiPauseMenu());
+		    firstClick = true;
+		}
+	    }
+
+	    // Points
+	    if (e.getSource() instanceof Point) {
+		Point p = (Point) e.getSource();
+		System.out.println(p.x + "|" + p.y);
+	    }
+	}
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-	int key = e.getKeyCode();
-	System.out.println(KeyEvent.getKeyText(key));
-	if (key == KeyEvent.VK_LEFT)
-	    scrollX -= tileSize / 4;
-	else if (key == KeyEvent.VK_RIGHT)
-	    scrollX += tileSize / 4;
-	else if (key == KeyEvent.VK_UP)
-	    scrollY -= tileSize / 4;
-	else if (key == KeyEvent.VK_DOWN)
-	    scrollY += tileSize / 4;
-	else if (key == KeyEvent.VK_ESCAPE) {
-	    Client.instance.setGuiScreen(new GuiPauseMenu());
-	    firstClick = true;
-	}
+	super.keyPressed(e);
+
 	if (scrollX < 0)
 	    scrollX = 0;
 	if (scrollY < 0)
@@ -334,10 +330,6 @@ public class MapRenderer implements Renderable, ActionListener, MouseInputListen
 	    scrollX = (int) (mapWidth * tileSize * zoom - width);
 	if (scrollY > (int) (mapHeight * tileSize * zoom - height))
 	    scrollY = (int) (mapHeight * tileSize * zoom - height);
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
     }
 
     @Override

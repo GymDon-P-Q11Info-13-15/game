@@ -10,6 +10,7 @@
 		"game.title": "Spielname",
 		"game.ended": "Spiel wurde beendet: %s",
 		"gui.game.new": "Neues Spiel",
+		"gui.game.endRound": "Runde beenden",
 		"gui.game.continue": "Zurück zum Spiel",
 		"gui.credits": "Credits",
 		"gui.credits.lead": "Leitung",

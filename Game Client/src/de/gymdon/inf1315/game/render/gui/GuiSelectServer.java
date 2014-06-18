@@ -24,7 +24,7 @@ public class GuiSelectServer extends GuiScreen {
     private GuiScrollList serverList;
     private List<ServerListEntry> servers = ServerListEntry.DEFAULT;
     private ListAdapter<ServerListEntry> adapter;
-    
+
     public GuiSelectServer() {
 	controlList.add(backButton);
 	try {
@@ -33,52 +33,53 @@ public class GuiSelectServer extends GuiScreen {
 	    e.printStackTrace();
 	}
     }
-    
+
     public GuiSelectServer(GuiScreen last) {
 	this();
 	this.last = last;
     }
-    
+
     @Override
     public void render(Graphics2D g2d, int width, int height) {
 	drawBackground(g2d, width, height);
-        
-        Font f = Client.instance.translation.font.deriveFont(Font.BOLD, 80F);
-        g2d.setFont(f);
-        String title = Client.instance.translation.translate("gui.server.select");
-        Rectangle2D bounds = g2d.getFontMetrics().getStringBounds(title, g2d);
-        int titleX = (int) (width/2 - bounds.getCenterX());
-        int titleY = (int) (80 + bounds.getMaxY());
-        g2d.setColor(Color.WHITE);
-        g2d.drawString(title, titleX, titleY);
 
-	int buttonWidth = width - width/4;
-	int buttonHeight = height/10;
-	int buttonSpacing = buttonHeight/4;
+	Font f = Client.instance.translation.font.deriveFont(Font.BOLD, 80F);
+	g2d.setFont(f);
+	String title = Client.instance.translation.translate("gui.server.select");
+	Rectangle2D bounds = g2d.getFontMetrics().getStringBounds(title, g2d);
+	int titleX = (int) (width / 2 - bounds.getCenterX());
+	int titleY = (int) (80 + bounds.getMaxY());
+	g2d.setColor(Color.WHITE);
+	g2d.drawString(title, titleX, titleY);
+
+	int buttonWidth = width - width / 4;
+	int buttonHeight = height / 10;
+	int buttonSpacing = buttonHeight / 4;
 	int topMargin = 150;
-	int leftMargin = width/2 - buttonWidth/2;
-	//int buttonWidthSmall = (buttonWidth - buttonSpacing)/2;
+	int leftMargin = width / 2 - buttonWidth / 2;
+	// int buttonWidthSmall = (buttonWidth - buttonSpacing)/2;
 	backButton.setX(leftMargin);
 	backButton.setY(height - buttonSpacing - buttonHeight);
 	backButton.setWidth(buttonWidth);
 	backButton.setHeight(buttonHeight);
-        
+
 	serverList.setX(leftMargin);
 	serverList.setY(topMargin);
 	serverList.setWidth(buttonWidth);
 	serverList.setHeight(height - buttonSpacing - buttonHeight - buttonSpacing - topMargin);
-        
-        super.render(g2d, width, height);
+
+	super.render(g2d, width, height);
     }
-    
+
     private void reload() throws IOException {
 	File f = new File("servers.json");
-	if(!f.exists()) {
+	if (!f.exists()) {
 	    writeServers();
 	    System.out.println(Client.instance.translation.translate("file.created", "servers.json"));
 	}
-	servers = new Gson().fromJson(new InputStreamReader(new FileInputStream("servers.json"), Charset.forName("UTF-8")), new TypeToken<List<ServerListEntry>>(){}.getType());
-	if(!servers.containsAll(ServerListEntry.DEFAULT)) {
+	servers = new Gson().fromJson(new InputStreamReader(new FileInputStream("servers.json"), Charset.forName("UTF-8")), new TypeToken<List<ServerListEntry>>() {
+	}.getType());
+	if (!servers.containsAll(ServerListEntry.DEFAULT)) {
 	    servers.addAll(0, ServerListEntry.DEFAULT);
 	    writeServers();
 	}
@@ -100,46 +101,37 @@ public class GuiSelectServer extends GuiScreen {
 	    }
 	};
 	serverList = new GuiScrollList(this, adapter, 1, 0, 0);
-	for(ServerListEntry e : servers)
+	for (ServerListEntry e : servers)
 	    e.ping();
 	controlList.add(serverList);
     }
-    
+
     private void writeServers() throws IOException {
-	if(servers == null)
+	if (servers == null)
 	    servers = ServerListEntry.DEFAULT;
 	Writer writer = new OutputStreamWriter(new FileOutputStream("servers.json"), Charset.forName("UTF-8"));
-	new GsonBuilder().setPrettyPrinting().create().toJson(servers, new TypeToken<List<ServerListEntry>>(){}.getType(), writer);
+	new GsonBuilder().setPrettyPrinting().create().toJson(servers, new TypeToken<List<ServerListEntry>>() {
+	}.getType(), writer);
 	writer.close();
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent e) {
-	if(e.getID() == ActionEvent.ACTION_PERFORMED) {
-	    GuiButton button = (GuiButton)e.getSource();
-	    if(button == backButton) {
-		Client.instance.setGuiScreen(last);
+	if (e.getID() == ActionEvent.ACTION_PERFORMED) {
+	    // Buttons
+	    if (e.getSource() instanceof GuiButton) {
+		GuiButton button = (GuiButton) e.getSource();
+		if (button == backButton) {
+		    Client.instance.setGuiScreen(last);
+		}
+	    }
+
+	    // Keys
+	    if (e.getSource() instanceof KeyEvent) {
+		int key = ((KeyEvent) e.getSource()).getKeyCode();
+		if (key == KeyEvent.VK_ESCAPE)
+		    actionPerformed(new ActionEvent(backButton, ActionEvent.ACTION_PERFORMED, null));
 	    }
 	}
     }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-	int key = e.getKeyCode();
-	if (key == KeyEvent.VK_ESCAPE)
-	    actionPerformed(new ActionEvent(backButton, ActionEvent.ACTION_PERFORMED, null));
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-	// TODO Auto-generated method stub
-	
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-	// TODO Auto-generated method stub
-	
-    }
-
 }
