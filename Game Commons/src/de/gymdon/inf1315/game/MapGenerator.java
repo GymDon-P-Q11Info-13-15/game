@@ -22,8 +22,8 @@ public class MapGenerator {
     public long seed;
     public Random random;
 
-    int distancesLeft = 0;
-    int distancesRight = 0;
+    double distancesLeft = 0;
+    double distancesRight = 0;
     double fairness = 1;
 
     boolean advantageLeft;
@@ -58,17 +58,17 @@ public class MapGenerator {
     public int getMapHeight() {
 	return mapHeight;
     }
-    
+
     public long getSeed() {
-	
+
 	return seed;
-	
+
     }
-    
+
     public void setSeed(long seed) {
-	
+
 	this.seed = seed;
-	
+
     }
 
     private void resetAll() {
@@ -107,8 +107,7 @@ public class MapGenerator {
 
     public void generateMapOutside() {
 	/**
-	 * This method is not finished yet. It is to create the outline of the
-	 * map
+	 * This method is not finished yet. It creates the outline of the map
 	 */
 
 	for (int i = 1; i <= averageSideWater; i++) {
@@ -129,8 +128,10 @@ public class MapGenerator {
 	int[] yLakes = new int[lakes];
 	int tries = 0;
 	for (int i = 0; i < lakes; i++) {
-	    int xLake = random.nextInt(mapWidth - avgLakeSize) + avgLakeSize / 2;
-	    int yLake = random.nextInt(mapHeight - avgLakeSize) + avgLakeSize / 2;
+	    int xLake = random.nextInt(mapWidth - avgLakeSize) + avgLakeSize
+		    / 2;
+	    int yLake = random.nextInt(mapHeight - avgLakeSize) + avgLakeSize
+		    / 2;
 	    for (;;) {
 		boolean near = false;
 		for (int j = 0; j < i; j++) {
@@ -140,8 +141,10 @@ public class MapGenerator {
 		}
 		if (!near || tries++ > 4)
 		    break;
-		xLake = random.nextInt(mapWidth - avgLakeSize) + avgLakeSize / 2;
-		yLake = random.nextInt(mapHeight - avgLakeSize) + avgLakeSize / 2;
+		xLake = random.nextInt(mapWidth - avgLakeSize) + avgLakeSize
+			/ 2;
+		yLake = random.nextInt(mapHeight - avgLakeSize) + avgLakeSize
+			/ 2;
 	    }
 	    xLakes[i] = xLake;
 	    yLakes[i] = yLake;
@@ -179,8 +182,10 @@ public class MapGenerator {
 	int[] ySands = new int[sandbanks];
 	tries = 0;
 	for (int i = 0; i < sandbanks; i++) {
-	    int xSand = random.nextInt(mapWidth - avgSandbankSize) + avgSandbankSize / 2;
-	    int ySand = random.nextInt(mapHeight - avgSandbankSize) + avgSandbankSize / 2;
+	    int xSand = random.nextInt(mapWidth - avgSandbankSize)
+		    + avgSandbankSize / 2;
+	    int ySand = random.nextInt(mapHeight - avgSandbankSize)
+		    + avgSandbankSize / 2;
 	    for (;;) {
 		boolean near = false;
 		for (int j = 0; j < i; j++) {
@@ -195,8 +200,10 @@ public class MapGenerator {
 		}
 		if (!near || tries++ > 4)
 		    break;
-		xSand = random.nextInt(mapWidth - avgSandbankSize) + avgSandbankSize / 2;
-		ySand = random.nextInt(mapHeight - avgSandbankSize) + avgSandbankSize / 2;
+		xSand = random.nextInt(mapWidth - avgSandbankSize)
+			+ avgSandbankSize / 2;
+		ySand = random.nextInt(mapHeight - avgSandbankSize)
+			+ avgSandbankSize / 2;
 	    }
 	    xSands[i] = xSand;
 	    ySands[i] = ySand;
@@ -244,23 +251,23 @@ public class MapGenerator {
 
 	// Generate Mines
 
-	int lastDistanceLeft;
-	int lastDistanceRight;
-
 	for (int i = 0; i < mines; i++) {
 	    int xMine = (int) (random.nextInt(mapWidth - 16) + 8);
 	    int yMine = (int) (random.nextInt(mapHeight - 8) + 4);
 
-	    if (map[xMine][yMine] != Tile.grass && map[xMine][yMine] != Tile.grass2 || marginBuildings(xMine, yMine, 5)) {
+	    if (map[xMine][yMine] != Tile.grass
+		    && map[xMine][yMine] != Tile.grass2
+		    || marginBuildings(xMine, yMine, 5)) {
 		i--;
 	    } else {
 		Mine m = new Mine(xMine, yMine);
 		m.superior = false;
 		buildings[xMine][yMine] = m;
-		lastDistanceLeft = giveDistance(buildings[1][mapHeight / 2 - 1], m);
-		lastDistanceRight = giveDistance(buildings[mapWidth - 3][mapHeight / 2 - 1], m);
-		distancesLeft = distancesLeft + lastDistanceLeft;
-		distancesRight = distancesRight + lastDistanceRight;
+		distancesLeft = distancesLeft
+			+ giveDistance(buildings[1][mapHeight / 2 - 1], m);
+		distancesRight = distancesRight
+			+ giveDistance(
+				buildings[mapWidth - 3][mapHeight / 2 - 1], m);
 	    }
 	}
 
@@ -277,11 +284,11 @@ public class MapGenerator {
 	System.out.println(advantageLeft);
 
 	int tries = 0;
-	
+
 	// Generate superiorMine(s)
 	for (int i = 0; i < superiorMines && tries < 50; i++) {
 	    tries++;
-	    
+
 	    int xSMine = (int) (mapWidth / 2);
 
 	    if (!advantageLeft) {
@@ -292,7 +299,9 @@ public class MapGenerator {
 
 	    int ySMine = (int) 5 + random.nextInt(mapHeight - 10);
 
-	    if (map[xSMine][ySMine] != Tile.grass && map[xSMine][ySMine] != Tile.grass2 || marginBuildings(xSMine, ySMine, 5)) {
+	    if (map[xSMine][ySMine] != Tile.grass
+		    && map[xSMine][ySMine] != Tile.grass2
+		    || marginBuildings(xSMine, ySMine, 5)) {
 		i--;
 	    } else {
 		Mine m = new Mine(xSMine, ySMine);
@@ -301,23 +310,23 @@ public class MapGenerator {
 	    }
 	}
     }
-    
+
     private void generateMapGrassMargin() {
-	
-	for(int i = 0; i < mapWidth; i++) {
-	    
+
+	for (int i = 0; i < mapWidth; i++) {
+
 	    map[i][0] = Tile.grass;
-	    map[i][mapHeight-1] = Tile.grass;
-	    
+	    map[i][mapHeight - 1] = Tile.grass;
+
 	}
-	
-	for(int i = 0; i < mapHeight; i++) {
-	    
+
+	for (int i = 0; i < mapHeight; i++) {
+
 	    map[0][i] = Tile.grass;
-	    map[mapWidth-1][i] = Tile.grass;
-	    
+	    map[mapWidth - 1][i] = Tile.grass;
+
 	}
-	
+
     }
 
     private void makeWaterRandom() {
@@ -331,14 +340,18 @@ public class MapGenerator {
 		    boolean generateTile = new Random().nextBoolean();
 		    if (generateTile)
 			map[i][k] = Tile.water2;
-		    
-		    if (map[i - 1][k] == Tile.grass || map[i - 1][k] == Tile.grass2)
-			map[i][k] = Tile.water; // ersetzen mit WasserÃ¼bergang
-		    if (map[i + 1][k] == Tile.grass || map[i + 1][k] == Tile.grass2)
+
+		    if (map[i - 1][k] == Tile.grass
+			    || map[i - 1][k] == Tile.grass2)
+			map[i][k] = Tile.water; // ersetzen mit Wasserübergang
+		    if (map[i + 1][k] == Tile.grass
+			    || map[i + 1][k] == Tile.grass2)
 			map[i][k] = Tile.water;
-		    if (map[i][k - 1] == Tile.grass || map[i][k - 1] == Tile.grass2)
+		    if (map[i][k - 1] == Tile.grass
+			    || map[i][k - 1] == Tile.grass2)
 			map[i][k] = Tile.water;
-		    if (map[i][k + 1] == Tile.grass || map[i][k + 1] == Tile.grass2)
+		    if (map[i][k + 1] == Tile.grass
+			    || map[i][k + 1] == Tile.grass2)
 			map[i][k] = Tile.water;
 		}
 
@@ -393,29 +406,31 @@ public class MapGenerator {
 	}
 	return false;
     }
-    
+
+    @SuppressWarnings("unused")
     private boolean marginWaterAndSand(int x, int y, int m) {
-	for(int i = x - m; i < x + m; i++) {
-	
-	    for(int k =  y - m; k < y + m; k++) {
-		
-		if (i > 0 && k > 0 && map[i][k] != Tile.grass || map[i][k] != Tile.grass2)
+	for (int i = x - m; i < x + m; i++) {
+
+	    for (int k = y - m; k < y + m; k++) {
+
+		if (i > 0 && k > 0 && map[i][k] != Tile.grass
+			|| map[i][k] != Tile.grass2)
 		    return true;
-		
+
 	    }
-	    
+
 	}
-	
+
 	return false;
-	
+
     }
 
-    private int giveDistance(Building castle, Building mine) {
+    private double giveDistance(Building castle, Building mine) {
 
-	int xDiff = Math.abs(castle.x - mine.x);
-	int yDiff = Math.abs(castle.y - mine.y);
-	int Diff = xDiff + yDiff;
-	return Diff;
+	PathFinder pf = new PathFinder(map);
+	pf.findPath(castle.x, castle.y, mine.x, mine.y);
+
+	return pf.lengthOfLastPath();
 
     }
 }

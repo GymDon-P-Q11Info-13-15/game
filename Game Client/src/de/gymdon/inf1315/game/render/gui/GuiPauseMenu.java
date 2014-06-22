@@ -76,6 +76,8 @@ public class GuiPauseMenu extends GuiScreen {
     @Override
     public void actionPerformed(ActionEvent e) {
 	if (e.getID() == ActionEvent.ACTION_PERFORMED) {
+	    // Buttons
+	    if(e.getSource() instanceof GuiButton) {
 	    GuiButton button = (GuiButton) e.getSource();
 	    if (button == continueGame)
 		Client.instance.activateMap(false);
@@ -83,27 +85,17 @@ public class GuiPauseMenu extends GuiScreen {
 		Client.instance.setGuiScreen(new GuiOptions(this));
 	    else if (button == mainMenu)
 		Client.instance.setGuiScreen(new GuiMainMenu());
+	    }
+	    
+	    // Keys
+	    if(e.getSource() instanceof KeyEvent)
+	    {
+		int key = ((KeyEvent) e.getSource()).getKeyCode();
+		if (key == KeyEvent.VK_ESCAPE) {
+		    actionPerformed(new ActionEvent(continueGame, ActionEvent.ACTION_PERFORMED, null));
+		    Client.instance.mapren.firstClick = false;
+		}
+	    }
 	}
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-	int key = e.getKeyCode();
-	if (key == KeyEvent.VK_ESCAPE) {
-	    actionPerformed(new ActionEvent(continueGame, ActionEvent.ACTION_PERFORMED, null));
-	    Client.instance.mapren.firstClick = false;
-	}
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-	// TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-	// TODO Auto-generated method stub
-
     }
 }

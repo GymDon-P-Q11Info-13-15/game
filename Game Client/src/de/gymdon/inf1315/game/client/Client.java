@@ -21,7 +21,6 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import de.gymdon.inf1315.game.*;
-import de.gymdon.inf1315.game.Player.Color;
 import de.gymdon.inf1315.game.packet.*;
 import de.gymdon.inf1315.game.render.*;
 import de.gymdon.inf1315.game.render.gui.*;
@@ -30,6 +29,7 @@ public class Client implements Runnable, WindowListener {
     public static final boolean DEBUG = true;
     public static final String TITLE = "Game Title";
     public static final String VERSION = "Alpha 0.0.1";
+    public static final String COMMIT = "$Id$";
     public static Client instance;
     private boolean running = false;
     private JFrame frame;
@@ -55,7 +55,6 @@ public class Client implements Runnable, WindowListener {
     public Client() {
 	//gm = new GameMechanics(); //You throw a NullPointerException
 	mapgen = new MapGenerator();
-	mapren = new MapRenderer();
 	units = new Unit[mapgen.getMapWidth()][mapgen.getMapHeight()];
 	Client.instance = this;
 	frame = new JFrame(TITLE);

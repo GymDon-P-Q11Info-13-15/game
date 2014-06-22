@@ -21,6 +21,7 @@ public class GuiButton extends GuiControl {
     protected int width;
     protected int height;
     protected String text;
+    protected String translatedText;
     protected Object[] textData = new Object[0];
     protected boolean translate = true;
     protected Texture texture;
@@ -40,13 +41,11 @@ public class GuiButton extends GuiControl {
 	this(parent, id, x, y, 100, 20, text);
     }
 
-    public GuiButton(GuiScreen parent, int id, int x, int y, int width,
-	    int height, String text) {
+    public GuiButton(GuiScreen parent, int id, int x, int y, int width, int height, String text) {
 	this(parent, id, x, y, width, height, text, null);
     }
 
-    public GuiButton(GuiScreen parent, int id, int x, int y, int width,
-	    int height, String text, Texture texture) {
+    public GuiButton(GuiScreen parent, int id, int x, int y, int width, int height, String text, Texture texture) {
 	this.parent = parent;
 	this.id = id;
 	this.x = x;
@@ -60,57 +59,48 @@ public class GuiButton extends GuiControl {
 
     @Override
     public void render(Graphics2D g2d, int width, int height) {
-	if(borderWidth > 0) {
+	if (borderWidth > 0) {
 	    int c = borderColor;
-	    if(!enabled) {
-		float[] hsb = Color.RGBtoHSB((borderColor>>16)&0xFF, (borderColor>>8)&0xFF, borderColor&0xFF, null);
-		c = Color.HSBtoRGB(hsb[0], hsb[1]/2, Math.min(hsb[2]*1.2F, 1));
+	    if (!enabled) {
+		float[] hsb = Color.RGBtoHSB((borderColor >> 16) & 0xFF, (borderColor >> 8) & 0xFF, borderColor & 0xFF, null);
+		c = Color.HSBtoRGB(hsb[0], hsb[1] / 2, Math.min(hsb[2] * 1.2F, 1));
 	    }
 	    g2d.setColor(new Color(c));
-	    if(borderRadius == 0) {
-		g2d.fillRect(this.x - borderWidth, this.y - borderWidth, this.width + 2*borderWidth, this.height + 2*borderWidth);
-	    }else {
-		g2d.fillRoundRect(this.x - borderWidth, this.y - borderWidth, this.width + 2*borderWidth, this.height + 2*borderWidth, borderRadius, borderRadius);
+	    if (borderRadius == 0) {
+		g2d.fillRect(this.x - borderWidth, this.y - borderWidth, this.width + 2 * borderWidth, this.height + 2 * borderWidth);
+	    } else {
+		g2d.fillRoundRect(this.x - borderWidth, this.y - borderWidth, this.width + 2 * borderWidth, this.height + 2 * borderWidth, borderRadius, borderRadius);
 	    }
 	}
 	if (texture != null) {
 	    if (drawBackground)
-		g2d.drawImage(texture.getImage(), x, y, x + this.width, y
-			+ this.height, texture.getX(), texture.getY(),
-			texture.getX() + texture.getWidth(), texture.getY()
-				+ texture.getHeight(), new Color(bgColor),
-			texture);
+		g2d.drawImage(texture.getImage(), x, y, x + this.width, y + this.height, texture.getX(), texture.getY(), texture.getX() + texture.getWidth(), texture.getY() + texture.getHeight(), new Color(bgColor), texture);
 	    else
-		g2d.drawImage(texture.getImage(), x, y, x + this.width, y
-			+ this.height, texture.getX(), texture.getY(),
-			texture.getX() + texture.getWidth(), texture.getY()
-				+ texture.getHeight(), texture);
+		g2d.drawImage(texture.getImage(), x, y, x + this.width, y + this.height, texture.getX(), texture.getY(), texture.getX() + texture.getWidth(), texture.getY() + texture.getHeight(), texture);
 	} else if (drawBackground) {
 	    int c = bgColor;
-	    if(!enabled) {
-		float[] hsb = Color.RGBtoHSB((bgColor>>16)&0xFF, (bgColor>>8)&0xFF, bgColor&0xFF, null);
-		c = Color.HSBtoRGB(hsb[0], hsb[1]/2, Math.min(hsb[2]*1.2F, 1));
+	    if (!enabled) {
+		float[] hsb = Color.RGBtoHSB((bgColor >> 16) & 0xFF, (bgColor >> 8) & 0xFF, bgColor & 0xFF, null);
+		c = Color.HSBtoRGB(hsb[0], hsb[1] / 2, Math.min(hsb[2] * 1.2F, 1));
 	    }
 	    g2d.setColor(new Color(c));
-	    if(borderRadius == 0)
+	    if (borderRadius == 0)
 		g2d.fillRect(x, y, this.width, this.height);
 	    else
 		g2d.fillRoundRect(this.x, this.y, this.width, this.height, borderRadius - borderWidth, borderRadius - borderWidth);
 	}
 
 	g2d.setFont(font);
-	String translatedText = translate ? Client.instance.translation.translate(text, textData) : text;
+	translatedText = translate ? Client.instance.translation.translate(text, textData) : text;
 	Rectangle2D bounds = g2d.getFontMetrics().getStringBounds(translatedText, g2d);
 	g2d.setColor(new Color(textColor));
-	g2d.drawString(translatedText,
-		(float) (x + (this.width - bounds.getWidth()) / 2),
-		(float) (y + (this.height + bounds.getHeight()) / 2));
+	g2d.drawString(translatedText, (float) (x + (this.width - bounds.getWidth()) / 2), (float) (y + (this.height + bounds.getHeight()) / 2));
     }
 
     protected void stateChanged() {
-	if(lastState == ButtonState.ACTIVE && currentState == ButtonState.HOVER) {
+	if (lastState == ButtonState.ACTIVE && currentState == ButtonState.HOVER) {
 	    ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, this.text);
-	    for(ActionListener l : actionListeners)
+	    for (ActionListener l : actionListeners)
 		l.actionPerformed(e);
 	}
     }
@@ -142,11 +132,18 @@ public class GuiButton extends GuiControl {
     public String getText() {
 	return text;
     }
-    
+
+    public String getTranslatedText() {
+	if (translate)
+	    return translatedText;
+	else
+	    return text;
+    }
+
     public Object[] getTextData() {
 	return textData;
     }
-    
+
     public boolean isTranslate() {
 	return translate;
     }
@@ -176,39 +173,39 @@ public class GuiButton extends GuiControl {
     }
 
     public int getBorderColor() {
-        return borderColor;
+	return borderColor;
     }
 
     public int getBorderWidth() {
-        return borderWidth;
+	return borderWidth;
     }
 
     public int getBorderRadius() {
-        return borderRadius;
+	return borderRadius;
     }
 
     public boolean isEnabled() {
-        return enabled;
+	return enabled;
     }
 
     public GuiButton setBorderColor(int borderColor) {
-        this.borderColor = borderColor;
-        return this;
+	this.borderColor = borderColor;
+	return this;
     }
 
     public GuiButton setBorderWidth(int borderWidth) {
-        this.borderWidth = borderWidth;
-        return this;
+	this.borderWidth = borderWidth;
+	return this;
     }
 
     public GuiButton setBorderRadius(int borderRadius) {
-        this.borderRadius = borderRadius;
-        return this;
+	this.borderRadius = borderRadius;
+	return this;
     }
 
     public GuiButton setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        return this;
+	this.enabled = enabled;
+	return this;
     }
 
     public GuiButton setParent(GuiScreen parent) {
@@ -240,12 +237,12 @@ public class GuiButton extends GuiControl {
 	this.text = text;
 	return this;
     }
-    
+
     public GuiButton setTextData(Object... data) {
 	this.textData = data;
 	return this;
     }
-    
+
     public GuiButton setTranslate(boolean translate) {
 	this.translate = translate;
 	return this;
@@ -277,7 +274,7 @@ public class GuiButton extends GuiControl {
     }
 
     public GuiButton setState(ButtonState state) {
-	if(!enabled)
+	if (!enabled)
 	    return this;
 	this.lastState = currentState;
 	this.currentState = state;
@@ -296,19 +293,19 @@ public class GuiButton extends GuiControl {
 	int y = e.getY();
 	if (x >= this.x && y >= this.y && x <= this.x + this.width && y <= this.y + this.height)
 	    setState(ButtonState.HOVER);
-	else if(currentState == ButtonState.HOVER)
+	else if (currentState == ButtonState.HOVER)
 	    setState(ButtonState.NORMAL);
     }
-    
+
     @Override
     public void mousePressed(MouseEvent e) {
 	int x = e.getX();
 	int y = e.getY();
 	if (x >= this.x && y >= this.y && x <= this.x + this.width && y <= this.y + this.height)
 	    setState(ButtonState.ACTIVE);
-        
+
     }
-    
+
     @Override
     public void mouseReleased(MouseEvent e) {
 	int x = e.getX();
@@ -327,6 +324,6 @@ public class GuiButton extends GuiControl {
     @Override
     public void removeActionListener(ActionListener l) {
 	actionListeners.remove(l);
-	
+
     }
 }
