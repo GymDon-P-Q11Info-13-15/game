@@ -19,7 +19,8 @@ public class Preferences {
     public GameSettings game = new GameSettings();
     
     public Preferences() {
-	String lang = Locale.getDefault().toLanguageTag();
+	Locale l = Locale.getDefault();
+	String lang = l.getLanguage()+'_'+l.getCountry();
 	if(Preferences.class.getResourceAsStream("/lang/" + lang + ".json") != null)
 	    this.language = lang;
     }
