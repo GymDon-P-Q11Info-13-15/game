@@ -12,15 +12,15 @@ public class UnitRenderMap {
 
     public static Texture getTexture(Unit u) {
 	if(u instanceof Archer)
-	    return StandardTexture.get("sand_old");
+	    return StandardTexture.get("overlay_white");
 	if(u instanceof Knight)
-	    return StandardTexture.get("sand_old");
+	    return StandardTexture.get("overlay_white");
 	if(u instanceof Miner)
-	    return StandardTexture.get("sand_old");
+	    return StandardTexture.get("overlay_white");
 	if(u instanceof Spearman)
-	    return StandardTexture.get("sand_old");
+	    return StandardTexture.get("overlay_white");
 	if(u instanceof Swordsman)
-	    return StandardTexture.get("sand_old");
+	    return StandardTexture.get("overlay_white");
 	return null;
     }
 }

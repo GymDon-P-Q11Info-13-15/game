@@ -16,7 +16,13 @@ public abstract class Unit extends GameObject {
 
     public abstract void attack();
 
-    public abstract void setHP(int health);
+    public void setHP(int health) {
+    	hp = health;
+    }
+    
+    public int getHP() {
+    	return hp;
+    }
 
     public abstract int getSpeed();
     

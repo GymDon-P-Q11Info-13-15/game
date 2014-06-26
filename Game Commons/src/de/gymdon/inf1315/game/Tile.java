@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Tile implements Comparable<Tile>{
     public double groundFactor;
-    private boolean walkable;
+    private boolean walkable = true;
     public double g = 1;
     public double h;
     public double f;
@@ -18,8 +18,8 @@ public class Tile implements Comparable<Tile>{
     public static final Tile grass2 = new Tile(0, "grass").setGroundFactor(1);
     public static final Tile sand = new Tile(1, "sand").setGroundFactor(3);
     public static final Tile sand2 = new Tile(1, "sand").setGroundFactor(3);
-    public static final Tile water = new Tile(2, "water").setGroundFactor(2);
-    public static final Tile water2 = new Tile(2, "water").setGroundFactor(2);
+    public static final Tile water = new Tile(2, "water").setGroundFactor(2).setWalkable(false);
+    public static final Tile water2 = new Tile(2, "water").setGroundFactor(2).setWalkable(false);
     
     public Tile(int id, String name) {
     	this.name = name;
@@ -50,11 +50,10 @@ public class Tile implements Comparable<Tile>{
 	return groundFactor;
     }
     
-    /* Not needed right now
-    private Tile setWalkable(boolean walkable) {
-	this.walkable = walkable;
-	return this;
-    }*/
+	private Tile setWalkable(boolean walkable){
+		this.walkable = walkable;
+		return this;
+	}
     
     public boolean isWalkable() {
 	return walkable;

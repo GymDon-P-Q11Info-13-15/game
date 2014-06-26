@@ -14,6 +14,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.event.MouseInputListener;
 
+import sun.management.counter.Units;
+
 import de.gymdon.inf1315.game.*;
 import de.gymdon.inf1315.game.client.*;
 import de.gymdon.inf1315.game.render.gui.GuiButton;
@@ -96,9 +98,12 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	for (int x = 0; x < units.length; x++) {
 	    for (int y = 0; y < units[x].length; y++) {
 		if (units[x][y] != null) {
-		    Texture tex = UnitRenderMap.getTexture(units[x][y]);
+		    Unit u = units[x][y];
+		    Texture tex = UnitRenderMap.getTexture(u);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
+		    g2d.drawString(u.getClass().getSimpleName(), x * tileSize, y * tileSize + tileSize/2);
+		    g2d.drawString(Integer.toString(u.getHP()), x * tileSize, y * tileSize + tileSize);
 		}
 	    }
 	}
@@ -211,6 +216,17 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		field[x][y] = true;
 		actionPerformed(new ActionEvent(new Point(x, y), ActionEvent.ACTION_PERFORMED, "Unit"));
 		return;
+	    }
+	    if(mapCache[x][y].isWalkable()) {
+		Class<?>[] classes = new Class<?>[] { Archer.class, Knight.class, Spearman.class, Swordsman.class };
+		@SuppressWarnings("unchecked")
+		Class<? extends Unit> clazz = (Class<? extends Unit>) classes[Client.instance.random.nextInt(classes.length)];
+		try {
+		    Unit u = clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, x, y);
+		    units[x][y] = u;
+		} catch (Exception e1) {
+		    e1.printStackTrace();
+		}
 	    }
 	}
 	firstClick = false;
