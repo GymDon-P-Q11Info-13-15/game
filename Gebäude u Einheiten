@@ -19,3 +19,13 @@ Einheiten:
   
 Sonstige (Katapulte, Rammen, etc.):
      *Miner
+
+
+Options Array für Gebäude und Einheiten:
+0: attack
+1: move
+2: stack
+3: (frei für weitere Optionen)
+4:
+5: spawn/build
+6: (upgrade)
