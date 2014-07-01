@@ -53,7 +53,7 @@ public class Client implements Runnable, WindowListener {
     
 
     public Client() {
-	//gm = new GameMechanics(); //You throw a NullPointerException
+	gm = new GameMechanics(); //You throw a NullPointerException
 	mapgen = new MapGenerator();
 	units = new Unit[mapgen.getMapWidth()][mapgen.getMapHeight()];
 	Client.instance = this;

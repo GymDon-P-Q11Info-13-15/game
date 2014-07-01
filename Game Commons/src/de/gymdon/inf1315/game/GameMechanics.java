@@ -239,7 +239,17 @@ public class GameMechanics implements ActionListener {
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-	String s = e.paramString();
-
+    	
+    	if(e.getSource() instanceof Unit)
+    	{
+    		Unit u = (Unit) e.getSource();
+    		System.out.println("Unit: (" + u.x + "|" + u.y + ")");
+    	}
+    	
+    	if(e.getSource() instanceof Building)
+    	{
+    		Building b = (Building) e.getSource();
+    		System.out.println("Building: (" + b.x + "|" + b.y + ")");
+    	}
     }
 }
