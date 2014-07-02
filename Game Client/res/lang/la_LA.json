@@ -18,7 +18,7 @@
 		"gui.game.continue": "Alea Pergere",
 		"gui.credits": "Credits",
 		"gui.credits.lead": "Princeps",
-		"gui.credits.client": "Client",
+		"gui.credits.client": "Quodcumque",
 		"gui.credits.server": "Server",
 		"gui.credits.textures": "Imagines",
 		"gui.credits.translations": "Interpretationes",
@@ -40,6 +40,16 @@
 		"gui.back.mainmenu": "Redire ad primum visificum",
 		"gui.back": "Redire",
 		"gui.test": "Abdication",
-		"gui.exit": "Exire"
+		"gui.exit": "Exire",
+		"game.unit.archer": "Sagittarius",
+		"game.unit.barracks": "Castra",
+		"game.unit.building": "Aedificium",
+		"game.unit.castle": "Arx",
+		"game.unit.knight": "Eques",
+		"game.unit.mine": "Cuniculus",
+		"game.unit.spearman": "Hastatus",
+		"game.unit.swordsman": "Gladiator",
+		"game.player.red": "Lusor I",
+		"game.player.blue": "Lusor II"
 	}
 }

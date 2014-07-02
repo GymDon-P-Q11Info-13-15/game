@@ -35,6 +35,16 @@
 		"gui.back.mainmenu": "Reen al la ĉefa menuo",
 		"gui.back": "Reen",
 		"gui.test": "Testo",
-		"gui.exit": "Fini"
+		"gui.exit": "Fini",
+		"game.unit.archer": "Bogenschütze",
+		"game.unit.barracks": "Kaserne",
+		"game.unit.building": "Gebäude",
+		"game.unit.castle": "Burg",
+		"game.unit.knight": "Ritter",
+		"game.unit.mine": "Mine",
+		"game.unit.spearman": "Speerträger",
+		"game.unit.swordsman": "Schwertkämpfer",
+		"game.player.red": "Spieler I",
+		"game.player.blue": "Spieler II"
 	}
 }
