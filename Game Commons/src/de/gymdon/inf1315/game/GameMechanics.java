@@ -3,12 +3,13 @@ package de.gymdon.inf1315.game;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
+import de.gymdon.inf1315.game.client.*;
 
 public class GameMechanics implements ActionListener {
     Random r = new Random();
-    Tile[][] map;
-    Building[][] buildings;
-    Unit[][] units;
+    //Tile[][] map;
+    //Building[][] buildings;
+    //Unit[][] units;
     boolean[][] tempRange;
     boolean won;
     int round;
@@ -22,9 +23,9 @@ public class GameMechanics implements ActionListener {
      */
     
     public GameMechanics() { // neue Welt mit Breite x und Höhe y
-	//this.map = Client.instance.map;
-	//buildings = Client.instance.buildings;
-	//units = Client.instance.units;
+	this.map = Client.instance.map;
+	buildings = Client.instance.buildings;
+	units = Client.instance.units;
 	won = false;
 	round = 0;
 	phase = 0;
@@ -59,11 +60,27 @@ public class GameMechanics implements ActionListener {
     
     public void clicked(int x, int y){
 	if(x>=0 && y>=0){
-	    if(units[x][y]!=null){
-		//units[x][y].clicked();
+	    if(Client.instance.units[x][y]!=null){
+		//Client.instance.units[x][y].clicked();
 	    }
 	    
 	}
+    }
+    /**
+     * Stacks two Units if their combined HP is lower than 120
+     * @param a 
+     * 			 first Unit to stack into another
+     * @param b
+     * 			 second Unit that is stacked into
+     */
+    public void stack(Unit a, Unit b){
+    	getAccesableFields(a);
+    	if(tempRange[b.x][b.y]==true){
+    		if((a.getHP()+b.getHP())>=120){
+    		   b.setHP(a.getHP()+b.getHP());
+    		   Client.instance.units[a.x][a.y]=null;
+    		}
+    	}
     }
 
     /**
@@ -80,8 +97,8 @@ public class GameMechanics implements ActionListener {
     public void buildBuilding(Building b, int x, int y) {
 	if (x >= 0 && y >= 0) {
 	    // check player's gold!
-	    if (buildings[x][y] == null) {
-		buildings[x][y] = b;
+	    if (Client.instance.buildings[x][y] == null) {
+		Client.instance.buildings[x][y] = b;
 	    }
 	} else {
 	    throw new IllegalArgumentException("Field position must be positive");
@@ -126,13 +143,13 @@ public class GameMechanics implements ActionListener {
     }
 
     public void getAccessableFields(Unit a) {
-	tempRange = new boolean[map.length][map[0].length];
+	tempRange = new boolean[Client.instance.map.length][Client.instance.map[0].length];
 	step(a.getSpeed(), a.x, a.y);
 
     }
     
     public boolean[][] getAccessableField(Unit a){
-    	tempRange = new boolean[map.length][map[0].length];
+    	tempRange = new boolean[Client.instance.map.length][Client.instance.map[0].length];
     	step(a.getSpeed(), a.x, a.y);
     	return tempRange;
     }
@@ -150,8 +167,8 @@ public class GameMechanics implements ActionListener {
 
     private void step(int actualSpeed, int x, int y) {
 
-	if (map[x][y].isWalkable() && buildings[x][y]==null) { 			//can only walk if no building or walkable
-	    int newSpeed = (int) (actualSpeed - map[x][y].getGroundFactor());  //TODO: Hotfix by Simi, groundFactor is now double
+	if (Client.instance.map[x][y].isWalkable() && Client.instance.buildings[x][y]==null) { 			//can only walk if no building or walkable
+	    int newSpeed = (int) (actualSpeed - Client.instance.map[x][y].getGroundFactor());  //TODO: Hotfix by Simi, groundFactor is now double
 
 	    if (newSpeed >= 1) {
 
