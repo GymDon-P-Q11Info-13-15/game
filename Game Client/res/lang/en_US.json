@@ -36,6 +36,16 @@
 		"gui.back.mainmenu": "Back to main menu",
 		"gui.back": "Back",
 		"gui.test": "Test",
-		"gui.exit": "Exit"
+		"gui.exit": "Exit",
+		"game.unit.archer": "Archer",
+		"game.unit.barracks": "Barracks",
+		"game.unit.building": "Building",
+		"game.unit.castle": "Castle",
+		"game.unit.knight": "Knight",
+		"game.unit.mine": "Mine",
+		"game.unit.spearman": "Spearman",
+		"game.unit.swordsman": "Swordman",
+		"game.player.red": "Player I",
+		"game.player.blue": "Player II"
 	}
 }
