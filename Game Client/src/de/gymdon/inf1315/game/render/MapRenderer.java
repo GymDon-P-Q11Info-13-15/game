@@ -15,6 +15,7 @@ import javax.swing.event.MouseInputListener;
 
 import de.gymdon.inf1315.game.*;
 import de.gymdon.inf1315.game.client.*;
+import de.gymdon.inf1315.game.render.gui.GuiGameMenu;
 import de.gymdon.inf1315.game.render.gui.GuiButton;
 import de.gymdon.inf1315.game.render.gui.GuiPauseMenu;
 import de.gymdon.inf1315.game.render.gui.GuiScreen;
@@ -35,10 +36,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private int scrollY = 0;
     private int diffX = 0;
     private int diffY = 0;
-    private boolean wait = false;
-    private GameObject menu;
+    private GameObject selected;
     private boolean[][] fieldHover;
     private boolean[][] field;
+    private GuiGameMenu guiBuilding;
+    private int guiPosX, guiPosY;
 
     public MapRenderer() {
 	controlList.add(endRound);
@@ -115,7 +117,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Rendering Click and Hover
 	for (int x = 0; x < fieldHover.length; x++) {
 	    for (int y = 0; y < fieldHover[x].length; y++) {
-		if (fieldHover[x][y] && !wait) {
+		if (fieldHover[x][y] && guiBuilding == null) {
 		    Texture tex = StandardTexture.get("hover");
 		    Building b = buildings[x][y];
 		    if (b != null)
@@ -126,20 +128,31 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 		if (field[x][y]) {
 		    Texture tex = StandardTexture.get("hover_clicked");
-		    Texture m = StandardTexture.get("sand_old");
 		    Building b = buildings[x][y];
 		    if (b != null) {
 			int tX = tileSize * b.getSizeX();
 			int tY = tileSize * b.getSizeY();
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tX, tY, tex);
-			g2d.drawImage(m.getImage(), x * tileSize + tX * 2, y * tileSize - tY, tX, tY, m);
-			g2d.drawImage(m.getImage(), x * tileSize + tX * 2, y * tileSize + tY, tX, tY, m);
 		    } else {
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
-			g2d.drawImage(m.getImage(), x * tileSize + tileSize * 2, y * tileSize - tileSize, tileSize, tileSize, m);
-			g2d.drawImage(m.getImage(), x * tileSize + tileSize * 2, y * tileSize + tileSize, tileSize, tileSize, m);
 		    }
 		}
+	    }
+	}
+
+	if (guiBuilding != null) {
+	    BufferedImage img = guiBuilding.render();
+	    if (img != null) {
+		int x = guiPosX;
+		int y = guiPosY;
+		/*
+		if (x + img.getWidth() > width)
+		    x = width - img.getWidth();
+		if (y + img.getHeight() > height)
+		    y = height - img.getHeight();
+		    */
+		g2d.translate(x, y);
+		g2d.drawImage(img, 0, 0, null);
 	    }
 	}
 
@@ -189,38 +202,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	return cache;
     }
 
-    private boolean menuCheck(int x, int y) {
-	if (menu != null) {
-	    if(topClicked(x, y) || botClicked(x, y) || selfClicked(x, y))
-		return true;
-	    else
-		return false;
-	} else {
-	    return false;
-	}
-    }
-
-    private boolean topClicked(int x, int y) {
-	if (x == menu.x + 2 && y == menu.y - 1) {
-	    return true;
-	} else
-	    return false;
-    }
-
-    private boolean botClicked(int x, int y) {
-	if (x == menu.x + 2 && y == menu.y + 1) {
-	    return true;
-	} else
-	    return false;
-    }
-
-    private boolean selfClicked(int x, int y) {
-	if (x == menu.x && y == menu.y) {
-	    return true;
-	} else
-	    return false;
-    }
-
     @Override
     public void mouseClicked(MouseEvent e) {
 	super.mouseClicked(e);
@@ -238,7 +219,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	Building[][] buildings = Client.instance.buildings;
 	Unit[][] units = Client.instance.units;
 
-	if (e.getButton() == MouseEvent.BUTTON1 && !firstClick && !(menuCheck(x, y))) {
+	if (e.getButton() == MouseEvent.BUTTON1 && !firstClick) {
 
 	    field = new boolean[mapWidth][mapHeight];
 	    for (int x1 = x; x1 > x1 - 6 && x1 >= 0; x1--) {
@@ -246,9 +227,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Building b = buildings[x1][y1];
 		    if (b != null && b.getSizeX() + x1 > x && b.getSizeY() + y1 > y) {
 			field[x1][y1] = true;
-			menu = b;
-			wait = true;
+			selected = b;
 			actionPerformed(new ActionEvent(b, ActionEvent.ACTION_PERFORMED, "Building"));
+			guiBuilding = new GuiGameMenu(b);
+			guiPosX = (int) ((e.getX() + scrollX) / zoom);
+			guiPosY = (int) ((e.getY() + scrollY) / zoom);
 			return;
 		    }
 		}
@@ -257,8 +240,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    if (units[x][y] != null) {
 		field[x][y] = true;
 		Unit u = units[x][y];
-		menu = u;
-		wait = true;
+		selected = u;
 		actionPerformed(new ActionEvent(u, ActionEvent.ACTION_PERFORMED, "Unit"));
 		return;
 	    }
@@ -275,17 +257,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		}
 	    }
 
-	    wait = false;
-	    menu = null;
-	} else if (menuCheck(x, y)) {
-	    if(topClicked(x, y))
-		System.out.println("Clicked on the top MenuSelectThingWithoutGraphic.");
-	    else if(botClicked(x, y))
-		System.out.println("Clicked on the bottom MenuSelectThingWithoutGraphic.");
-	    else if(selfClicked(x, y))
-		System.out.println("Clicked on the selected GameObject.");
+	    selected = null;
 	}
 	firstClick = false;
+	guiBuilding = null;
     }
 
     @Override
