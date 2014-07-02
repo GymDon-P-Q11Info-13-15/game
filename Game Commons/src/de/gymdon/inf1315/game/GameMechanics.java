@@ -131,6 +131,12 @@ public class GameMechanics implements ActionListener {
 
     }
     
+    public boolean[][] getAccessableField(Unit a){
+    	tempRange = new boolean[map.length][map[0].length];
+    	step(a.getSpeed(), a.x, a.y);
+    	return tempRange;
+    }
+    
     public boolean isAccessable(Unit u, int x, int y){
 	getAccessableFields(u);
 	if(tempRange[x][y]==true){
