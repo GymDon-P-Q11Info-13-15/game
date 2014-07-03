@@ -23,9 +23,9 @@ public class GameMechanics implements ActionListener {
      */
     
     public GameMechanics() { // neue Welt mit Breite x und Höhe y
-	this.map = Client.instance.map;
-	buildings = Client.instance.buildings;
-	units = Client.instance.units;
+	this.map = game.map;
+	buildings = game.buildings;
+	units = game.units;
 	won = false;
 	round = 0;
 	phase = 0;
@@ -60,8 +60,8 @@ public class GameMechanics implements ActionListener {
     
     public void clicked(int x, int y){
 	if(x>=0 && y>=0){
-	    if(Client.instance.units[x][y]!=null){
-		//Client.instance.units[x][y].clicked();
+	    if(game.units[x][y]!=null){
+		//game.units[x][y].clicked();
 	    }
 	    
 	}
@@ -74,11 +74,11 @@ public class GameMechanics implements ActionListener {
      * 			 second Unit that is stacked into
      */
     public void stack(Unit a, Unit b){
-    	getAccesableFields(a);
+    	getAccessableFields(a);
     	if(tempRange[b.x][b.y]==true){
     		if((a.getHP()+b.getHP())>=120){
     		   b.setHP(a.getHP()+b.getHP());
-    		   Client.instance.units[a.x][a.y]=null;
+    		   game.units[a.x][a.y]=null;
     		}
     	}
     }
@@ -97,8 +97,8 @@ public class GameMechanics implements ActionListener {
     public void buildBuilding(Building b, int x, int y) {
 	if (x >= 0 && y >= 0) {
 	    // check player's gold!
-	    if (Client.instance.buildings[x][y] == null) {
-		Client.instance.buildings[x][y] = b;
+	    if (game.buildings[x][y] == null) {
+		game.buildings[x][y] = b;
 	    }
 	} else {
 	    throw new IllegalArgumentException("Field position must be positive");
@@ -143,13 +143,13 @@ public class GameMechanics implements ActionListener {
     }
 
     public void getAccessableFields(Unit a) {
-	tempRange = new boolean[Client.instance.map.length][Client.instance.map[0].length];
+	tempRange = new boolean[game.map.length][game.map[0].length];
 	step(a.getSpeed(), a.x, a.y);
 
     }
     
     public boolean[][] getAccessableField(Unit a){
-    	tempRange = new boolean[Client.instance.map.length][Client.instance.map[0].length];
+    	tempRange = new boolean[game.map.length][game.map[0].length];
     	step(a.getSpeed(), a.x, a.y);
     	return tempRange;
     }
@@ -167,8 +167,8 @@ public class GameMechanics implements ActionListener {
 
     private void step(int actualSpeed, int x, int y) {
 
-	if (Client.instance.map[x][y].isWalkable() && Client.instance.buildings[x][y]==null) { 			//can only walk if no building or walkable
-	    int newSpeed = (int) (actualSpeed - Client.instance.map[x][y].getGroundFactor());  //TODO: Hotfix by Simi, groundFactor is now double
+	if (game.map[x][y].isWalkable() && game.buildings[x][y]==null) { 			//can only walk if no building or walkable
+	    int newSpeed = (int) (actualSpeed - game.map[x][y].getGroundFactor());  //TODO: Hotfix by Simi, groundFactor is now double
 
 	    if (newSpeed >= 1) {
 
