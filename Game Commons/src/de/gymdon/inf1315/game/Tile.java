@@ -26,9 +26,7 @@ public class Tile implements Comparable<Tile> {
     }
 
     public void makeF() {
-
-	f = g + h;
-
+    	f = groundFactor + h;
     }
 
     public List<Point> getParent(List<Point> list) {
