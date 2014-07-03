@@ -51,7 +51,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	cache = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = cache.createGraphics();
 
-	Tile[][] map = Client.instance.map;
+	Tile[][] map = Client.instance.game.map;
 	int mapWidth = map.length;
 	int mapHeight = map[0].length;
 	double w = (mapWidth * tileSize * zoom);
@@ -83,7 +83,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	g2d.drawImage(this.map, 0, 0, null);
 
 	// Rendering Buildings
-	Building[][] buildings = Client.instance.buildings;
+	Building[][] buildings = Client.instance.game.buildings;
 	for (int x = 0; x < buildings.length; x++) {
 	    for (int y = 0; y < buildings[x].length; y++) {
 		if (buildings[x][y] != null) {
@@ -95,7 +95,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	}
 
 	// Rendering Units
-	Unit[][] units = Client.instance.units;
+	Unit[][] units = Client.instance.game.units;
 	for (int x = 0; x < units.length; x++) {
 	    for (int y = 0; y < units[x].length; y++) {
 		if (units[x][y] != null) {
@@ -216,8 +216,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	if (x < 0 || x >= field.length || y < 0 || y >= field[x].length)
 	    return;
-	Building[][] buildings = Client.instance.buildings;
-	Unit[][] units = Client.instance.units;
+	Building[][] buildings = Client.instance.game.buildings;
+	Unit[][] units = Client.instance.game.units;
 
 	if (e.getButton() == MouseEvent.BUTTON1 && !firstClick) {
 
@@ -277,8 +277,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	if (x < 0 || x >= fieldHover.length || y < 0 || y >= fieldHover[x].length)
 	    return;
-	Building[][] buildings = Client.instance.buildings;
-	Unit[][] units = Client.instance.units;
+	Building[][] buildings = Client.instance.game.buildings;
+	Unit[][] units = Client.instance.game.units;
 
 	fieldHover = new boolean[mapWidth][mapHeight];
 	for (int x1 = x; x1 > x1 - 6 && x1 >= 0; x1--) {
@@ -358,7 +358,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    // GameObjects
 	    if (e.getSource() instanceof GameObject) {
 		// GameObject g = (GameObject) e.getSource();
-		Client.instance.gm.actionPerformed(e);
+		Client.instance.game.gm.actionPerformed(e);
 	    }
 	}
     }

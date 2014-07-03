@@ -45,17 +45,9 @@ public class Client implements Runnable, WindowListener {
     public List<Remote> remotes = new ArrayList<Remote>();
     public Map<Remote, Thread> remoteThreads = new HashMap<Remote, Thread>();
     public MapRenderer mapren;
-    public MapGenerator mapgen;
-    public Tile[][] map;
-    public Building[][] buildings;
-    public Unit[][] units;
-    public GameMechanics gm;
-    
+    public Game game;
 
     public Client() {
-	gm = new GameMechanics(); //You throw a NullPointerException
-	mapgen = new MapGenerator();
-	units = new Unit[mapgen.getMapWidth()][mapgen.getMapHeight()];
 	Client.instance = this;
 	frame = new JFrame(TITLE);
 	frame.setSize(1280, 720);
@@ -112,7 +104,7 @@ public class Client implements Runnable, WindowListener {
 	    if (System.currentTimeMillis() - lastTimer1 > 1000) {
 		lastTimer1 += 1000;
 		if (DEBUG) {
-		    if(translation != null) {
+		    if (translation != null) {
 			frame.setTitle(translation.translate("game.title") + " - " + ticks + "TPS " + frames + "FPS");
 			System.out.println(translation.translate("game.title") + " - " + ticks + "TPS " + frames + "FPS");
 		    }
@@ -298,13 +290,14 @@ public class Client implements Runnable, WindowListener {
     }
 
     public void activateMap(boolean newMap) {
-	if(newMap)
-	{
+	if (newMap) {
+	    game = new Game(null);
+	    game.gm.game = game;
 	    mapren = new MapRenderer();
-	    mapgen = new MapGenerator();
-	    mapgen.generateAll();
-	    map = mapgen.getMap();
-	    buildings = mapgen.getBuildings();
+	    game.mapgen = new MapGenerator();
+	    game.mapgen.generateAll();
+	    game.map = game.mapgen.getMap();
+	    game.buildings = game.mapgen.getBuildings();
 	}
 	setGuiScreen(null);
 	canvas.mapRenderer = mapren;

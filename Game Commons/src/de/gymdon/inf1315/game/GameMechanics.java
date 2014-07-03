@@ -14,6 +14,7 @@ public class GameMechanics implements ActionListener {
     boolean won;
     int round;
     int phase;
+    public Game game;
 
     /**
      * Map, Buildings etc wird alle im MapGenerator generiert
