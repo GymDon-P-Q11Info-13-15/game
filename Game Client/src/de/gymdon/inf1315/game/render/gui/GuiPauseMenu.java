@@ -69,7 +69,7 @@ public class GuiPauseMenu extends GuiScreen {
 	
 	g2d.setColor(Color.WHITE);
 	g2d.setFont(Client.instance.translation.font.deriveFont(Font.BOLD, 12));
-	g2d.drawString("Seed: " + Client.instance.mapgen.getSeed(), buttonWidth, height - height/16);
+	g2d.drawString("Seed: " + Client.instance.game.mapgen.getSeed(), buttonWidth, height - height/16);
 	super.render(g2d, width, height);
     }
 
