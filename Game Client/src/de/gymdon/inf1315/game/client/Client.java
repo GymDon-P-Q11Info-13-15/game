@@ -290,13 +290,9 @@ public class Client implements Runnable, WindowListener {
     }
 
     public void activateMap(boolean newMap) {
-	game = new Game(null);
-	game.gm.game = game;
-	if(game == null) {
-	    System.err.println("game == null");
-	    return;
-	}
 	if (newMap) {
+	    game = new Game(null);
+	    game.gm.game = game;
 	    mapren = new MapRenderer();
 	    game.mapgen = new MapGenerator();
 	    game.mapgen.generateAll();
