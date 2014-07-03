@@ -27,7 +27,7 @@ public class Tile implements Comparable<Tile>{
     
     public void makeF() {
     	
-    	f = g + h;
+    	f = groundFactor + h;
     	
     }
     
