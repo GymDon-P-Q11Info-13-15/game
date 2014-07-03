@@ -25,14 +25,18 @@ public abstract class Unit extends GameObject {
     public int getHP() {
     	return hp;
     }
+    
+    public void resetSpeed(){
+    	act_speed=speed;
+    }
 
     public abstract int getSpeed();
     
-    public boolean[] clicked(){
-    	if(act_speed==0){
+    public boolean[] clicked(int phase){
+    	if(act_speed==0||phase!=1){
     		options[1]=false;
     	}
-    	if(hp<=100){
+    	if(hp<=100||phase!=1){
     		options[2]=false;
     	}
     	return options;

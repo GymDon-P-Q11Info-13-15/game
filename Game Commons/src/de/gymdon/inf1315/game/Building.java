@@ -14,4 +14,6 @@ public abstract class Building extends GameObject {
 	return 1;
     }
     
+    //TODO: clicked()
+    
 }
