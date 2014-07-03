@@ -11,15 +11,15 @@ import de.gymdon.inf1315.game.render.StandardTexture;
 public class UnitRenderMap {
 
     public static Texture getTexture(Unit u) {
-	if(u instanceof Archer)
+	if (u instanceof Archer)
 	    return StandardTexture.get("overlay_white");
-	if(u instanceof Knight)
+	if (u instanceof Knight)
 	    return StandardTexture.get("overlay_white");
-	if(u instanceof Miner)
+	if (u instanceof Miner)
 	    return StandardTexture.get("overlay_white");
-	if(u instanceof Spearman)
+	if (u instanceof Spearman)
 	    return StandardTexture.get("overlay_white");
-	if(u instanceof Swordsman)
+	if (u instanceof Swordsman)
 	    return StandardTexture.get("overlay_white");
 	return null;
     }

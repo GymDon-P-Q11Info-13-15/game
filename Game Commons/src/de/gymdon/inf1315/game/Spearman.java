@@ -22,7 +22,7 @@ public class Spearman extends Unit {
 
     @Override
     public void attack() {
-	
+
     }
 
     @Override
@@ -41,8 +41,7 @@ public class Spearman extends Unit {
 
     @Override
     public void clicked() {
-	
-	
+
     }
 
 }

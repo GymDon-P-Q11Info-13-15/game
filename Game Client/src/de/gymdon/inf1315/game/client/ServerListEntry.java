@@ -29,7 +29,7 @@ public class ServerListEntry {
 
 	    @Override
 	    public void render(Graphics2D g2d, int width, int height) {
-		LinearGradientPaint gradient = new LinearGradientPaint(0, 0, 0, 100, new float[]{0,1}, new Color[]{new Color(0x666666),new Color(0x444444)});
+		LinearGradientPaint gradient = new LinearGradientPaint(0, 0, 0, 100, new float[] { 0, 1 }, new Color[] { new Color(0x666666), new Color(0x444444) });
 		g2d.setPaint(gradient);
 		g2d.fillRect(0, 0, width, 100);
 		g2d.setColor(new Color(0x666666));
@@ -40,22 +40,22 @@ public class ServerListEntry {
 		g2d.setFont(Client.instance.translation.font.deriveFont(Font.BOLD, 18F));
 		g2d.setColor(Color.GRAY);
 		g2d.drawString(ip, 50, 75);
-		if(ping >= 0) {
-		    if(ping == 0)
+		if (ping >= 0) {
+		    if (ping == 0)
 			g2d.setColor(Color.RED.darker());
 		    g2d.drawString(ping == 0 ? Client.instance.translation.translate("protocol.timeout") : ping + "ms", 50, 95);
 		}
 	    }
-	    
+
 	};
     }
-    
+
     public InetSocketAddress getAddress() {
-	if(ip.contains(":"))
+	if (ip.contains(":"))
 	    return new InetSocketAddress(ip.substring(0, ip.indexOf(':')), Integer.parseInt(name.substring(ip.indexOf(':') + 1)));
 	return new InetSocketAddress(ip, 22422);
     }
-    
+
     public void ping() {
 	new Thread() {
 	    public void run() {
@@ -68,16 +68,16 @@ public class ServerListEntry {
 		    Client.instance.remotes.add(server);
 		    final long start = System.currentTimeMillis();
 		    server.addPacketListener(new PacketListener() {
-		        
-		        @Override
-		        public void handlePacket(Remote r, Packet p, boolean in) {
-		    		if(in) {
-		    		    if(p instanceof PacketHello) {
-		    			r.leave("");
-		    			ping = (int) (System.currentTimeMillis() - start);
-		    		    }
-		    		}
-		        }
+
+			@Override
+			public void handlePacket(Remote r, Packet p, boolean in) {
+			    if (in) {
+				if (p instanceof PacketHello) {
+				    r.leave("");
+				    ping = (int) (System.currentTimeMillis() - start);
+				}
+			    }
+			}
 		    });
 		    PacketHello hello = new PacketHello(server);
 		    hello.serverHello = false;
@@ -87,33 +87,33 @@ public class ServerListEntry {
 			Thread.sleep(2000);
 		    } catch (InterruptedException e) {
 		    }
-		    if(pinging && ping < 0) {
+		    if (pinging && ping < 0) {
 			ping = 0;
 			pinging = false;
 			System.err.println("[ServerList] " + name + "(" + ip + "): " + Client.instance.translation.translate("protocol.timeout"));
 			server.leave("");
 		    }
-		    if(!server.left())
+		    if (!server.left())
 			server.leave("");
 		} catch (IOException e) {
 		    System.err.println("[ServerList] " + name + "(" + ip + "): " + e.getMessage());
 		    ping = 0;
 		    pinging = false;
 		}
-		
+
 	    }
 	}.start();
     }
-    
+
     public int getPing() {
 	return ping;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
-	return obj instanceof ServerListEntry && ((ServerListEntry)obj).ip.equals(ip);
+	return obj instanceof ServerListEntry && ((ServerListEntry) obj).ip.equals(ip);
     }
-    
+
     static {
 	ServerListEntry main = new ServerListEntry();
 	main.name = "PVPcTutorials.de";

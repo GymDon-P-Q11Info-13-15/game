@@ -18,7 +18,7 @@ public class GameCanvas extends JPanel {
 	int width = getWidth();
 	int height = getHeight();
 	BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-	Graphics2D g2d = (Graphics2D)image.createGraphics();
+	Graphics2D g2d = (Graphics2D) image.createGraphics();
 	g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	g2d.setColor(Color.BLACK);
@@ -28,7 +28,7 @@ public class GameCanvas extends JPanel {
 	if (Client.instance.currentScreen != null)
 	    Client.instance.currentScreen.render(g2d, width, height);
 	g2d.dispose();
-	
+
 	g.drawImage(image, 0, 0, null);
     }
 }

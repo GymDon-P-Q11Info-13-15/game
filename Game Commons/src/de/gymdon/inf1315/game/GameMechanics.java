@@ -16,27 +16,26 @@ public class GameMechanics implements ActionListener {
     public Game game;
 
     /**
-     * Map, Buildings etc wird alle im MapGenerator generiert
-     * Da braucht ihr hier in den GameMechanics nichts machen
-     * Ich denk mal ein Objekt von GameMechanics wird im Client erzeugt,
-     * dann wird da die Karte etc gleich übergeben. (?)
+     * Map, Buildings etc wird alle im MapGenerator generiert Da braucht ihr
+     * hier in den GameMechanics nichts machen Ich denk mal ein Objekt von
+     * GameMechanics wird im Client erzeugt, dann wird da die Karte etc gleich
+     * übergeben. (?)
      */
-    
+
     public GameMechanics() { // neue Welt mit Breite x und Höhe y
-	//this.map = Client.instance.map;
-	//buildings = Client.instance.buildings;
-	//units = Client.instance.units;
+	// this.map = Client.instance.map;
+	// buildings = Client.instance.buildings;
+	// units = Client.instance.units;
 	won = false;
 	round = 0;
 	phase = 0;
     }
-    
-    
+
     /**
      * Set a Map as internal Tile Array
      * 
-     * @param t 
-     * 		Tile Array as new Map
+     * @param t
+     *            Tile Array as new Map
      */
     public void setMap(Tile[][] t) {
 	map = t;
@@ -50,20 +49,19 @@ public class GameMechanics implements ActionListener {
 	}
 
     }
-    
-    public void nextPhase(){
+
+    public void nextPhase() {
 	phase++;
-	phase=phase%6;
-	
-	
+	phase = phase % 6;
+
     }
-    
-    public void clicked(int x, int y){
-	if(x>=0 && y>=0){
-	    if(units[x][y]!=null){
-		//units[x][y].clicked();
+
+    public void clicked(int x, int y) {
+	if (x >= 0 && y >= 0) {
+	    if (units[x][y] != null) {
+		// units[x][y].clicked();
 	    }
-	    
+
 	}
     }
 
@@ -131,28 +129,37 @@ public class GameMechanics implements ActionListener {
 	step(a.getSpeed(), a.x, a.y);
 
     }
-    
-    public boolean[][] getAccessableField(Unit a){
-    	tempRange = new boolean[map.length][map[0].length];
-    	step(a.getSpeed(), a.x, a.y);
-    	return tempRange;
+
+    public boolean[][] getAccessableField(Unit a) {
+	tempRange = new boolean[map.length][map[0].length];
+	step(a.getSpeed(), a.x, a.y);
+	return tempRange;
     }
-    
-    public boolean isAccessable(Unit u, int x, int y){
+
+    public boolean isAccessable(Unit u, int x, int y) {
 	getAccessableFields(u);
-	if(tempRange[x][y]==true){
+	if (tempRange[x][y] == true) {
 	    return true;
-	}
-	else{
+	} else {
 	    return false;
 	}
-	
+
     }
 
     private void step(int actualSpeed, int x, int y) {
 
-	if (map[x][y].isWalkable() && buildings[x][y]==null) { 			//can only walk if no building or walkable
-	    int newSpeed = (int) (actualSpeed - map[x][y].getGroundFactor());  //TODO: Hotfix by Simi, groundFactor is now double
+	if (map[x][y].isWalkable() && buildings[x][y] == null) { // can only
+								 // walk if no
+								 // building or
+								 // walkable
+	    int newSpeed = (int) (actualSpeed - map[x][y].getGroundFactor()); // TODO:
+									      // Hotfix
+									      // by
+									      // Simi,
+									      // groundFactor
+									      // is
+									      // now
+									      // double
 
 	    if (newSpeed >= 1) {
 
@@ -186,17 +193,12 @@ public class GameMechanics implements ActionListener {
      * 
      * }
      */
-    /*public int getassist(Unit u){
-    Unit x;
-    
-    if (x!=null){
-    return  (int)(Math.round(x.attack * x.combined)) ;
-    }
-    else{
-    return 0;	
-    }
-    }
-    */
+    /*
+     * public int getassist(Unit u){ Unit x;
+     * 
+     * if (x!=null){ return (int)(Math.round(x.attack * x.combined)) ; } else{
+     * return 0; } }
+     */
     public int strikechance(Unit striker, Unit stroke) {
 	// Berechnet eine zahl die der Rng überschreiten muss um zu treffen
 	int attchance = 80 - (striker.attack + striker.hp / 4 - stroke.defense / 2 - stroke.hp / 4);
@@ -218,7 +220,7 @@ public class GameMechanics implements ActionListener {
 	    {
 		defender.setHP(defender.hp - r.nextInt(attacker.attack) * attacker.hp / 100);
 		// ranged Schadensberechnung wip
-		
+
 		return;
 	    } else {
 		if (r.nextInt(81) >= strikechance(attacker, defender)) {
@@ -237,26 +239,25 @@ public class GameMechanics implements ActionListener {
 	    }
 	}
     }
-    public void pillage(Unit u,Building b)
-    {
-     if(r.nextInt(101)>=b.defense){
-	b.hp=b.hp-u.attack*125*(int)((75+r.nextInt(51))/100); 
-     }
-	
+
+    public void pillage(Unit u, Building b) {
+	if (r.nextInt(101) >= b.defense) {
+	    b.hp = b.hp - u.attack * 125 * (int) ((75 + r.nextInt(51)) / 100);
+	}
+
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-    	
-    	if(e.getSource() instanceof Unit)
-    	{
-    		Unit u = (Unit) e.getSource();
-    		System.out.println("Unit: (" + u.x + "|" + u.y + ")");
-    	}
-    	
-    	if(e.getSource() instanceof Building)
-    	{
-    		Building b = (Building) e.getSource();
-    		System.out.println("Building: (" + b.x + "|" + b.y + ")");
-    	}
+
+	if (e.getSource() instanceof Unit) {
+	    Unit u = (Unit) e.getSource();
+	    System.out.println("Unit: (" + u.x + "|" + u.y + ")");
+	}
+
+	if (e.getSource() instanceof Building) {
+	    Building b = (Building) e.getSource();
+	    System.out.println("Building: (" + b.x + "|" + b.y + ")");
+	}
     }
 }

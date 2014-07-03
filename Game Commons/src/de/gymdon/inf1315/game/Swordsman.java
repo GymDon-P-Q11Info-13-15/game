@@ -41,7 +41,7 @@ public class Swordsman extends Unit {
     @Override
     public void clicked() {
 	// TODO Auto-generated method stub
-	
+
     }
 
 }

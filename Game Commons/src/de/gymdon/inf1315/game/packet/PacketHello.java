@@ -35,7 +35,7 @@ public class PacketHello extends Packet {
 	protocolVersion = in.readInt();
 	ping = in.readBoolean();
 	remote.setPing(ping);
-	if(protocolVersion != Packet.PROTOCOL_VERSION) {
+	if (protocolVersion != Packet.PROTOCOL_VERSION) {
 	    remote.kick("protocol.version.incompatible", protocolVersion, Packet.PROTOCOL_VERSION);
 	}
     }

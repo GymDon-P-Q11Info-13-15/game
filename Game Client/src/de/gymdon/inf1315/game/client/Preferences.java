@@ -17,19 +17,19 @@ public class Preferences {
     public String language = "en_US";
     public VideoSettings video = new VideoSettings();
     public GameSettings game = new GameSettings();
-    
+
     public Preferences() {
 	Locale l = Locale.getDefault();
-	String lang = l.getLanguage()+'_'+l.getCountry();
-	if(Preferences.class.getResourceAsStream("/lang/" + lang + ".json") != null)
+	String lang = l.getLanguage() + '_' + l.getCountry();
+	if (Preferences.class.getResourceAsStream("/lang/" + lang + ".json") != null)
 	    this.language = lang;
     }
-    
+
     public class VideoSettings {
 	public boolean vsync = true;
 	public boolean fullscreen = false;
     }
-    
+
     public class GameSettings {
 	public int arrow = 0;
 	public boolean invertZoom = false;
@@ -47,19 +47,19 @@ public class Preferences {
 	this.video = np.video;
 	this.game = np.game;
     }
-    
+
     private Preferences init() {
 	try {
 	    List<String> langs = Utils.getResourceListing(Preferences.class.getClassLoader(), "/lang/");
 	    langs.remove("/langs/languages.json");
-	    if(!langs.contains("/lang/" + language + ".json")) {
+	    if (!langs.contains("/lang/" + language + ".json")) {
 		String last = this.language;
-		for(String lang : langs)
-		    if(lang.startsWith("/lang/" + language + "_")) {
+		for (String lang : langs)
+		    if (lang.startsWith("/lang/" + language + "_")) {
 			language = lang.substring(6);
 			break;
 		    }
-		if(!langs.contains("/lang/" + language + ".json"))
+		if (!langs.contains("/lang/" + language + ".json"))
 		    language = new Preferences().language;
 		System.out.println(last + " -> " + language);
 	    }

@@ -10,17 +10,17 @@ import de.gymdon.inf1315.game.Player;
 
 public class GuiGameMenu extends Gui {
     public Building building;
-    
+
     public GuiGameMenu(Building building) {
 	this.building = building;
     }
-    
+
     public BufferedImage render() {
-	if(building instanceof Castle)
+	if (building instanceof Castle)
 	    return renderCastle();
 	return null;
     }
-    
+
     private BufferedImage renderCastle() {
 	BufferedImage image = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = image.createGraphics();

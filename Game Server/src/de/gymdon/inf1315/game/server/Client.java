@@ -18,8 +18,7 @@ public class Client extends Remote {
 	if (game == null)
 	    return null;
 	if (game.hasBothClients())
-	    return game.getClientA() == this ? game.getClientB() : game
-		    .getClientA();
+	    return game.getClientA() == this ? game.getClientB() : game.getClientA();
 	return null;
     }
 
@@ -43,13 +42,13 @@ public class Client extends Remote {
     public boolean isClient() {
 	return true;
     }
-    
+
     @Override
     public void setPing(boolean ping) {
-        super.setPing(ping);
-        if(!ping) {
-            System.out.println(Server.instance.translation.translate("client.new", socket.getInetAddress().getCanonicalHostName()));
-            System.out.flush();
-        }
+	super.setPing(ping);
+	if (!ping) {
+	    System.out.println(Server.instance.translation.translate("client.new", socket.getInetAddress().getCanonicalHostName()));
+	    System.out.flush();
+	}
     }
 }

@@ -9,7 +9,7 @@ public abstract class Packet {
     public static final short ID = -1;
     public static final Map<Short, Class<? extends Packet>> packetTypes = new HashMap<Short, Class<? extends Packet>>();
     public static final int PROTOCOL_VERSION = 2;
-    
+
     protected Remote remote;
 
     public Packet(Remote r) {
@@ -28,20 +28,19 @@ public abstract class Packet {
     public static Packet newPacket(short id, Remote r) {
 	if (packetTypes.containsKey(id))
 	    try {
-		return packetTypes.get(id).getConstructor(Remote.class)
-			.newInstance(r);
+		return packetTypes.get(id).getConstructor(Remote.class).newInstance(r);
 	    } catch (Exception e) {
 		e.printStackTrace();
 	    }
 	return null;
     }
-    
+
     private static void register(Class<? extends Packet> packet) {
 	try {
 	    short id = packet.getField("ID").getShort(null);
-	    if(id < 0)
+	    if (id < 0)
 		System.err.println("Packet ID undefined: " + packet.getSimpleName());
-	    else if(packetTypes.containsKey(id)) 
+	    else if (packetTypes.containsKey(id))
 		System.err.println("Duplicate Packet ID: " + packet.getSimpleName() + " (0x" + Integer.toHexString(id) + " = " + packetTypes.get(id).getSimpleName() + ")");
 	    else
 		packetTypes.put(id, packet);
