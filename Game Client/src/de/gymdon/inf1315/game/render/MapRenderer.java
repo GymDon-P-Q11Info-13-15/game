@@ -239,6 +239,9 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		field[x][y] = true;
 		Unit u = units[x][y];
 		selected = u;
+		guiGameObject = new GuiGameMenu(u);
+		guiPosX = (x + 1) * tileSize;
+		guiPosY = (y + 1) * tileSize;
 		return;
 	    }
 

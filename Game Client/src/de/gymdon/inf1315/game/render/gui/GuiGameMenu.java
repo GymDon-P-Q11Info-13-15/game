@@ -9,8 +9,8 @@ import de.gymdon.inf1315.game.*;
 public class GuiGameMenu extends Gui {
     public GameObject object;
 
-    public GuiGameMenu(Building building) {
-	this.object = building;
+    public GuiGameMenu(GameObject go) {
+	this.object = go;
     }
 
     public BufferedImage render() {
