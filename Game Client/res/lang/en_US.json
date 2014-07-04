@@ -45,7 +45,7 @@
 		"game.unit.mine": "Mine",
 		"game.unit.spearman": "Spearman",
 		"game.unit.swordsman": "Swordman",
-		"game.player.red": "Player I",
-		"game.player.blue": "Player II"
+		"game.player.red": "Player Red",
+		"game.player.blue": "Player Blue"
 	}
 }

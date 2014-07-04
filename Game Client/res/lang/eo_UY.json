@@ -36,15 +36,15 @@
 		"gui.back": "Reen",
 		"gui.test": "Testo",
 		"gui.exit": "Fini",
-		"game.unit.archer": "Bogenschütze",
-		"game.unit.barracks": "Kaserne",
-		"game.unit.building": "Gebäude",
-		"game.unit.castle": "Burg",
-		"game.unit.knight": "Ritter",
-		"game.unit.mine": "Mine",
-		"game.unit.spearman": "Speerträger",
-		"game.unit.swordsman": "Schwertkämpfer",
-		"game.player.red": "Spieler I",
-		"game.player.blue": "Spieler II"
+		"game.unit.archer": "Arquero",
+		"game.unit.barracks": "Barakoj",
+		"game.unit.building": "Konstruaĵo",
+		"game.unit.castle": "Kastelo",
+		"game.unit.knight": "Kavaliro",
+		"game.unit.mine": "Mino",
+		"game.unit.spearman": "Lanco portanto",
+		"game.unit.swordsman": "Glavo batalanto",
+		"game.player.red": "Ludanto ruĝa",
+		"game.player.blue": "Ludanto blua"
 	}
 }
