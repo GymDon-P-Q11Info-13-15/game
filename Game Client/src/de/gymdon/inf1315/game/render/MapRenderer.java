@@ -144,11 +144,16 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    if (img != null) {
 		int x = guiPosX;
 		int y = guiPosY;
-		/*
-		 * if (x + img.getWidth() > width) x = width - img.getWidth();
-		 * if (y + img.getHeight() > height) y = height -
-		 * img.getHeight();
-		 */
+		if (x + img.getWidth() > this.width)
+		{
+		    System.out.println("x");
+		    x = (x - tileSize) - img.getWidth();
+		}
+		if (y + img.getHeight() > this.height)
+		{
+		    System.out.println("y");
+		    y = (y - tileSize) - img.getHeight();
+		}
 		g2d.translate(x, y);
 		g2d.drawImage(img, 0, 0, null);
 	    }
@@ -193,7 +198,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	gameStateButton.setY(height - botMargin - buttonHeight);
 	gameStateButton.setWidth(buttonWidthVerySmall);
 	gameStateButton.setHeight(buttonHeight);
-	// gameStateButton.setText(Client.instance.game.gm.phaseButtonText());
+	gameStateButton.setText(Client.instance.game.gm.phaseButtonText());
 	super.render(g2do, width, height);
     }
 
