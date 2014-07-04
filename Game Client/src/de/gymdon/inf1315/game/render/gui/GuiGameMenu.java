@@ -39,9 +39,9 @@ public class GuiGameMenu extends Gui {
     private BufferedImage renderUnit() {
 	BufferedImage image = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = image.createGraphics();
-	g2d.setColor(new Color(object.owner.color == Player.Color.RED ? 0x6C4824 : 0x6C4824));
+	g2d.setColor(new Color(0x6C4824));
 	g2d.fillRoundRect(0, 0, 500, 500, 10, 10);
-	g2d.setColor(new Color(object.owner.color == Player.Color.RED ? 0x7B5C3D : 0x7B5C3D));
+	g2d.setColor(new Color(0x7B5C3D));
 	g2d.fillRoundRect(5, 5, 490, 490, 5, 5);
 	return image;
     }
