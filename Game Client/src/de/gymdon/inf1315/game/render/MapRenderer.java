@@ -104,7 +104,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = UnitRenderMap.getTexture(u);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
-		    g2d.drawString(u.getClass().getSimpleName(), x * tileSize, y * tileSize + tileSize / 2);
+		    g2d.drawString(Client.instance.translation.translate("game.unit." + u.getClass().getSimpleName().toLowerCase()), x * tileSize, y * tileSize + tileSize / 2);
 		    g2d.drawString(Integer.toString(u.getHP()), x * tileSize, y * tileSize + tileSize);
 		}
 	    }
