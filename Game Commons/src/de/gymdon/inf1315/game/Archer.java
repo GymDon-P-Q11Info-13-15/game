@@ -44,7 +44,7 @@ public class Archer extends Unit {
     @Override
     public void clicked() {
 	// TODO Auto-generated method stub
-	
+
     }
 
 }

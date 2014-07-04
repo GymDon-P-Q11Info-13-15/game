@@ -1,7 +1,7 @@
 package de.gymdon.inf1315.game;
 
 public class Miner extends Unit {
-    
+
     public Miner(Player owner, int x, int y) {
 	this.owner = owner;
 	this.x = x;
@@ -14,6 +14,7 @@ public class Miner extends Unit {
 	cost = 20;
 	combined = 0.01;
     }
+
     @Override
     public void attack() {
 	// TODO Auto-generated method stub
@@ -22,7 +23,7 @@ public class Miner extends Unit {
 
     @Override
     public void setHP(int health) {
-	this.hp=health;
+	this.hp = health;
 
     }
 
@@ -31,10 +32,11 @@ public class Miner extends Unit {
 	// TODO Auto-generated method stub
 	return speed;
     }
+
     @Override
     public void clicked() {
 	// TODO Auto-generated method stub
-	
+
     }
 
 }

@@ -66,10 +66,10 @@ public class GuiPauseMenu extends GuiScreen {
 	mainMenu.setY(topMargin + (buttonHeight + buttonSpacing) * 2);
 	mainMenu.setWidth(buttonWidth);
 	mainMenu.setHeight(buttonHeight);
-	
+
 	g2d.setColor(Color.WHITE);
 	g2d.setFont(Client.instance.translation.font.deriveFont(Font.BOLD, 12));
-	g2d.drawString("Seed: " + Client.instance.game.mapgen.getSeed(), buttonWidth, height - height/16);
+	g2d.drawString("Seed: " + Client.instance.game.mapgen.getSeed(), buttonWidth, height - height / 16);
 	super.render(g2d, width, height);
     }
 
@@ -77,19 +77,18 @@ public class GuiPauseMenu extends GuiScreen {
     public void actionPerformed(ActionEvent e) {
 	if (e.getID() == ActionEvent.ACTION_PERFORMED) {
 	    // Buttons
-	    if(e.getSource() instanceof GuiButton) {
-	    GuiButton button = (GuiButton) e.getSource();
-	    if (button == continueGame)
-		Client.instance.activateMap(false);
-	    else if (button == options)
-		Client.instance.setGuiScreen(new GuiOptions(this));
-	    else if (button == mainMenu)
-		Client.instance.setGuiScreen(new GuiMainMenu());
+	    if (e.getSource() instanceof GuiButton) {
+		GuiButton button = (GuiButton) e.getSource();
+		if (button == continueGame)
+		    Client.instance.activateMap(false);
+		else if (button == options)
+		    Client.instance.setGuiScreen(new GuiOptions(this));
+		else if (button == mainMenu)
+		    Client.instance.setGuiScreen(new GuiMainMenu());
 	    }
-	    
+
 	    // Keys
-	    if(e.getSource() instanceof KeyEvent)
-	    {
+	    if (e.getSource() instanceof KeyEvent) {
 		int key = ((KeyEvent) e.getSource()).getKeyCode();
 		if (key == KeyEvent.VK_ESCAPE) {
 		    actionPerformed(new ActionEvent(continueGame, ActionEvent.ACTION_PERFORMED, null));

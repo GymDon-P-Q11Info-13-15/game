@@ -15,30 +15,23 @@ public class MacOSUtils {
 	    Class<?> fullScreenUtils = Class.forName("com.apple.eawt.FullScreenUtilities");
 	    Method setWindowCanFullScreen = fullScreenUtils.getMethod("setWindowCanFullScreen", Window.class, Boolean.TYPE);
 	    setWindowCanFullScreen.invoke(null, window, true);
-	    /*	Can this be done with reflection?
-	     	FullScreenUtilities.addFullScreenListenerTo(window,
-		    new FullScreenListener() {
-
-			@Override
-			public void windowExitingFullScreen(FullScreenEvent arg0) {
-			}
-
-			@Override
-			public void windowExitedFullScreen(FullScreenEvent arg0) {
-			    Client.instance.preferences.video.fullscreen = false;
-			}
-
-			@Override
-			public void windowEnteringFullScreen(
-				FullScreenEvent arg0) {
-			}
-
-			@Override
-			public void windowEnteredFullScreen(FullScreenEvent arg0) {
-			    Client.instance.preferences.video.fullscreen = true;
-			}
-		    });
-		    
+	    /*
+	     * Can this be done with reflection?
+	     * FullScreenUtilities.addFullScreenListenerTo(window, new
+	     * FullScreenListener() {
+	     * 
+	     * @Override public void windowExitingFullScreen(FullScreenEvent
+	     * arg0) { }
+	     * 
+	     * @Override public void windowExitedFullScreen(FullScreenEvent
+	     * arg0) { Client.instance.preferences.video.fullscreen = false; }
+	     * 
+	     * @Override public void windowEnteringFullScreen( FullScreenEvent
+	     * arg0) { }
+	     * 
+	     * @Override public void windowEnteredFullScreen(FullScreenEvent
+	     * arg0) { Client.instance.preferences.video.fullscreen = true; }
+	     * });
 	     */
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -54,7 +47,7 @@ public class MacOSUtils {
 		Object app = getApplication.invoke(null);
 		Method requestToggleFullScreen = application.getMethod("requestToggleFullScreen", Window.class);
 		requestToggleFullScreen.invoke(app, window);
-	    } catch(Exception e) {
+	    } catch (Exception e) {
 		e.printStackTrace();
 	    }
 	}

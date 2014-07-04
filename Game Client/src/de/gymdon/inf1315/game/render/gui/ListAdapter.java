@@ -16,33 +16,33 @@ public abstract class ListAdapter<T> implements GuiAdapter {
 
     @Override
     public int getHeight(int index, GuiScrollList parent) {
-	if(heightCache.containsKey(parent) && heightCache.get(parent).containsKey(index))
+	if (heightCache.containsKey(parent) && heightCache.get(parent).containsKey(index))
 	    return heightCache.get(parent).get(index);
 	int height = getHeight(list.get(index), parent);
-	if(!heightCache.containsKey(parent))
-	    heightCache.put(parent, new HashMap<Integer,Integer>());
+	if (!heightCache.containsKey(parent))
+	    heightCache.put(parent, new HashMap<Integer, Integer>());
 	heightCache.get(parent).put(index, height);
 	return height;
     }
 
     @Override
     public int getWidth(int index, GuiScrollList parent) {
-	if(widthCache.containsKey(parent) && widthCache.get(parent).containsKey(index))
+	if (widthCache.containsKey(parent) && widthCache.get(parent).containsKey(index))
 	    return widthCache.get(parent).get(index);
 	int width = getHeight(list.get(index), parent);
-	if(!widthCache.containsKey(parent))
-	    widthCache.put(parent, new HashMap<Integer,Integer>());
+	if (!widthCache.containsKey(parent))
+	    widthCache.put(parent, new HashMap<Integer, Integer>());
 	widthCache.get(parent).put(index, width);
 	return width;
     }
 
     @Override
     public Gui get(int index, GuiScrollList parent) {
-	if(guiCache.containsKey(parent) && guiCache.get(parent).containsKey(index))
+	if (guiCache.containsKey(parent) && guiCache.get(parent).containsKey(index))
 	    return guiCache.get(parent).get(index);
 	Gui gui = get(list.get(index), parent);
-	if(!guiCache.containsKey(parent))
-	    guiCache.put(parent, new HashMap<Integer,Gui>());
+	if (!guiCache.containsKey(parent))
+	    guiCache.put(parent, new HashMap<Integer, Gui>());
 	guiCache.get(parent).put(index, gui);
 	return gui;
     }
@@ -52,12 +52,12 @@ public abstract class ListAdapter<T> implements GuiAdapter {
     public abstract int getWidth(T element, GuiScrollList parent);
 
     public abstract Gui get(T element, GuiScrollList parent);
-    
+
     @Override
     public int getLength(GuiScrollList parent) {
 	return list.size();
     }
-    
+
     public void clear() {
 	guiCache.clear();
 	heightCache.clear();

@@ -20,4 +20,9 @@ public class Barracks extends Building {
     public void occupy(Player p) {
 
     }
+
+    public boolean[] clicked(int phase) {
+	
+	return options;
+    }
 }

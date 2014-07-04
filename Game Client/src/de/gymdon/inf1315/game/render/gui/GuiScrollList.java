@@ -40,8 +40,7 @@ public class GuiScrollList extends GuiControl {
 	this(parent, adapter, id, x, y, 100, 20);
     }
 
-    public GuiScrollList(GuiScreen parent, GuiAdapter adapter, int id, int x, int y, int width,
-	    int height) {
+    public GuiScrollList(GuiScreen parent, GuiAdapter adapter, int id, int x, int y, int width, int height) {
 	this.parent = parent;
 	this.id = id;
 	this.x = x;
@@ -54,12 +53,12 @@ public class GuiScrollList extends GuiControl {
 
     @Override
     public void render(Graphics2D g2d, int width, int height) {
-	if(borderWidth > 0) {
+	if (borderWidth > 0) {
 	    g2d.setColor(new Color(borderColor));
-	    if(borderRadius == 0) {
-		g2d.fillRect(this.x - borderWidth, this.y - borderWidth, this.width + 2*borderWidth, this.height + 2*borderWidth);
-	    }else {
-		g2d.fillRoundRect(this.x - borderWidth, this.y - borderWidth, this.width + 2*borderWidth, this.height + 2*borderWidth, borderRadius, borderRadius);
+	    if (borderRadius == 0) {
+		g2d.fillRect(this.x - borderWidth, this.y - borderWidth, this.width + 2 * borderWidth, this.height + 2 * borderWidth);
+	    } else {
+		g2d.fillRoundRect(this.x - borderWidth, this.y - borderWidth, this.width + 2 * borderWidth, this.height + 2 * borderWidth, borderRadius, borderRadius);
 	    }
 	}
 	Shape clip = g2d.getClip();
@@ -69,38 +68,36 @@ public class GuiScrollList extends GuiControl {
 	drawBackground(g2d, width, height);
 	g2d.setClip(clipMain);
 	drawBackground(g2d, width, height);
-	//g2d.fillRect(0, 0, width, height);
+	// g2d.fillRect(0, 0, width, height);
 	AffineTransform tx = g2d.getTransform();
 	totalHeight = 0;
 	g2d.translate(this.x, -scroll + this.y);
-	for(int i = 0; i < adapter.getLength(this); i++) {
+	for (int i = 0; i < adapter.getLength(this); i++) {
 	    adapter.get(i, this).render(g2d, this.width, this.height);
 	    int h = adapter.getHeight(i, this);
 	    g2d.translate(0, h);
 	    totalHeight += h;
 	}
 	g2d.setTransform(tx);
-	if(scroll > totalHeight - this.height) {
+	if (scroll > totalHeight - this.height) {
 	    scroll = totalHeight - this.height;
-	    scrollPerc = (float)scroll/(float)totalHeight;
+	    scrollPerc = (float) scroll / (float) totalHeight;
 	}
-	if(scroll < 0)
+	if (scroll < 0)
 	    scroll = 0;
-	scrollButtonHeight = totalHeight > this.height ? (int)(((float)this.height/totalHeight)*this.height) : this.height;
+	scrollButtonHeight = totalHeight > this.height ? (int) (((float) this.height / totalHeight) * this.height) : this.height;
 	g2d.setClip(clip);
 	g2d.setColor(new Color(borderColor));
-	g2d.fillRoundRect(this.x + this.width - 40 + 5 + 1, (int) (this.y + scrollPerc*this.height + borderWidth - 3), 40 - 5 - 2, scrollButtonHeight - borderWidth, borderRadius - borderWidth, borderRadius - borderWidth);
+	g2d.fillRoundRect(this.x + this.width - 40 + 5 + 1, (int) (this.y + scrollPerc * this.height + borderWidth - 3), 40 - 5 - 2, scrollButtonHeight - borderWidth, borderRadius - borderWidth, borderRadius - borderWidth);
     }
-    
+
     protected void drawBackground(Graphics2D g2d, int width, int height) {
-        LinearGradientPaint gradient = new LinearGradientPaint(width*0.7F, 0, width*0.3F, height, 
-        	new float[]{0,1}, 
-        	new Color[]{new Color(0xc69c6d), new Color(0x754c24)});
-        g2d.setPaint(gradient);
-        g2d.fillRect(0, 0, width, height);
-        g2d.setColor(Color.BLACK);
+	LinearGradientPaint gradient = new LinearGradientPaint(width * 0.7F, 0, width * 0.3F, height, new float[] { 0, 1 }, new Color[] { new Color(0xc69c6d), new Color(0x754c24) });
+	g2d.setPaint(gradient);
+	g2d.fillRect(0, 0, width, height);
+	g2d.setColor(Color.BLACK);
     }
-    
+
     public int getId() {
 	return id;
     }
@@ -138,30 +135,30 @@ public class GuiScrollList extends GuiControl {
     }
 
     public int getBorderColor() {
-        return borderColor;
+	return borderColor;
     }
 
     public int getBorderWidth() {
-        return borderWidth;
+	return borderWidth;
     }
 
     public int getBorderRadius() {
-        return borderRadius;
+	return borderRadius;
     }
 
     public GuiScrollList setBorderColor(int borderColor) {
-        this.borderColor = borderColor;
-        return this;
+	this.borderColor = borderColor;
+	return this;
     }
 
     public GuiScrollList setBorderWidth(int borderWidth) {
-        this.borderWidth = borderWidth;
-        return this;
+	this.borderWidth = borderWidth;
+	return this;
     }
 
     public GuiScrollList setBorderRadius(int borderRadius) {
-        this.borderRadius = borderRadius;
-        return this;
+	this.borderRadius = borderRadius;
+	return this;
     }
 
     public GuiScrollList setParent(GuiScreen parent) {
@@ -211,51 +208,49 @@ public class GuiScrollList extends GuiControl {
     @Override
     public void mouseMoved(MouseEvent e) {
     }
-    
+
     @Override
     public void mouseDragged(MouseEvent e) {
 	float y = e.getY();
-	if(scrolling) {
-	    scrollPerc = (y - startScrolling)/this.height + startScrollingPerc;
+	if (scrolling) {
+	    scrollPerc = (y - startScrolling) / this.height + startScrollingPerc;
 	    scroll = (int) (scrollPerc * totalHeight);
-	    if(scrollPerc < 0)
+	    if (scrollPerc < 0)
 		scrollPerc = scroll = 0;
-	    else 
-		if(scroll > totalHeight - this.height) {
-		    scroll = totalHeight - this.height;
-		    scrollPerc = (float)scroll/(float)totalHeight;
-		}
+	    else if (scroll > totalHeight - this.height) {
+		scroll = totalHeight - this.height;
+		scrollPerc = (float) scroll / (float) totalHeight;
+	    }
 	}
     }
-    
+
     @Override
     public void mousePressed(MouseEvent e) {
 	int x = e.getX();
 	int y = e.getY();
-	if(this.x + this.width - 34 <= x && this.y + scrollPerc*this.height + borderWidth - 3 <= y && 
-		this.x + this.width - 1 > x && this.y + scrollPerc*this.height + borderWidth - 3 + scrollButtonHeight - borderWidth > y) {
+	if (this.x + this.width - 34 <= x && this.y + scrollPerc * this.height + borderWidth - 3 <= y && this.x + this.width - 1 > x && this.y + scrollPerc * this.height + borderWidth - 3 + scrollButtonHeight - borderWidth > y) {
 	    scrolling = true;
 	    startScrollingPerc = scrollPerc;
 	    startScrolling = y;
 	}
-        
+
     }
-    
+
     @Override
     public void mouseReleased(MouseEvent e) {
-	//int x = e.getX();
-	//int y = e.getY();
+	// int x = e.getX();
+	// int y = e.getY();
 	scrolling = false;
     }
 
     @Override
     public void addActionListener(ActionListener l) {
-	actionListeners .add(l);
+	actionListeners.add(l);
     }
 
     @Override
     public void removeActionListener(ActionListener l) {
 	actionListeners.remove(l);
-	
+
     }
 }

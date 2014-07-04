@@ -10,13 +10,13 @@ import javax.imageio.ImageIO;
 
 public class StandardTexture implements Texture {
 
-    private static Map<String,Texture> map = new HashMap<String, Texture>();
+    private static Map<String, Texture> map = new HashMap<String, Texture>();
     private BufferedImage image;
-    
+
     public StandardTexture(BufferedImage image) {
 	this.image = image;
     }
-    
+
     public StandardTexture(String name) {
 	try {
 	    this.image = ImageIO.read(StandardTexture.class.getResourceAsStream("/textures/" + name + ".png"));
@@ -25,7 +25,7 @@ public class StandardTexture implements Texture {
 	    e.printStackTrace();
 	}
     }
-    
+
     @Override
     public boolean imageUpdate(Image arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
 	return false;
@@ -57,7 +57,7 @@ public class StandardTexture implements Texture {
     }
 
     public static Texture get(String name) {
-	if(map.containsKey(name))
+	if (map.containsKey(name))
 	    return map.get(name);
 	return new StandardTexture(name);
     }

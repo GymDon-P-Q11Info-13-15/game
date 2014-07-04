@@ -15,6 +15,7 @@ public class GameMechanics implements ActionListener {
 	int phase;
 	public Game game;
 
+
 	/**
 	 * Map, Buildings etc wird alle im MapGenerator generiert Da braucht ihr
 	 * hier in den GameMechanics nichts machen Ich denk mal ein Objekt von
@@ -22,21 +23,26 @@ public class GameMechanics implements ActionListener {
 	 * übergeben. (?)
 	 */
 
-	public GameMechanics() { // neue Welt mit Breite x und Höhe y
-		won = false;
-		round = 0;
-		phase = 0;
-	}
 
-	/**
-	 * Set a Map as internal Tile Array
-	 * 
-	 * @param t
-	 *            Tile Array as new Map
-	 */
-	public void setMap(Tile[][] t) {
-		game.map = t;
-	}
+    public GameMechanics() { // neue Welt mit Breite x und Höhe y
+	// this.map = Client.instance.map;
+	// buildings = Client.instance.buildings;
+	// units = Client.instance.units;
+	won = false;
+	round = 0;
+	phase = 0;
+    }
+
+    /**
+     * Set a Map as internal Tile Array
+     * 
+     * @param t
+     *            Tile Array as new Map
+     */
+    public void setMap(Tile[][] t) {
+	game.map = t;
+    }
+
 
 	public void run() {
 
@@ -55,7 +61,13 @@ public class GameMechanics implements ActionListener {
 		else{
 			return "gui.game.endPhase";
 		}
-	}
+
+    }
+
+    
+
+
+	
 
 	public void nextPhase() {
 		
@@ -161,7 +173,12 @@ public class GameMechanics implements ActionListener {
 		step(a.getSpeed(), a.x, a.y);
 
 	}
-
+	
+	/**
+	 * 	returns array of all accessable fields
+	 * @param a 	Unit whose movement is calculated
+	 * @return	boolean array with true for all accessable fields
+	 */
 	public boolean[][] getAccessableField(Unit a) {
 		tempRange = new boolean[game.map.length][game.map[0].length];
 		step(a.getSpeed(), a.x, a.y);
@@ -224,25 +241,30 @@ public class GameMechanics implements ActionListener {
 	 * 
 	 * }
 	 */
-	/*
-	 * public int getassist(Unit u){ Unit x;
-	 * 
-	 * if (x!=null){ return (int)(Math.round(x.attack * x.combined)) ; } else{
-	 * return 0; } }
-	 */
-	public int strikechance(Unit striker, Unit stroke) {
-		// Berechnet eine zahl die der Rng überschreiten muss um zu treffen
-		int attchance = 80 - (striker.attack + striker.hp / 4 - stroke.defense
-				/ 2 - stroke.hp / 4);
-		System.out.println(attchance);
-		if (attchance < 0) {
-			return 0;
-		} else if (attchance > 75) {
-			return 75;
-		} else {
-			return attchance;
-		}
+
+    
+
+    
+
+   
+
+    
+
+    
+    public int strikechance(Unit striker, Unit stroke) {
+	// Berechnet eine zahl die der Rng überschreiten muss um zu treffen
+	int attchance = 80 - (striker.attack + striker.hp / 4 - stroke.defense / 2 - stroke.hp / 4);
+	System.out.println(attchance);
+	if (attchance < 0) {
+	    return 5;
+	} else if (attchance > 75) {
+	    return 75;
+	} else {
+	    return attchance;
 	}
+    }
+    
+   
 
 	public void combat(Unit attacker, Unit defender, int round) {
 

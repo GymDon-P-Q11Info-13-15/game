@@ -9,7 +9,7 @@ import de.gymdon.inf1315.game.render.StandardTexture;
 public class BuildingRenderMap {
 
     public static Texture getTexture(Building b) {
-	if(b instanceof Barracks)
+	if (b instanceof Barracks)
 	    return StandardTexture.get("sand_old");
 	if (b instanceof Castle)
 	    return b.owner == null ? StandardTexture.get("castle_big_neutral") : StandardTexture.get("castle_small_" + b.owner.color.name().toLowerCase());

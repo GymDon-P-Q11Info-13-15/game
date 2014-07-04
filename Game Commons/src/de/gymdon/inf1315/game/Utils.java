@@ -15,7 +15,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class Utils {
-    
+
     public static List<String> getResourceListing(ClassLoader cl) throws URISyntaxException, IOException {
 	URL dirURL = cl.getResource("");
 	if (dirURL != null && dirURL.getProtocol().equals("file")) {
@@ -36,33 +36,33 @@ public class Utils {
 
 	throw new UnsupportedOperationException("Cannot list files for URL " + dirURL);
     }
-    
+
     public static List<String> getResourceListing(ClassLoader cl, String prefix) throws URISyntaxException, IOException {
 	List<String> l = getResourceListing(cl);
-	for(Iterator<String> it = l.iterator(); it.hasNext();) {
+	for (Iterator<String> it = l.iterator(); it.hasNext();) {
 	    String s = it.next();
-	    if(!s.startsWith(prefix))
+	    if (!s.startsWith(prefix))
 		it.remove();
 	}
 	return l;
     }
-    
+
     private static List<String> recurse(File dir, List<String> append, String relative) {
-	if(append == null)
+	if (append == null)
 	    append = new ArrayList<String>();
-	for(File f : dir.listFiles()) {
-	    if(f.isDirectory())
+	for (File f : dir.listFiles()) {
+	    if (f.isDirectory())
 		recurse(f, append, relative);
 	    else
 		append.add(f.getAbsolutePath().replace('\\', '/').substring(relative.length()));
 	}
 	return append;
     }
-    
+
     public static List<String> recurse(File directory, String relative) {
 	return recurse(directory, null, relative);
     }
-    
+
     public static List<String> recurse(File directory) {
 	return recurse(directory, null, "/");
     }

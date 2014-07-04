@@ -24,10 +24,8 @@ public abstract class Remote {
 
     public Remote(Socket s) throws IOException {
 	this.socket = s;
-	out = new DataOutputStream(new BufferedOutputStream(
-		socket.getOutputStream()));
-	in = new DataInputStream(new BufferedInputStream(
-		socket.getInputStream()));
+	out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+	in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
     }
 
     public Socket getSocket() {
@@ -74,9 +72,7 @@ public abstract class Remote {
 	kick.args = args;
 	if (properties.containsKey("translation")) {
 	    Translation t = (Translation) properties.get("translation");
-	    System.out.println(t.translate("client.kicked", socket
-		    .getInetAddress().getCanonicalHostName(), t.translate(
-		    message, args)));
+	    System.out.println(t.translate("client.kicked", socket.getInetAddress().getCanonicalHostName(), t.translate(message, args)));
 	}
 	try {
 	    kick.send();

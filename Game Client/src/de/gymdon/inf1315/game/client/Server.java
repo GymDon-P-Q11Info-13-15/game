@@ -26,7 +26,7 @@ public class Server extends Remote {
     }
 
     public void processPackets() {
-	if(left())
+	if (left())
 	    return;
 	try {
 	    DataInputStream din = getInputStream();
@@ -41,7 +41,7 @@ public class Server extends Remote {
 	    if (getSocket().isClosed())
 		leave("Socket closed");
 	    long now = System.currentTimeMillis();
-	    if(lastPacket == 0)
+	    if (lastPacket == 0)
 		lastPacket = System.currentTimeMillis();
 	    if (now - this.getLastPacketTime() >= 2100) {
 		PacketHeartbeat heartbeat = new PacketHeartbeat(this);

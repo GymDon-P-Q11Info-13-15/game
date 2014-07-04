@@ -32,11 +32,11 @@ public class Server implements Runnable {
 	this.connectionHandler = new ConnectionHandler(this);
 	this.timer = new Timer(connectionHandler);
 	this.readPreferences();
-	if(!preferences.language.equals("en"))
+	if (!preferences.language.equals("en"))
 	    translation.load(preferences.language);
 	this.run();
     }
-    
+
     private void readPreferences() {
 	File f = new File("preferences.json");
 	try {
@@ -48,12 +48,12 @@ public class Server implements Runnable {
 		preferences.write(new FileWriter(f));
 		System.out.println(translation.translate("file.created", "preferences.json"));
 	    }
-	    if(preferences.version != Preferences.CURRENT_VERSION) {
+	    if (preferences.version != Preferences.CURRENT_VERSION) {
 		preferences.version = Preferences.CURRENT_VERSION;
 		preferences = new Preferences();
 		f.createNewFile();
 		preferences.write(new FileWriter(f));
-		System.out.println(translation.translate("updated.version","preferences.json", preferences.version));
+		System.out.println(translation.translate("updated.version", "preferences.json", preferences.version));
 	    }
 	} catch (IOException e) {
 	    throw new RuntimeException("Preferences couldn't be loaded/saved", e);
@@ -65,7 +65,7 @@ public class Server implements Runnable {
 	ServerSocket ss;
 	try {
 	    ss = new ServerSocket(preferences.port);
-	    if(!(preferences.hostname.equals("0.0.0.0") || preferences.hostname.equals("*") || preferences.hostname.equals("")))
+	    if (!(preferences.hostname.equals("0.0.0.0") || preferences.hostname.equals("*") || preferences.hostname.equals("")))
 		ss.bind(new InetSocketAddress(preferences.hostname, preferences.port));
 	    System.out.println(translation.translate("server.started", preferences.hostname, preferences.port));
 	} catch (IOException e) {

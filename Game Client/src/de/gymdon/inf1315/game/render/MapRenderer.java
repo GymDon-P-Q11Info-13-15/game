@@ -146,11 +146,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		int x = guiPosX;
 		int y = guiPosY;
 		/*
-		if (x + img.getWidth() > width)
-		    x = width - img.getWidth();
-		if (y + img.getHeight() > height)
-		    y = height - img.getHeight();
-		    */
+		 * if (x + img.getWidth() > width) x = width - img.getWidth();
+		 * if (y + img.getHeight() > height) y = height -
+		 * img.getHeight();
+		 */
 		g2d.translate(x, y);
 		g2d.drawImage(img, 0, 0, null);
 	    }
