@@ -40,11 +40,28 @@ public class GameMechanics implements ActionListener {
     public void setMap(Tile[][] t) {
 	game.map = t;
     }
+    
 
     public void run() {
 
 	while (!won) { // Ablauf EINER Spielrunde (was ein Spieler machen darf)
 		       // (Bauen -> Bewegen -> Kaempfen)
+
+	    phase = 0;
+	    
+	    nextPhase();
+	    
+	    // start round
+
+	    // phase = "building etc";
+
+	    // Client beendet phase -> next phase;
+
+	    // phase % 3 == 0 -> Change active player
+
+	    // Other player -> gleicher Ablauf wie oben
+
+	    // if castle destroyed -> won = true;
 
 	}
 
@@ -296,7 +313,6 @@ public class GameMechanics implements ActionListener {
 
 	if (e.getSource() instanceof Building) {
 	    Building b = (Building) e.getSource();
-	    b.clicked(phase % 3);
 	    System.out.println("Building: (" + b.x + "|" + b.y + ")");
 	}
     }
