@@ -11,6 +11,7 @@
 		"game.ended": "qa'vaQ bImevchu'pu'be'mo' 'oH: %s",
 		"gui.game.new": "chu' qa'vaQ",
 		"gui.game.endRound": "poH mev",
+		"gui.game.endPhase": "Phase beenden",
 		"gui.game.continue": "chap tlhopDaq qa'vaQ",
 		"gui.credits": "Credits",
 		"gui.credits.lead": "nacH",
