@@ -37,8 +37,14 @@ public abstract class Unit extends GameObject {
     	if(act_speed==0||phase!=1){
     		options[1]=false;
     	}
+    	else{
+    	    options[1]=true;
+    	}
     	if(hp<=100||phase!=1){
     		options[2]=false;
+    	}
+    	else{
+    	    options[2]=true;
     	}
     	return options;
     }

@@ -14,7 +14,17 @@ public abstract class Building extends GameObject {
 	return 1;
     }
 
-    // TODO: clicked()
     
-    public abstract boolean[] clicked(int phase);
+    
+    public boolean[] clicked(int phase){
+	if(phase%3==0){
+	    options[5]=true;
+	}
+	else{
+	    options[5]=false;
+	}
+	
+	
+	return options;
+    }
 }
