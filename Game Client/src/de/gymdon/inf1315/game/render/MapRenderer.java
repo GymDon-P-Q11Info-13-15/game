@@ -220,6 +220,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	if (x < 0 || x >= field.length || y < 0 || y >= field[x].length)
 	    return;
+	int bx = gameStateButton.getX();
+	int by = gameStateButton.getY();
+	if(e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight())
+	    return;
 	Building[][] buildings = Client.instance.game.buildings;
 	Unit[][] units = Client.instance.game.units;
 
@@ -281,6 +285,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	int y = (int) (((e.getY() + scrollY) / zoom) / tileSize);
 
 	if (x < 0 || x >= fieldHover.length || y < 0 || y >= fieldHover[x].length)
+	    return;
+	int bx = gameStateButton.getX();
+	int by = gameStateButton.getY();
+	if(e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight())
 	    return;
 	Building[][] buildings = Client.instance.game.buildings;
 	Unit[][] units = Client.instance.game.units;
