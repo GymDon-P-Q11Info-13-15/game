@@ -42,6 +42,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private GuiGameMenu guiGameObject;
     private int guiPosX;
     private int guiPosY;
+    private int guiDebugX;
+    private int guiDebugY;
+    private int guiWidth;
+    private int guiHeight;
 
     public MapRenderer() {
 	controlList.add(gameStateButton);
@@ -144,18 +148,16 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    if (img != null) {
 		int x = guiPosX;
 		int y = guiPosY;
-		if (x + img.getWidth() > this.width)
-		{
-		    System.out.println("x");
-		    x = (x - tileSize) - img.getWidth();
-		}
-		if (y + img.getHeight() > this.height)
-		{
-		    System.out.println("y");
-		    y = (y - tileSize) - img.getHeight();
-		}
+		guiWidth = img.getWidth();
+		guiHeight = img.getHeight();
+		if (x + guiWidth > this.width)
+		    x = (x - tileSize) - guiWidth;
+		if (y + guiHeight > this.height)
+		    y = (y - tileSize) - guiHeight;
 		g2d.translate(x, y);
 		g2d.drawImage(img, 0, 0, null);
+		guiDebugX = x;
+		guiDebugY = y;
 	    }
 	}
 
@@ -220,9 +222,15 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	if (x < 0 || x >= field.length || y < 0 || y >= field[x].length)
 	    return;
+	// Clicking on Button
 	int bx = gameStateButton.getX();
 	int by = gameStateButton.getY();
 	if(e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight())
+	    return;
+	// Clicking on guiGameObject
+	int gx = (int) ((e.getX() + scrollX) / zoom);
+	int gy = (int) ((e.getY() + scrollY) / zoom);
+	if(gx >= guiDebugX && gx <= guiDebugX + guiWidth && gy >= guiDebugY && gy <= guiDebugY + guiHeight)
 	    return;
 	Building[][] buildings = Client.instance.game.buildings;
 	Unit[][] units = Client.instance.game.units;
@@ -236,7 +244,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    if (b != null && b.getSizeX() + x1 > x && b.getSizeY() + y1 > y) {
 			field[x1][y1] = true;
 			selected = b;
-			guiGameObject = new GuiGameMenu(b);
+			guiGameObject = new GuiGameMenu(selected);
 			guiPosX = (x + b.getSizeX()) * tileSize;
 			guiPosY = (y + b.getSizeY()) * tileSize;
 			return;
@@ -248,7 +256,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		field[x][y] = true;
 		Unit u = units[x][y];
 		selected = u;
-		guiGameObject = new GuiGameMenu(u);
+		guiGameObject = new GuiGameMenu(selected);
 		guiPosX = (x + 1) * tileSize;
 		guiPosY = (y + 1) * tileSize;
 		return;
