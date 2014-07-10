@@ -25,6 +25,13 @@ public class Castle extends Building {
     }
 
     public boolean[] clicked(int phase) {
+	if(phase%3==0){
+	    options[5]=true;
+	}
+	else{
+	    options[5]=false;
+	}
+	
 	
 	return options;
     }

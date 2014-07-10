@@ -49,6 +49,25 @@ public class GameMechanics implements ActionListener {
 	}
 
     }
+    /**
+     *  return of current player and phase  
+     * @return  [0]: name of current Player [1]:name of current Phase
+     */
+    public String[] phaseText(){
+	String[] phases = new String[2];
+	switch(phase&3){
+	case 0: phases[1]="game.phase.build"; break;
+	case 1: phases[1]="game.phase.move"; break;
+	case 2: phases[1]="game.phase.attack"; break;
+	}
+	if(phase<=3){
+	    phases[0]="game.player.red";
+	}
+	else{
+	    phases[0]="game.player.blue";
+	}
+	return phases;
+    }
 
     public String phaseButtonText() {
 	if (phase == 3 || phase == 5) {
