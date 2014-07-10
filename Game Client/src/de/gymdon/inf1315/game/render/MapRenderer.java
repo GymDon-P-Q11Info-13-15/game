@@ -108,7 +108,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = UnitRenderMap.getTexture(u);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
-		    g2d.drawString(Client.instance.translation.translate("game.unit." + u.getClass().getSimpleName().toLowerCase()), x * tileSize, y * tileSize + tileSize / 2);
 		    g2d.drawString(Integer.toString(u.getHP()), x * tileSize, y * tileSize + tileSize);
 		}
 	    }
@@ -294,9 +293,15 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	if (x < 0 || x >= fieldHover.length || y < 0 || y >= fieldHover[x].length)
 	    return;
+	// Clicking on Button
 	int bx = gameStateButton.getX();
 	int by = gameStateButton.getY();
 	if(e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight())
+	    return;
+	// Clicking on guiGameObject
+	int gx = (int) ((e.getX() + scrollX) / zoom);
+	int gy = (int) ((e.getY() + scrollY) / zoom);
+	if(gx >= guiDebugX && gx <= guiDebugX + guiWidth && gy >= guiDebugY && gy <= guiDebugY + guiHeight)
 	    return;
 	Building[][] buildings = Client.instance.game.buildings;
 	Unit[][] units = Client.instance.game.units;
