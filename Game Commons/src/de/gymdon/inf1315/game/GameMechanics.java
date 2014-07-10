@@ -335,12 +335,13 @@ else{
 
 	if (e.getSource() instanceof Unit) {
 	    Unit u = (Unit) e.getSource();
-	    u.clicked(phase % 3);
+	    game.options=u.clicked(phase % 3);
 	    System.out.println("Unit: (" + u.x + "|" + u.y + ")");
 	}
 
 	if (e.getSource() instanceof Building) {
 	    Building b = (Building) e.getSource();
+	    game.options=b.clicked(phase%3);
 	    System.out.println("Building: (" + b.x + "|" + b.y + ")");
 	}
     }
