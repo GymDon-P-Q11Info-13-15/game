@@ -14,9 +14,9 @@ import java.util.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import de.gymdon.inf1315.game.Utils;
 import de.gymdon.inf1315.game.client.Client;
 import de.gymdon.inf1315.game.render.StandardTexture;
+import de.gymdon.inf1315.game.util.Utils;
 
 public class GuiOptions extends GuiScreen {
 

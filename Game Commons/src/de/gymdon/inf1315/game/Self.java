@@ -1,4 +1,4 @@
-package de.gymdon.inf1315.game.util;
+package de.gymdon.inf1315.game;
 
 public abstract class Self {
     public static Self instance;
@@ -6,5 +6,4 @@ public abstract class Self {
     public Translation translation;
     
     public abstract String getName();
-    public abstract boolean isServer();
 }

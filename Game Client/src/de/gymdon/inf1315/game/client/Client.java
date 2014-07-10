@@ -24,6 +24,7 @@ import de.gymdon.inf1315.game.*;
 import de.gymdon.inf1315.game.packet.*;
 import de.gymdon.inf1315.game.render.*;
 import de.gymdon.inf1315.game.render.gui.*;
+import de.gymdon.inf1315.game.util.Translation;
 
 public class Client implements Runnable, WindowListener {
     public static final boolean DEBUG = true;

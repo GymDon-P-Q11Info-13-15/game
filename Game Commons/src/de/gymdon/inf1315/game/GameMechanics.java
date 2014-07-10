@@ -239,6 +239,7 @@ public class GameMechanics implements ActionListener {
     }
     @Override
     public void actionPerformed(ActionEvent e) {
+	@SuppressWarnings("unused")
 	String s = e.paramString();
 
     }

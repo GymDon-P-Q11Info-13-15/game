@@ -1,4 +1,4 @@
-package de.gymdon.inf1315.game.util;
+package de.gymdon.inf1315.game;
 
 public abstract class Preferences {
 

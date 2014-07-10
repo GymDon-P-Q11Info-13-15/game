@@ -1,36 +1,37 @@
 package de.gymdon.inf1315.game.packet;
 
-import java.io.DataInput;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import com.google.gson.Gson;
 
 public class PacketKick extends Packet {
 
-    public static final short ID = 2;
-    public String message;
-    public Object[] args;
+	public static final short ID = 2;
+	public String message;
+	public Object[] args;
+	
+	public static final short MESSAGE_READ = 1;
 
-    public PacketKick(Remote r) {
-	super(r);
-    }
+	public PacketKick(Remote r) {
+		super(r);
+	}
 
-    @Override
-    public void handlePacket() throws IOException {
-	super.handlePacket();
-	DataInput in = remote.getInputStream();
-	message = in.readUTF();
-	args = new Gson().fromJson(in.readUTF(), Object[].class);
-    }
+	@Override
+	public void handlePacket() {
+		switch(actualStatus) {
+		case NEW_PACKET:
+			message = remote.readUTF();
+			actualStatus = MESSAGE_READ;
+		case MESSAGE_READ:
+			args = new Gson().fromJson(remote.readUTF(), Object[].class);
+			super.handlePacket();
+		}
+		
+	}
 
-    @Override
-    public void send() throws IOException {
-	super.send();
-	DataOutputStream out = remote.getOutputStream();
-	out.writeShort(ID);
-	out.writeUTF(message);
-	out.writeUTF(new Gson().toJson(args));
-	super.send();
-    }
+	@Override
+	public void send() {
+		remote.writeShort(ID);
+		remote.writeUTF(message);
+		remote.writeUTF(new Gson().toJson(args));
+		super.send();
+	}
 }

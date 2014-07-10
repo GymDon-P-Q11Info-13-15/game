@@ -9,7 +9,7 @@ import java.util.Locale;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import de.gymdon.inf1315.game.Utils;
+import de.gymdon.inf1315.game.util.Utils;
 
 public class Preferences {
     public static final int CURRENT_VERSION = 4;

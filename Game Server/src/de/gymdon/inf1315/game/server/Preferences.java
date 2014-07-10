@@ -7,7 +7,7 @@ import java.io.Writer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class Preferences extends de.gymdon.inf1315.game.Preferences {
+public class Preferences extends de.gymdon.inf1315.game.util.Preferences {
     public static final int CURRENT_VERSION = 2;
     public int version =  CURRENT_VERSION;
     public String server_name = "Game Server";
