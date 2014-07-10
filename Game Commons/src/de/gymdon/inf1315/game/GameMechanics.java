@@ -49,7 +49,13 @@ public class GameMechanics implements ActionListener {
 
 	    phase = 0;
 	    
-	    nextPhase();
+	    if(phase%3==0){
+		game.options[0]=false;
+		game.options[1]=false;
+	    }
+	    if(phase%3==1){
+		
+	    }
 	    
 	    // start round
 
@@ -104,15 +110,6 @@ public class GameMechanics implements ActionListener {
 	    phase++;
 	}
 
-    }
-
-    public void clicked(int x, int y) {
-	if (x >= 0 && y >= 0) {
-	    if (game.units[x][y] != null) {
-		// game.units[x][y].clicked();
-	    }
-
-	}
     }
 
     /**
