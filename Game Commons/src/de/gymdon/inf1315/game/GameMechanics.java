@@ -72,25 +72,6 @@ public class GameMechanics implements ActionListener {
 	}
 
     }
-    /**
-     *  return of current player and phase  
-     * @return  [0]: name of current Player [1]:name of current Phase
-     */
-    public String[] phaseText(){
-	String[] phases = new String[2];
-	switch(phase&3){
-	case 0: phases[1]="game.phase.build"; break;
-	case 1: phases[1]="game.phase.move"; break;
-	case 2: phases[1]="game.phase.attack"; break;
-	}
-	if(phase<=3){
-	    phases[0]="game.player.red";
-	}
-	else{
-	    phases[0]="game.player.blue";
-	}
-	return phases;
-    }
 
     public String phaseButtonText() {
 	if (phase == 3 || phase == 5) {
@@ -314,13 +295,14 @@ public class GameMechanics implements ActionListener {
 	}
 
     }
-    public void create(Player p,Unit u,Building b)
+    
+public void create(Player p,Unit u,Building b)
     {
-if(p.gold < u.cost){}
+if(p.gold < u.cost){System.err.println("More gold requiered");}
 else{
    p.gold = p.gold - u.cost; 
-   if(u instanceof Archer)game.units[b.x-1][b.y]=new Archer(p,b.x-1,b.y); 
-   if(u instanceof Knight)game.units[b.x-1][b.y]=new Knight(p,b.x-1,b.y);
+   if(u instanceof Archer && b instanceof Barracks)game.units[b.x-1][b.y]=new Archer(p,b.x-1,b.y); 
+   if(u instanceof Knight && b instanceof Barracks)game.units[b.x-1][b.y]=new Knight(p,b.x-1,b.y);
    if(u instanceof Miner)game.units[b.x-1][b.y]=new Miner(p,b.x-1,b.y);
    if(u instanceof Spearman)game.units[b.x-1][b.y]=new Spearman(p,b.x-1,b.y);
    if(u instanceof Swordsman)game.units[b.x-1][b.y]=new Swordsman(p,b.x-1,b.y);
@@ -328,7 +310,8 @@ else{
     }
     }
     @Override
-    public void actionPerformed(ActionEvent e) {
+    
+public void actionPerformed(ActionEvent e) {
 
 	if (e.getSource() instanceof Unit) {
 	    Unit u = (Unit) e.getSource();
