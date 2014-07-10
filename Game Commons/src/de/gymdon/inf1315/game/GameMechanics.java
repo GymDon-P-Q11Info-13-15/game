@@ -12,7 +12,7 @@ public class GameMechanics implements ActionListener {
     boolean[][] tempRange;
     boolean won;
     int round;
-    int phase;
+    public int phase;
     public Game game;
 
     /**

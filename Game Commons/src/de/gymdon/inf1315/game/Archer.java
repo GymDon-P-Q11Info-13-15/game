@@ -40,11 +40,4 @@ public class Archer extends Unit {
 	return speed;
 
     }
-
-    @Override
-    public boolean[] clicked(int phase) {
-	// TODO Auto-generated method stub
-		return null;
-    }
-
 }

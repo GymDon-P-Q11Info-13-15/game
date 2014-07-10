@@ -243,9 +243,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    if (b != null && b.getSizeX() + x1 > x && b.getSizeY() + y1 > y) {
 			field[x1][y1] = true;
 			selected = b;
+			actionPerformed(new ActionEvent(selected, ActionEvent.ACTION_PERFORMED, null));
 			guiGameObject = new GuiGameMenu(selected);
 			guiPosX = (x + b.getSizeX()) * tileSize;
 			guiPosY = (y + b.getSizeY()) * tileSize;
+			
 			return;
 		    }
 		}
@@ -255,6 +257,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		field[x][y] = true;
 		Unit u = units[x][y];
 		selected = u;
+		actionPerformed(new ActionEvent(selected, ActionEvent.ACTION_PERFORMED, null));
 		guiGameObject = new GuiGameMenu(selected);
 		guiPosX = (x + 1) * tileSize;
 		guiPosY = (y + 1) * tileSize;
@@ -361,7 +364,12 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    if (e.getSource() instanceof GuiButton) {
 		GuiButton button = (GuiButton) e.getSource();
 		if (button == gameStateButton)
-		    System.out.println(button.getText());
+		    Client.instance.game.gm.nextPhase(); System.out.println(Client.instance.game.gm.phase);
+	    }
+	    
+	    // GameObjects
+	    if (e.getSource() instanceof GameObject) {
+		Client.instance.game.gm.actionPerformed(e);
 	    }
 
 	    // Keys
