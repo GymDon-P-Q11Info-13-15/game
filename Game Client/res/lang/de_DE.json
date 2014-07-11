@@ -42,6 +42,7 @@
 		"game.option.move": "Bewegen",
 		"game.option.spawn": "Rekrutieren",
 		"game.option.stack": "Vereinen",
+		"game.option.upgrade": "Verbessern",
 		"game.phase.build": "Bauphase",
 		"game.phase.move": "Bewegungsphase",
 		"game.phase.attack": "Angriffsphase",
