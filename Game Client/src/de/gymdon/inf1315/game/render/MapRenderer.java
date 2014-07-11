@@ -46,6 +46,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private int guiDebugY;
     private int guiWidth;
     private int guiHeight;
+    private int guiPhaseX = width - width/2;
+    private int guiPhaseY = height/8;
 
     public MapRenderer() {
 	controlList.add(gameStateButton);
@@ -142,6 +144,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    }
 	}
 
+	// Rendering Menu
 	if (guiGameObject != null) {
 	    BufferedImage img = guiGameObject.render();
 	    if (img != null) {
@@ -187,6 +190,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	g2d.dispose();
 	g2do.drawImage(cache, 0, 0, null);
+	
+	// Rendering Gold, Phase, etc.
+	int p = Client.instance.game.gm.phase;
+	//g2do.drawString(Client.instance.translation.translate("game.phase." + (p == 0 ? "build" : p == 1 ? "move" : p == 2 ? "attack" : ""), new Object[0]), guiPhaseX, guiPhaseY);
 
 	int botMargin = height / 32;
 	int buttonWidth = width - width / 4;

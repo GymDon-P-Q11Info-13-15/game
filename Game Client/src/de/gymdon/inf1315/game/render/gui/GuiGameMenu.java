@@ -26,6 +26,8 @@ public class GuiGameMenu extends Gui {
 	if (object instanceof Building) {
 	    if (object instanceof Castle)
 		return renderCastle();
+	    if (object instanceof Mine)
+		return renderMine();
 	}
 
 	// Units
@@ -40,6 +42,28 @@ public class GuiGameMenu extends Gui {
 	g2d.setColor(new Color(object.owner.color == Player.Color.RED ? 0x6C4824 : 0x6C4824));
 	g2d.fillRoundRect(0, 0, guiWidth, guiHeight, 10, 10);
 	g2d.setColor(new Color(object.owner.color == Player.Color.RED ? 0x7B5C3D : 0x7B5C3D));
+	g2d.fillRoundRect(5, 5, 490, 490, 5, 5);
+	g2d.translate(20, 20);
+	g2d.setColor(new Color(0xFFFFFF));
+	g2d.setFont(font);
+	int c = 0;
+	for(int i = 0; i < opt.length; i++)
+	{
+	    if(opt[i])
+	    {
+		g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, font.getSize() - 20 + (spacing + font.getSize() - 20) * c);
+		c++;
+	    }
+	}
+	return image;
+    }
+    
+    private BufferedImage renderMine() {
+	BufferedImage image = new BufferedImage(guiWidth, guiWidth, BufferedImage.TYPE_INT_ARGB);
+	Graphics2D g2d = image.createGraphics();
+	g2d.setColor(new Color(0x6C4824));
+	g2d.fillRoundRect(0, 0, guiWidth, guiHeight, 10, 10);
+	g2d.setColor(new Color(0x7B5C3D));
 	g2d.fillRoundRect(5, 5, 490, 490, 5, 5);
 	g2d.translate(20, 20);
 	g2d.setColor(new Color(0xFFFFFF));
