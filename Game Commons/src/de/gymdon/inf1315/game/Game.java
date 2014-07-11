@@ -11,6 +11,7 @@ public class Game {
     public Unit[][] units;
     public GameMechanics gm;
     public boolean[] options;
+    public int phase, round;
 
     public Game(Remote clientA) {
 	options= new boolean[7];

@@ -10,9 +10,8 @@ public class GameMechanics implements ActionListener {
     // Building[][] buildings;
     // Unit[][] units;
     boolean[][] tempRange;
+    
     boolean won;
-    int round;
-    public int phase;
     public Game game;
 
     /**
@@ -27,8 +26,8 @@ public class GameMechanics implements ActionListener {
 	// buildings = Client.instance.buildings;
 	// units = Client.instance.units;
 	won = false;
-	round = 0;
-	phase = 0;
+	game.round = 0;
+	game.phase = 0;
     }
 
     /**
@@ -47,13 +46,13 @@ public class GameMechanics implements ActionListener {
 	while (!won) { // Ablauf EINER Spielrunde (was ein Spieler machen darf)
 		       // (Bauen -> Bewegen -> Kaempfen)
 
-	    phase = 0;
+	    game.phase = 0;
 	    
-	    if(phase%3==0){
+	    if(game.phase%3==0){
 		game.options[0]=false;
 		game.options[1]=false;
 	    }
-	    if(phase%3==1){
+	    if(game.phase%3==1){
 		
 	    }
 	    
@@ -74,7 +73,7 @@ public class GameMechanics implements ActionListener {
     }
 
     public String phaseButtonText() {
-	if (phase == 3 || phase == 5) {
+	if (game.phase == 3 || game.phase == 5) {
 	    return "gui.game.endRound";
 	} else {
 	    return "gui.game.endPhase";
@@ -84,11 +83,11 @@ public class GameMechanics implements ActionListener {
 
     public void nextPhase() {
 
-	if (phase++ == 6) {
-	    round++;
-	    phase = 0;
+	if (game.phase++ == 6) {
+	    game.round++;
+	    game.phase = 0;
 	} else {
-	    phase++;
+	    game.phase++;
 	}
 
     }
@@ -315,13 +314,13 @@ public void actionPerformed(ActionEvent e) {
 
 	if (e.getSource() instanceof Unit) {
 	    Unit u = (Unit) e.getSource();
-	    game.options=u.clicked(phase % 3);
+	    game.options=u.clicked(game.phase % 3);
 	    System.out.println("Unit: (" + u.x + "|" + u.y + ")");
 	}
 
 	if (e.getSource() instanceof Building) {
 	    Building b = (Building) e.getSource();
-	    game.options=b.clicked(phase%3);
+	    game.options=b.clicked(game.phase%3);
 	    System.out.println("Building: (" + b.x + "|" + b.y + ")");
 	}
     }
