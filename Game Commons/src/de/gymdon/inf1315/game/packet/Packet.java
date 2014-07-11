@@ -53,6 +53,7 @@ public abstract class Packet {
 	register(PacketHello.class);
 	register(PacketHeartbeat.class);
 	register(PacketKick.class);
-	register(PacketStartGame.class);
+	//register(PacketStartGame.class);
+	// TODO create PacketStartGame
     }
 }

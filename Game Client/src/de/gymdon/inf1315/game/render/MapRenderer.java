@@ -121,7 +121,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Rendering Click and Hover
 	for (int x = 0; x < fieldHover.length; x++) {
 	    for (int y = 0; y < fieldHover[x].length; y++) {
-		if (fieldHover[x][y] && guiGameObject == null) {
+		if (fieldHover[x][y]) {
 		    Texture tex = StandardTexture.get("hover");
 		    Building b = buildings[x][y];
 		    if (b != null)
@@ -206,6 +206,18 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     public BufferedImage getMapBackground() {
 	return cache;
     }
+    
+    private void clear()
+    {
+	selected = null;
+	guiGameObject = null;
+	guiPosX = -1;
+	guiPosY = -1;
+	guiDebugX = -1;
+	guiDebugY = -1;
+	guiWidth = -1;
+	guiHeight = -1;
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -225,7 +237,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	int bx = gameStateButton.getX();
 	int by = gameStateButton.getY();
 	if(e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight())
+	{
+	    this.clear();
+	    field = new boolean[mapWidth][mapHeight];
 	    return;
+	}
 	// Clicking on guiGameObject
 	int gx = (int) ((e.getX() + scrollX) / zoom);
 	int gy = (int) ((e.getY() + scrollY) / zoom);
@@ -247,7 +263,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 			guiGameObject = new GuiGameMenu(selected);
 			guiPosX = (x + b.getSizeX()) * tileSize;
 			guiPosY = (y + b.getSizeY()) * tileSize;
-			
 			return;
 		    }
 		}
@@ -276,10 +291,9 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		}
 	    }
 
-	    selected = null;
+	    this.clear();
 	}
 	firstClick = false;
-	guiGameObject = null;
     }
 
     @Override
@@ -364,7 +378,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    if (e.getSource() instanceof GuiButton) {
 		GuiButton button = (GuiButton) e.getSource();
 		if (button == gameStateButton)
-		    Client.instance.game.gm.nextPhase(); System.out.println(Client.instance.game.gm.phase);
+		    Client.instance.game.gm.nextPhase();
 	    }
 	    
 	    // GameObjects
