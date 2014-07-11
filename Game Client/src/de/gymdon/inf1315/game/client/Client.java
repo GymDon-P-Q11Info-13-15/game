@@ -292,7 +292,6 @@ public class Client implements Runnable, WindowListener {
     public void activateMap(boolean newMap) {
 	if (newMap) {
 	    game = new Game(null);
-	    game.gm.game = game;
 	    mapren = new MapRenderer();
 	    game.mapgen = new MapGenerator();
 	    game.mapgen.generateAll();

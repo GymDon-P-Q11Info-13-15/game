@@ -1,5 +1,6 @@
 package de.gymdon.inf1315.game.render;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,8 +47,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private int guiDebugY;
     private int guiWidth;
     private int guiHeight;
-    private int guiPhaseX = width - width/2;
-    private int guiPhaseY = height/8;
 
     public MapRenderer() {
 	controlList.add(gameStateButton);
@@ -192,8 +191,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	g2do.drawImage(cache, 0, 0, null);
 	
 	// Rendering Gold, Phase, etc.
-	int p = Client.instance.game.gm.phase;
-	//g2do.drawString(Client.instance.translation.translate("game.phase." + (p == 0 ? "build" : p == 1 ? "move" : p == 2 ? "attack" : ""), new Object[0]), guiPhaseX, guiPhaseY);
+	int p = Client.instance.game.phase;
+	g2do.setFont(Client.instance.translation.font.deriveFont(50F));
+	g2do.setColor(new Color(0xFFFFFF));
+	g2do.drawString(Client.instance.translation.translate("game.phase." + (p == 0 || p == 3 ? "build" : p == 1 || p == 4 ? "move" : p == 2 || p == 5 ? "attack" : "" + p), new Object[0]), 20, 50);
 
 	int botMargin = height / 32;
 	int buttonWidth = width - width / 4;

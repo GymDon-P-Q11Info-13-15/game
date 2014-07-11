@@ -11,13 +11,14 @@ public class Game {
     public Unit[][] units;
     public GameMechanics gm;
     public boolean[] options;
-    public int phase, round;
+    public int phase = 0;
+    public int round = 0;
 
     public Game(Remote clientA) {
 	options= new boolean[7];
 	this.clientA = clientA;
 	mapgen = new MapGenerator();
-	gm = new GameMechanics();
+	gm = new GameMechanics(this);
 	units = new Unit[mapgen.getMapWidth()][mapgen.getMapHeight()];
     }
 

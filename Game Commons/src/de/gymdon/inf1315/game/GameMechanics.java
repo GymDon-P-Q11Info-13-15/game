@@ -21,10 +21,11 @@ public class GameMechanics implements ActionListener {
      * übergeben. (?)
      */
 
-    public GameMechanics() { // neue Welt mit Breite x und Höhe y
+    public GameMechanics(Game g) { // neue Welt mit Breite x und Höhe y
 	// this.map = Client.instance.map;
 	// buildings = Client.instance.buildings;
 	// units = Client.instance.units;
+	game = g;
 	won = false;
 	game.round = 0;
 	game.phase = 0;
@@ -83,7 +84,7 @@ public class GameMechanics implements ActionListener {
 
     public void nextPhase() {
 
-	if (game.phase++ == 6) {
+	if (game.phase + 1 == 6) {
 	    game.round++;
 	    game.phase = 0;
 	} else {
