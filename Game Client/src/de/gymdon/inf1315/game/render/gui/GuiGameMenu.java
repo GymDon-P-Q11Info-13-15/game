@@ -15,7 +15,7 @@ public class GuiGameMenu extends Gui {
     public int spacing = guiWidth / 10;
     private Font font = Client.instance.translation.font.deriveFont(75F);
     private boolean[] opt = Client.instance.game.options;
-    private String[] act = new String[] {"", "", "", "", "", "", ""};
+    private String[] act = new String[] {"attack", "move", "stack", "", "", "spawn", "upgrade"};
 
     public GuiGameMenu(GameObject go) {
 	this.object = go;
