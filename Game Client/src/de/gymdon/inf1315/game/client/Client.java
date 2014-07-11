@@ -26,7 +26,7 @@ import de.gymdon.inf1315.game.render.*;
 import de.gymdon.inf1315.game.render.gui.*;
 
 public class Client implements Runnable, WindowListener {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final String TITLE = "Game Title";
     public static final String VERSION = "Alpha 0.0.1";
     public static final String COMMIT = "$Id$";

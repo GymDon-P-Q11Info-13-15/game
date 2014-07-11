@@ -8,7 +8,7 @@ public abstract class Packet {
 
     public static final short ID = -1;
     public static final Map<Short, Class<? extends Packet>> packetTypes = new HashMap<Short, Class<? extends Packet>>();
-    public static final int PROTOCOL_VERSION = 2;
+    public static final int PROTOCOL_VERSION = 3;
 
     protected Remote remote;
 
@@ -17,12 +17,12 @@ public abstract class Packet {
     }
 
     public void handlePacket() throws IOException {
-	remote.notifyPacket();
+	remote.notifyPacket(this, true);
     }
 
     public void send() throws IOException {
 	remote.getOutputStream().flush();
-	remote.notifyPacket();
+	remote.notifyPacket(this, false);
     }
 
     public static Packet newPacket(short id, Remote r) {
@@ -53,5 +53,6 @@ public abstract class Packet {
 	register(PacketHello.class);
 	register(PacketHeartbeat.class);
 	register(PacketKick.class);
+	register(PacketStartGame.class);
     }
 }

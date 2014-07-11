@@ -44,6 +44,7 @@ public class ConnectionHandler {
 		}
 	    } catch (Exception e) {
 		r.leave(e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+		e.printStackTrace();
 	    }
 	    if (r.left())
 		i.remove();

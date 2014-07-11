@@ -46,7 +46,7 @@ public class Client extends Remote {
     @Override
     public void setPing(boolean ping) {
 	super.setPing(ping);
-	if (!ping) {
+	if (!ping || true) {
 	    System.out.println(Server.instance.translation.translate("client.new", socket.getInetAddress().getCanonicalHostName()));
 	    System.out.flush();
 	}

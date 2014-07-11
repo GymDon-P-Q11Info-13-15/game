@@ -5,10 +5,11 @@ import java.util.*;
 import java.io.*;
 import java.util.ArrayList;
 
+import de.gymdon.inf1315.game.Self;
 import de.gymdon.inf1315.game.Translation;
 import de.gymdon.inf1315.game.packet.Remote;
 
-public class Server implements Runnable {
+public class Server extends Self implements Runnable {
 
     public static Server instance;
 
@@ -27,6 +28,7 @@ public class Server implements Runnable {
 	if (instance != null)
 	    throw new RuntimeException("Already running");
 	instance = this;
+	Self.instance = this;
 	Remote.isServer = true;
 	translation = new Translation("en");
 	this.connectionHandler = new ConnectionHandler(this);
@@ -97,5 +99,10 @@ public class Server implements Runnable {
 
     public void stop() {
 	running = false;
+    }
+
+    @Override
+    public String getName() {
+	return preferences.server_name;
     }
 }

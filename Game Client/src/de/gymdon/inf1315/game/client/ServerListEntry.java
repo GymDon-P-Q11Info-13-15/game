@@ -40,10 +40,10 @@ public class ServerListEntry {
 		g2d.setFont(Client.instance.translation.font.deriveFont(Font.BOLD, 18F));
 		g2d.setColor(Color.GRAY);
 		g2d.drawString(ip, 50, 75);
-		if (ping >= 0) {
-		    if (ping == 0)
+		if (ping != -1) {
+		    if (ping == -2)
 			g2d.setColor(Color.RED.darker());
-		    g2d.drawString(ping == 0 ? Client.instance.translation.translate("protocol.timeout") : ping + "ms", 50, 95);
+		    g2d.drawString(ping == -2 ? Client.instance.translation.translate("protocol.timeout") : ping + "ms", 50, 95);
 		}
 	    }
 
@@ -72,6 +72,7 @@ public class ServerListEntry {
 			@Override
 			public void handlePacket(Remote r, Packet p, boolean in) {
 			    if (in) {
+				System.out.println(p.getClass().getSimpleName());
 				if (p instanceof PacketHello) {
 				    r.leave("");
 				    ping = (int) (System.currentTimeMillis() - start);
@@ -83,21 +84,21 @@ public class ServerListEntry {
 		    hello.serverHello = false;
 		    hello.ping = true;
 		    hello.send();
-		    try {
+		    /*try {
 			Thread.sleep(2000);
 		    } catch (InterruptedException e) {
 		    }
 		    if (pinging && ping < 0) {
-			ping = 0;
+			ping = -2;
 			pinging = false;
 			System.err.println("[ServerList] " + name + "(" + ip + "): " + Client.instance.translation.translate("protocol.timeout"));
 			server.leave("");
 		    }
 		    if (!server.left())
-			server.leave("");
+			server.leave("");*/
 		} catch (IOException e) {
 		    System.err.println("[ServerList] " + name + "(" + ip + "): " + e.getMessage());
-		    ping = 0;
+		    ping = -2;
 		    pinging = false;
 		}
 

@@ -85,8 +85,11 @@ public abstract class Remote {
 	left = true;
     }
 
-    public void notifyPacket() {
+    public void notifyPacket(Packet p, boolean in) {
 	lastPacket = System.currentTimeMillis();
+	System.out.println((in ? "in: " : "out: ") + p.getClass().getSimpleName());
+	for(PacketListener l : listeners)
+	    l.handlePacket(this, p, in);
     }
 
     public long getLastPacketTime() {
