@@ -38,10 +38,4 @@ public class Spearman extends Unit {
 	return speed;
 
     }
-
-    @Override
-    public void clicked() {
-
-    }
-
 }

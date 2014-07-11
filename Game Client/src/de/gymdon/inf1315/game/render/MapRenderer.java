@@ -22,7 +22,7 @@ import de.gymdon.inf1315.game.render.gui.GuiScreen;
 
 public class MapRenderer extends GuiScreen implements Renderable, ActionListener, MouseInputListener, MouseWheelListener, KeyListener {
 
-    private GuiButton endRound = new GuiButton(this, 0, 20, 20, "gui.game.endRound");
+    private GuiButton gameStateButton = new GuiButton(this, 0, 20, 20, null);
     public static final int TILE_SIZE_SMALL = 32;
     public static final int TILE_SIZE_NORMAL = 64;
     public static final int TILE_SIZE_BIG = 128;
@@ -39,11 +39,16 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private GameObject selected;
     private boolean[][] fieldHover;
     private boolean[][] field;
-    private GuiGameMenu guiBuilding;
-    private int guiPosX, guiPosY;
+    private GuiGameMenu guiGameObject;
+    private int guiPosX;
+    private int guiPosY;
+    private int guiDebugX;
+    private int guiDebugY;
+    private int guiWidth;
+    private int guiHeight;
 
     public MapRenderer() {
-	controlList.add(endRound);
+	controlList.add(gameStateButton);
     }
 
     @Override
@@ -103,7 +108,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = UnitRenderMap.getTexture(u);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
-		    g2d.drawString(Client.instance.translation.translate("game.unit." + u.getClass().getSimpleName().toLowerCase()), x * tileSize, y * tileSize + tileSize / 2);
 		    g2d.drawString(Integer.toString(u.getHP()), x * tileSize, y * tileSize + tileSize);
 		}
 	    }
@@ -117,7 +121,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Rendering Click and Hover
 	for (int x = 0; x < fieldHover.length; x++) {
 	    for (int y = 0; y < fieldHover[x].length; y++) {
-		if (fieldHover[x][y] && guiBuilding == null) {
+		if (fieldHover[x][y] && guiGameObject == null) {
 		    Texture tex = StandardTexture.get("hover");
 		    Building b = buildings[x][y];
 		    if (b != null)
@@ -130,9 +134,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = StandardTexture.get("hover_clicked");
 		    Building b = buildings[x][y];
 		    if (b != null) {
-			int tX = tileSize * b.getSizeX();
-			int tY = tileSize * b.getSizeY();
-			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tX, tY, tex);
+			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * b.getSizeX(), tileSize * b.getSizeY(), tex);
 		    } else {
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
 		    }
@@ -140,18 +142,21 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    }
 	}
 
-	if (guiBuilding != null) {
-	    BufferedImage img = guiBuilding.render();
+	if (guiGameObject != null) {
+	    BufferedImage img = guiGameObject.render();
 	    if (img != null) {
 		int x = guiPosX;
 		int y = guiPosY;
-		/*
-		 * if (x + img.getWidth() > width) x = width - img.getWidth();
-		 * if (y + img.getHeight() > height) y = height -
-		 * img.getHeight();
-		 */
+		guiWidth = img.getWidth();
+		guiHeight = img.getHeight();
+		if (x + guiWidth > this.width)
+		    x = (x - tileSize) - guiWidth;
+		if (y + guiHeight > this.height)
+		    y = (y - tileSize) - guiHeight;
 		g2d.translate(x, y);
 		g2d.drawImage(img, 0, 0, null);
+		guiDebugX = x;
+		guiDebugY = y;
 	    }
 	}
 
@@ -190,10 +195,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	int rightMargin = width / 32;
 	int buttonWidthSmall = (buttonWidth - buttonSpacing) / 2;
 	int buttonWidthVerySmall = (buttonWidthSmall - buttonSpacing) / 2;
-	endRound.setX(width - rightMargin - buttonWidthVerySmall);
-	endRound.setY(height - botMargin - buttonHeight);
-	endRound.setWidth(buttonWidthVerySmall);
-	endRound.setHeight(buttonHeight);
+	gameStateButton.setX(width - rightMargin - buttonWidthVerySmall);
+	gameStateButton.setY(height - botMargin - buttonHeight);
+	gameStateButton.setWidth(buttonWidthVerySmall);
+	gameStateButton.setHeight(buttonHeight);
+	gameStateButton.setText(Client.instance.game.gm.phaseButtonText());
 	super.render(g2do, width, height);
     }
 
@@ -215,6 +221,16 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	if (x < 0 || x >= field.length || y < 0 || y >= field[x].length)
 	    return;
+	// Clicking on Button
+	int bx = gameStateButton.getX();
+	int by = gameStateButton.getY();
+	if(e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight())
+	    return;
+	// Clicking on guiGameObject
+	int gx = (int) ((e.getX() + scrollX) / zoom);
+	int gy = (int) ((e.getY() + scrollY) / zoom);
+	if(gx >= guiDebugX && gx <= guiDebugX + guiWidth && gy >= guiDebugY && gy <= guiDebugY + guiHeight)
+	    return;
 	Building[][] buildings = Client.instance.game.buildings;
 	Unit[][] units = Client.instance.game.units;
 
@@ -227,10 +243,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    if (b != null && b.getSizeX() + x1 > x && b.getSizeY() + y1 > y) {
 			field[x1][y1] = true;
 			selected = b;
-			actionPerformed(new ActionEvent(b, ActionEvent.ACTION_PERFORMED, "Building"));
-			guiBuilding = new GuiGameMenu(b);
-			guiPosX = (int) ((e.getX() + scrollX) / zoom);
-			guiPosY = (int) ((e.getY() + scrollY) / zoom);
+			actionPerformed(new ActionEvent(selected, ActionEvent.ACTION_PERFORMED, null));
+			guiGameObject = new GuiGameMenu(selected);
+			guiPosX = (x + b.getSizeX()) * tileSize;
+			guiPosY = (y + b.getSizeY()) * tileSize;
+			
 			return;
 		    }
 		}
@@ -240,7 +257,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		field[x][y] = true;
 		Unit u = units[x][y];
 		selected = u;
-		actionPerformed(new ActionEvent(u, ActionEvent.ACTION_PERFORMED, "Unit"));
+		actionPerformed(new ActionEvent(selected, ActionEvent.ACTION_PERFORMED, null));
+		guiGameObject = new GuiGameMenu(selected);
+		guiPosX = (x + 1) * tileSize;
+		guiPosY = (y + 1) * tileSize;
 		return;
 	    }
 
@@ -259,7 +279,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    selected = null;
 	}
 	firstClick = false;
-	guiBuilding = null;
+	guiGameObject = null;
     }
 
     @Override
@@ -275,6 +295,16 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	int y = (int) (((e.getY() + scrollY) / zoom) / tileSize);
 
 	if (x < 0 || x >= fieldHover.length || y < 0 || y >= fieldHover[x].length)
+	    return;
+	// Clicking on Button
+	int bx = gameStateButton.getX();
+	int by = gameStateButton.getY();
+	if(e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight())
+	    return;
+	// Clicking on guiGameObject
+	int gx = (int) ((e.getX() + scrollX) / zoom);
+	int gy = (int) ((e.getY() + scrollY) / zoom);
+	if(gx >= guiDebugX && gx <= guiDebugX + guiWidth && gy >= guiDebugY && gy <= guiDebugY + guiHeight)
 	    return;
 	Building[][] buildings = Client.instance.game.buildings;
 	Unit[][] units = Client.instance.game.units;
@@ -333,8 +363,13 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    // Buttons
 	    if (e.getSource() instanceof GuiButton) {
 		GuiButton button = (GuiButton) e.getSource();
-		if (button == endRound)
-		    System.out.println(button.getText());
+		if (button == gameStateButton)
+		    Client.instance.game.gm.nextPhase(); System.out.println(Client.instance.game.gm.phase);
+	    }
+	    
+	    // GameObjects
+	    if (e.getSource() instanceof GameObject) {
+		Client.instance.game.gm.actionPerformed(e);
 	    }
 
 	    // Keys
@@ -352,12 +387,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Client.instance.setGuiScreen(new GuiPauseMenu());
 		    firstClick = true;
 		}
-	    }
-
-	    // GameObjects
-	    if (e.getSource() instanceof GameObject) {
-		// GameObject g = (GameObject) e.getSource();
-		Client.instance.game.gm.actionPerformed(e);
 	    }
 	}
     }

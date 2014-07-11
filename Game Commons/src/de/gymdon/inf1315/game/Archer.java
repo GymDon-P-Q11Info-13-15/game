@@ -40,11 +40,4 @@ public class Archer extends Unit {
 	return speed;
 
     }
-
-    @Override
-    public void clicked() {
-	// TODO Auto-generated method stub
-
-    }
-
 }

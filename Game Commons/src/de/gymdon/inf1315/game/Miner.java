@@ -34,9 +34,9 @@ public class Miner extends Unit {
     }
 
     @Override
-    public void clicked() {
+    public boolean[] clicked(int phase) {
 	// TODO Auto-generated method stub
-
+		return null;
     }
 
 }

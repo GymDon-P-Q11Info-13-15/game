@@ -37,11 +37,4 @@ public class Swordsman extends Unit {
 
 	return speed;
     }
-
-    @Override
-    public void clicked() {
-	// TODO Auto-generated method stub
-
-    }
-
 }

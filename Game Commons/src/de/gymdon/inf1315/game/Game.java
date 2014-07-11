@@ -10,8 +10,10 @@ public class Game {
     public Building[][] buildings;
     public Unit[][] units;
     public GameMechanics gm;
+    public boolean[] options;
 
     public Game(Remote clientA) {
+	options= new boolean[7];
 	this.clientA = clientA;
 	mapgen = new MapGenerator();
 	gm = new GameMechanics();

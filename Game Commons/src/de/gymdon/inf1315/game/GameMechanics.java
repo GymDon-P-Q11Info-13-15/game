@@ -6,13 +6,13 @@ import java.util.Random;
 
 public class GameMechanics implements ActionListener {
     Random r = new Random();
-    Tile[][] map;
-    Building[][] buildings;
-    Unit[][] units;
+    // Tile[][] map;
+    // Building[][] buildings;
+    // Unit[][] units;
     boolean[][] tempRange;
     boolean won;
     int round;
-    int phase;
+    public int phase;
     public Game game;
 
     /**
@@ -38,30 +38,76 @@ public class GameMechanics implements ActionListener {
      *            Tile Array as new Map
      */
     public void setMap(Tile[][] t) {
-	map = t;
+	game.map = t;
     }
+    
 
     public void run() {
 
 	while (!won) { // Ablauf EINER Spielrunde (was ein Spieler machen darf)
 		       // (Bauen -> Bewegen -> Kaempfen)
-	    round++;
+
+	    phase = 0;
+	    
+	    if(phase%3==0){
+		game.options[0]=false;
+		game.options[1]=false;
+	    }
+	    if(phase%3==1){
+		
+	    }
+	    
+	    // start round
+
+	    // phase = "building etc";
+
+	    // Client beendet phase -> next phase;
+
+	    // phase % 3 == 0 -> Change active player
+
+	    // Other player -> gleicher Ablauf wie oben
+
+	    // if castle destroyed -> won = true;
+
+	}
+
+    }
+
+    public String phaseButtonText() {
+	if (phase == 3 || phase == 5) {
+	    return "gui.game.endRound";
+	} else {
+	    return "gui.game.endPhase";
 	}
 
     }
 
     public void nextPhase() {
-	phase++;
-	phase = phase % 6;
+
+	if (phase++ == 6) {
+	    round++;
+	    phase = 0;
+	} else {
+	    phase++;
+	}
 
     }
 
-    public void clicked(int x, int y) {
-	if (x >= 0 && y >= 0) {
-	    if (units[x][y] != null) {
-		// units[x][y].clicked();
+    /**
+     * Stacks two Units if their combined HP is lower than 120
+     * 
+     * @param a
+     *            first Unit to stack into another
+     * @param b
+     *            second Unit that is stacked into
+     */
+    public void stack(Unit a, Unit b) {
+	getAccessableFields(a);
+	if (tempRange[b.x][b.y] == true) {
+	    if ((a.getHP() + b.getHP()) >= 120) {
+		b.setHP(a.getHP() + b.getHP());
+		game.units[a.x][a.y] = null;
 	    }
-
 	}
     }
 
@@ -79,8 +125,8 @@ public class GameMechanics implements ActionListener {
     public void buildBuilding(Building b, int x, int y) {
 	if (x >= 0 && y >= 0) {
 	    // check player's gold!
-	    if (buildings[x][y] == null) {
-		buildings[x][y] = b;
+	    if (game.buildings[x][y] == null) {
+		game.buildings[x][y] = b;
 	    }
 	} else {
 	    throw new IllegalArgumentException("Field position must be positive");
@@ -94,7 +140,7 @@ public class GameMechanics implements ActionListener {
      *            Unit
      * @param x
      *            x-coordinate of the field to move to
-     * @param y
+ Archer    * @param y
      *            y-coordinate of the field to move to
      * @return true if move was possible, false otherwise
      */
@@ -125,13 +171,20 @@ public class GameMechanics implements ActionListener {
     }
 
     public void getAccessableFields(Unit a) {
-	tempRange = new boolean[map.length][map[0].length];
+	tempRange = new boolean[game.map.length][game.map[0].length];
 	step(a.getSpeed(), a.x, a.y);
 
     }
 
+    /**
+     * returns array of all accessable fields
+     * 
+     * @param a
+     *            Unit whose movement is calculated
+     * @return boolean array with true for all accessable fields
+     */
     public boolean[][] getAccessableField(Unit a) {
-	tempRange = new boolean[map.length][map[0].length];
+	tempRange = new boolean[game.map.length][game.map[0].length];
 	step(a.getSpeed(), a.x, a.y);
 	return tempRange;
     }
@@ -148,18 +201,22 @@ public class GameMechanics implements ActionListener {
 
     private void step(int actualSpeed, int x, int y) {
 
-	if (map[x][y].isWalkable() && buildings[x][y] == null) { // can only
-								 // walk if no
-								 // building or
-								 // walkable
-	    int newSpeed = (int) (actualSpeed - map[x][y].getGroundFactor()); // TODO:
-									      // Hotfix
-									      // by
-									      // Simi,
-									      // groundFactor
-									      // is
-									      // now
-									      // double
+	if (game.map[x][y].isWalkable() && game.buildings[x][y] == null) { // can
+									   // only
+									   // walk
+									   // if
+									   // no
+									   // building
+									   // or
+									   // walkable
+	    int newSpeed = (int) (actualSpeed - game.map[x][y].getGroundFactor()); // TODO:
+										   // Hotfix
+										   // by
+										   // Simi,
+										   // groundFactor
+										   // is
+										   // now
+										   // double
 
 	    if (newSpeed >= 1) {
 
@@ -193,18 +250,12 @@ public class GameMechanics implements ActionListener {
      * 
      * }
      */
-    /*
-     * public int getassist(Unit u){ Unit x;
-     * 
-     * if (x!=null){ return (int)(Math.round(x.attack * x.combined)) ; } else{
-     * return 0; } }
-     */
+
     public int strikechance(Unit striker, Unit stroke) {
-	// Berechnet eine zahl die der Rng überschreiten muss um zu treffen
 	int attchance = 80 - (striker.attack + striker.hp / 4 - stroke.defense / 2 - stroke.hp / 4);
 	System.out.println(attchance);
 	if (attchance < 0) {
-	    return 0;
+	    return 5;
 	} else if (attchance > 75) {
 	    return 75;
 	} else {
@@ -219,20 +270,18 @@ public class GameMechanics implements ActionListener {
 	    // Prüfen ob der Verteidiger sich wehren kann
 	    {
 		defender.setHP(defender.hp - r.nextInt(attacker.attack) * attacker.hp / 100);
-		// ranged Schadensberechnung wip
+		
 
 		return;
 	    } else {
 		if (r.nextInt(81) >= strikechance(attacker, defender)) {
 		    defender.setHP(defender.hp - 1);
 		}
-		// Rng Wert muss ausgerechneten Wert überschreiten um für 1 zu
-		// striken
+		
 		if (r.nextInt(81) >= strikechance(defender, attacker)) {
 		    attacker.setHP(attacker.hp - 1);
 		}
-		System.out.println("round " + round + " defhp " + defender.hp + " atkhp " + attacker.hp);
-		// Nur zu Testzwecken wird später noch entfernt
+		
 	    }
 	    if (defender.hp > 0 && attacker.hp > 0) {
 		combat(attacker, defender, round + 1);
@@ -246,17 +295,33 @@ public class GameMechanics implements ActionListener {
 	}
 
     }
-
+    
+public void create(Player p,Unit u,Building b)
+    {
+if(p.gold < u.cost){System.err.println("More gold requiered");}
+else{
+   p.gold = p.gold - u.cost; 
+   if(u instanceof Archer && b instanceof Barracks)game.units[b.x-1][b.y]=new Archer(p,b.x-1,b.y); 
+   if(u instanceof Knight && b instanceof Barracks)game.units[b.x-1][b.y]=new Knight(p,b.x-1,b.y);
+   if(u instanceof Miner)game.units[b.x-1][b.y]=new Miner(p,b.x-1,b.y);
+   if(u instanceof Spearman)game.units[b.x-1][b.y]=new Spearman(p,b.x-1,b.y);
+   if(u instanceof Swordsman)game.units[b.x-1][b.y]=new Swordsman(p,b.x-1,b.y);
+   //if(u instanceof Scout)game.units[b.x-1][b.y]=new Scout(p,b.x-1,b.y);
+    }
+    }
     @Override
-    public void actionPerformed(ActionEvent e) {
+    
+public void actionPerformed(ActionEvent e) {
 
 	if (e.getSource() instanceof Unit) {
 	    Unit u = (Unit) e.getSource();
+	    game.options=u.clicked(phase % 3);
 	    System.out.println("Unit: (" + u.x + "|" + u.y + ")");
 	}
 
 	if (e.getSource() instanceof Building) {
 	    Building b = (Building) e.getSource();
+	    game.options=b.clicked(phase%3);
 	    System.out.println("Building: (" + b.x + "|" + b.y + ")");
 	}
     }

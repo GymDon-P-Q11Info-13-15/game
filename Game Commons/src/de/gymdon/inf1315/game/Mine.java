@@ -16,4 +16,9 @@ public class Mine extends Building {
 	this.owner = p;
 
     }
+
+    public boolean[] clicked(int phase) {
+	options[5]=false;
+	return options;
+    }
 }

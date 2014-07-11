@@ -4,7 +4,7 @@
 	"client.new": "Neuer Client: %s",
 	"client.left": "Verbindung zu Client getrennt: %s",
 	"client.kicked": "Client %s wurde gekickt: \"%s\"",
-	"protocol.version.incompatible": "Protokolversion inkompatibel (erwartet %2$d und gefunden %1$d)",
+	"protocol.version.incompatible": "Protokollversion inkompatibel (erwartet %2$d und gefunden %1$d)",
 	"updated.version": "Updated %s zu Version %s",
 	"file.created": "Datei erstellt %s",
 	"game.ended": "Spiel beendet: %s"
