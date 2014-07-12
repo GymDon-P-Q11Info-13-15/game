@@ -18,7 +18,8 @@ public class Game {
 	options= new boolean[7];
 	this.clientA = clientA;
 	mapgen = new MapGenerator();
-	gm = new GameMechanics(this);
+	gm = new GameMechanics();
+	gm.game = this;
 	units = new Unit[mapgen.getMapWidth()][mapgen.getMapHeight()];
     }
 

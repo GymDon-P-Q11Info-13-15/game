@@ -61,10 +61,10 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	    if (opt[i]) {
 		g2d.drawString(act[i] != "" ? Client.instance.translation.translate("game.option." + act[i], new Object[0]) : "", 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		if (actionHover[i]) {
-		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 15, 3, actionHeight[i]);
-		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 15, actionWidth[i] + 8, 3);
-		    g2d.fillRect(actionWidth[i] + 4, (spacing + actionHeight[i]) * c + 15, 3, actionHeight[i]);
-		    g2d.fillRect(-4, actionHeight[i] + (spacing + actionHeight[i]) * c + 15, actionWidth[i] + 8, 3);
+		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 12, 3, actionHeight[i]);
+		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 12, actionWidth[i] + 8, 3);
+		    g2d.fillRect(actionWidth[i] + 4, (spacing + actionHeight[i]) * c + 12, 3, actionHeight[i]);
+		    g2d.fillRect(-4, actionHeight[i] + (spacing + actionHeight[i]) * c + 12, actionWidth[i] + 8, 3);
 		}
 		c++;
 	    }
@@ -87,10 +87,10 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	    if (opt[i]) {
 		g2d.drawString(act[i] != "" ? Client.instance.translation.translate("game.option." + act[i], new Object[0]) : "", 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		if (actionHover[i]) {
-		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 15, 3, actionHeight[i]);
-		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 15, actionWidth[i] + 8, 3);
-		    g2d.fillRect(actionWidth[i] + 4, (spacing + actionHeight[i]) * c + 15, 3, actionHeight[i]);
-		    g2d.fillRect(-4, actionHeight[i] + (spacing + actionHeight[i]) * c + 15, actionWidth[i], 3);
+		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 12, 3, actionHeight[i]);
+		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 12, actionWidth[i] + 8, 3);
+		    g2d.fillRect(actionWidth[i] + 4, (spacing + actionHeight[i]) * c + 12, 3, actionHeight[i]);
+		    g2d.fillRect(-4, actionHeight[i] + (spacing + actionHeight[i]) * c + 12, actionWidth[i] + 8, 3);
 		}
 		c++;
 	    }
@@ -113,15 +113,18 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	    if (opt[i]) {
 		g2d.drawString(act[i] != "" ? Client.instance.translation.translate("game.option." + act[i], new Object[0]) : "", 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		if (actionHover[i]) {
-		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 15, 3, actionHeight[i]);
-		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 15, actionWidth[i] + 8, 3);
-		    g2d.fillRect(actionWidth[i] + 4, (spacing + actionHeight[i]) * c + 15, 3, actionHeight[i]);
-		    g2d.fillRect(-4, actionHeight[i] + (spacing + actionHeight[i]) * c + 15, actionWidth[i] + 8, 3);
+		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 12, 3, actionHeight[i]);
+		    g2d.fillRect(-4, (spacing + actionHeight[i]) * c + 12, actionWidth[i] + 8, 3);
+		    g2d.fillRect(actionWidth[i] + 4, (spacing + actionHeight[i]) * c + 12, 3, actionHeight[i]);
+		    g2d.fillRect(-4, actionHeight[i] + (spacing + actionHeight[i]) * c + 12, actionWidth[i] + 8, 3);
 		}
 		c++;
 	    }
 	}
-	return image;
+	if(Client.instance.mapren.activeAction)
+	    return null;
+	else
+	    return image;
     }
 
     @Override
@@ -149,17 +152,19 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		    if (x >= 0 && x <= actionWidth[i] && y >= (actionHeight[i] + spacing) * c && y <= actionHeight[i] + (spacing + actionHeight[i]) * c) {
 			System.out.println(act[i] != "" ? Client.instance.translation.translate("game.option." + act[i], new Object[0]) : "");
 			if (act[i] == "attack") {
+			    Client.instance.mapren.activeAction = true;
 			}
 			if (act[i] == "move") {
+			    Client.instance.mapren.activeAction = true;
 			}
 			if (act[i] == "stack") {
+			    Client.instance.mapren.activeAction = true;
 			}
 			if (act[i] == "spawn") {
 			}
 			if (act[i] == "upgrade") {
 			}
 		    }
-
 		    c++;
 		}
 	    }

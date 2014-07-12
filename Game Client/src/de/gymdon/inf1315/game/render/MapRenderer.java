@@ -48,6 +48,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private int guiDebugY;
     private int guiWidth;
     private int guiHeight;
+    private int speed;
+    public boolean activeAction = false;
 
     public MapRenderer() {
 	controlList.add(gameStateButton);
@@ -148,6 +150,17 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	if (guiGameObject != null) {
 	    guiGameObject.keepSizesUpToDate();
 	    BufferedImage img = guiGameObject.render();
+	    if (activeAction) {
+		speed = ((Unit) selected).getSpeed();
+		Texture tex = StandardTexture.get("overlay_white");
+		g2d.translate(selected.x * tileSize, selected.y * tileSize);
+		for (int x = -speed * tileSize; x <= speed * tileSize; x = x + tileSize) {
+		    for (int y = -speed * tileSize; y <= speed * tileSize; y = y + tileSize) {
+			if(map[x/tileSize + selected.x][y/tileSize + selected.y].isWalkable())
+			    g2d.drawImage(tex.getImage(), x, y, tileSize, tileSize, tex);
+		    }
+		}
+	    }
 	    if (img != null) {
 		int x = guiPosX;
 		int y = guiPosY;
@@ -157,8 +170,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    x = (x - tileSize) - guiWidth;
 		if (y + guiHeight > this.height)
 		    y = (y - tileSize) - guiHeight;
-		g2d.translate(x, y);
-		g2d.drawImage(img, 0, 0, null);
+		g2d.drawImage(img, x, y, null);
 		guiDebugX = x;
 		guiDebugY = y;
 	    }
@@ -226,7 +238,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	guiDebugY = -1;
 	guiWidth = -1;
 	guiHeight = -1;
-	if(mapCache != null)
+	if (mapCache != null)
 	    field = new boolean[mapCache.length][mapCache[0].length];
     }
 
@@ -254,10 +266,23 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Clicking on guiGameObject
 	int gx = (int) ((e.getX() + scrollX) / zoom);
 	int gy = (int) ((e.getY() + scrollY) / zoom);
+	if (activeAction)
+	{
+	    int ax = (selected.x - speed) * tileSize;
+	    int ay = (selected.y - speed) * tileSize;
+	    if (gx >= ax && gx <= ax + speed * 2 * tileSize + tileSize && gy >= ay && gy <= ay + speed * 2 * tileSize + tileSize)
+		return;
+	    else
+	    {
+		activeAction = false;
+		return;
+	    }
+	}
 	if (gx >= guiDebugX && gx <= guiDebugX + guiWidth && gy >= guiDebugY && gy <= guiDebugY + guiHeight) {
 	    guiGameObject.mouseClicked(new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), gx - guiDebugX, gy - guiDebugY, e.getClickCount(), e.isPopupTrigger(), e.getButton()));
 	    return;
 	}
+	
 	Building[][] buildings = Client.instance.game.buildings;
 	Unit[][] units = Client.instance.game.units;
 
