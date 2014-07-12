@@ -156,8 +156,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		g2d.translate(selected.x * tileSize, selected.y * tileSize);
 		for (int x = -speed * tileSize; x <= speed * tileSize; x = x + tileSize) {
 		    for (int y = -speed * tileSize; y <= speed * tileSize; y = y + tileSize) {
-			if(map[x/tileSize + selected.x][y/tileSize + selected.y].isWalkable())
-			    g2d.drawImage(tex.getImage(), x, y, tileSize, tileSize, tex);
+			int mx = x / tileSize + selected.x;
+			int my = y / tileSize + selected.y;
+			if (mx >= 0 && my >= 0)
+			    if (map[mx][my].isWalkable() && (x != 0 || y != 0))
+				g2d.drawImage(tex.getImage(), x, y, tileSize, tileSize, tex);
 		    }
 		}
 	    }
@@ -166,9 +169,9 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		int y = guiPosY;
 		guiWidth = img.getWidth();
 		guiHeight = img.getHeight();
-		if (x + guiWidth > this.width)
+		if (guiPosX + guiWidth > this.width)
 		    x = (x - tileSize) - guiWidth;
-		if (y + guiHeight > this.height)
+		if (guiPosY + guiHeight > this.height)
 		    y = (y - tileSize) - guiHeight;
 		g2d.drawImage(img, x, y, null);
 		guiDebugX = x;
@@ -266,14 +269,12 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Clicking on guiGameObject
 	int gx = (int) ((e.getX() + scrollX) / zoom);
 	int gy = (int) ((e.getY() + scrollY) / zoom);
-	if (activeAction)
-	{
+	if (activeAction) {
 	    int ax = (selected.x - speed) * tileSize;
 	    int ay = (selected.y - speed) * tileSize;
 	    if (gx >= ax && gx <= ax + speed * 2 * tileSize + tileSize && gy >= ay && gy <= ay + speed * 2 * tileSize + tileSize)
 		return;
-	    else
-	    {
+	    else {
 		activeAction = false;
 		return;
 	    }
@@ -282,7 +283,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    guiGameObject.mouseClicked(new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), gx - guiDebugX, gy - guiDebugY, e.getClickCount(), e.isPopupTrigger(), e.getButton()));
 	    return;
 	}
-	
+
 	Building[][] buildings = Client.instance.game.buildings;
 	Unit[][] units = Client.instance.game.units;
 
