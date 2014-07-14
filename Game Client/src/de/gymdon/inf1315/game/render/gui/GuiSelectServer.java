@@ -21,12 +21,18 @@ public class GuiSelectServer extends GuiScreen {
 
     private GuiScreen last;
     private GuiButton backButton = new GuiButton(this, 0, 300, 550, "gui.back");
+    private GuiButton startButton = new GuiButton(this, 1, 300, 550, "gui.server.start").setEnabled(false);
+    private GuiButton addButton = new GuiButton(this, 2, 300, 550, "gui.server.add");
+    private GuiButton removeButton = new GuiButton(this, 3, 300, 550, "gui.server.remove").setEnabled(false);
     private GuiScrollList serverList;
     private List<ServerListEntry> servers = ServerListEntry.DEFAULT;
     private ListAdapter<ServerListEntry> adapter;
 
     public GuiSelectServer() {
 	controlList.add(backButton);
+	controlList.add(startButton);
+	controlList.add(addButton);
+	controlList.add(removeButton);
 	try {
 	    reload();
 	} catch (IOException e) {
@@ -57,10 +63,26 @@ public class GuiSelectServer extends GuiScreen {
 	int buttonSpacing = buttonHeight / 4;
 	int topMargin = 150;
 	int leftMargin = width / 2 - buttonWidth / 2;
-	// int buttonWidthSmall = (buttonWidth - buttonSpacing)/2;
-	backButton.setX(leftMargin);
+	int buttonWidthSmall = (buttonWidth - buttonSpacing)/2;
+	int buttonWidthVerySmall = (buttonWidthSmall - buttonSpacing)/2;
+	startButton.setX(leftMargin);
+	startButton.setY(height - buttonSpacing - buttonHeight);
+	startButton.setWidth(buttonWidthVerySmall);
+	startButton.setHeight(buttonHeight);
+	
+	addButton.setX(leftMargin + buttonWidthVerySmall + buttonSpacing);
+	addButton.setY(height - buttonSpacing - buttonHeight);
+	addButton.setWidth(buttonWidthVerySmall);
+	addButton.setHeight(buttonHeight);
+	
+	removeButton.setX(leftMargin + (buttonWidthVerySmall + buttonSpacing)*2);
+	removeButton.setY(height - buttonSpacing - buttonHeight);
+	removeButton.setWidth(buttonWidthVerySmall);
+	removeButton.setHeight(buttonHeight);
+	
+	backButton.setX(leftMargin + buttonWidth - buttonWidthVerySmall);
 	backButton.setY(height - buttonSpacing - buttonHeight);
-	backButton.setWidth(buttonWidth);
+	backButton.setWidth(buttonWidthVerySmall);
 	backButton.setHeight(buttonHeight);
 
 	serverList.setX(leftMargin);
@@ -87,17 +109,17 @@ public class GuiSelectServer extends GuiScreen {
 
 	    @Override
 	    public int getHeight(ServerListEntry element, GuiScrollList parent) {
-		return 100;
+		return element != null ? 100 : 0;
 	    }
 
 	    @Override
 	    public int getWidth(ServerListEntry element, GuiScrollList parent) {
-		return parent.getWidth();
+		return element != null ? parent.getWidth() : 0;
 	    }
 
 	    @Override
 	    public Gui get(ServerListEntry element, GuiScrollList parent) {
-		return element.getGui();
+		return element != null ? element.getGui() : null;
 	    }
 	};
 	serverList = new GuiScrollList(this, adapter, 1, 0, 0);
@@ -124,6 +146,10 @@ public class GuiSelectServer extends GuiScreen {
 		if (button == backButton) {
 		    Client.instance.setGuiScreen(last);
 		}
+	    }
+	    
+	    if(e.getSource() == serverList) {
+		
 	    }
 
 	    // Keys

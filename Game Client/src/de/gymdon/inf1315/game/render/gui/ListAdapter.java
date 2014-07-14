@@ -29,7 +29,7 @@ public abstract class ListAdapter<T> implements GuiAdapter {
     public int getWidth(int index, GuiScrollList parent) {
 	if (widthCache.containsKey(parent) && widthCache.get(parent).containsKey(index))
 	    return widthCache.get(parent).get(index);
-	int width = getHeight(list.get(index), parent);
+	int width = getWidth(list.get(index), parent);
 	if (!widthCache.containsKey(parent))
 	    widthCache.put(parent, new HashMap<Integer, Integer>());
 	widthCache.get(parent).put(index, width);

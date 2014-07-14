@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.LinearGradientPaint;
 import java.awt.Shape;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -35,6 +36,7 @@ public class GuiScrollList extends GuiControl {
     protected int scroll = 0;
     protected int scrollButtonHeight = 0;
     protected int totalHeight;
+    protected int selected = -1;
 
     public GuiScrollList(GuiScreen parent, GuiAdapter adapter, int id, int x, int y) {
 	this(parent, adapter, id, x, y, 100, 20);
@@ -146,6 +148,10 @@ public class GuiScrollList extends GuiControl {
 	return borderRadius;
     }
 
+    public int getSelected() {
+        return selected;
+    }
+
     public GuiScrollList setBorderColor(int borderColor) {
 	this.borderColor = borderColor;
 	return this;
@@ -238,8 +244,25 @@ public class GuiScrollList extends GuiControl {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-	// int x = e.getX();
-	// int y = e.getY();
+	//int x = e.getX() - this.x;
+	int y = e.getY() - this.y;
+	if(!scrolling) {
+	    int h = 0;
+	    for(int i = 0; i < adapter.getLength(this); i++) {
+		int height = adapter.getHeight(i, this);
+		if(height == 0) {
+		    selected = -1;
+		    break;
+		}
+		h += height;
+		if(y <= h) {
+		    selected = i;
+		    for(ActionListener l : actionListeners)
+			l.actionPerformed(new ActionEvent(this, selected, "selected"));
+		    break;
+		}
+	    }
+	}
 	scrolling = false;
     }
 
