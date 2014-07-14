@@ -5,13 +5,12 @@
 		<unzip dest="bin/">
 			<fileset dir="../Game Commons/">
 				<include name="**/*.jar" />
+				<exclude name="**/*-sources.jar" />
+				<exclude name="**/*-src.jar" />
+				<exclude name="**/*-javadoc.jar" />
 			</fileset>
 			<patternset>
 				<exclude name="META-INF/" />
-				<exclude name="**/*.html" />
-				<exclude name="**/*.css" />
-				<exclude name="package-list" />
-				<exclude name="resources" />
 			</patternset>
 		</unzip>
 		<jar destfile="server.jar" index="true">
