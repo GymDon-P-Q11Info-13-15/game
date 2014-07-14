@@ -14,6 +14,9 @@
 				<exclude name="resources" />
 			</patternset>
 		</unzip>
-		<jar basedir="bin/" destfile="server.jar" index="true" />
+		<jar destfile="server.jar" index="true">
+			<fileset dir="../Game Commons/bin/" />
+			<fileset dir="../Game Server/bin/" />
+		</jar>
 	</target>
 </project>
