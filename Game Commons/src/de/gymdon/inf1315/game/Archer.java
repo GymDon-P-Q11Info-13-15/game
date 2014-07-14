@@ -40,4 +40,11 @@ public class Archer extends Unit {
 	return speed;
 
     }
+    
+    @Override
+    public int getRange() {
+
+	return range;
+
+    }
 }

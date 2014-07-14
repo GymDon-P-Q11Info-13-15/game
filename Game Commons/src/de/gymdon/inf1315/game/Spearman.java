@@ -38,4 +38,11 @@ public class Spearman extends Unit {
 	return speed;
 
     }
+    
+    @Override
+    public int getRange() {
+
+	return range;
+
+    }
 }

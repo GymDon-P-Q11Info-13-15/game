@@ -152,15 +152,16 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		    if (x >= 0 && x <= actionWidth[i] && y >= (actionHeight[i] + spacing) * c && y <= actionHeight[i] + (spacing + actionHeight[i]) * c) {
 			System.out.println(act[i] != "" ? Client.instance.translation.translate("game.option." + act[i], new Object[0]) : "");
 			if (act[i] == "attack") {
-			    Client.instance.mapren.activeAction = true;
+			    Client.instance.mapren.attack = true;
 			}
 			if (act[i] == "move") {
-			    Client.instance.mapren.activeAction = true;
+			    Client.instance.mapren.move = true;
 			}
 			if (act[i] == "stack") {
-			    Client.instance.mapren.activeAction = true;
+			    Client.instance.mapren.stack = true;
 			}
 			if (act[i] == "spawn") {
+			    Client.instance.mapren.spawn = true;
 			}
 			if (act[i] == "upgrade") {
 			}
