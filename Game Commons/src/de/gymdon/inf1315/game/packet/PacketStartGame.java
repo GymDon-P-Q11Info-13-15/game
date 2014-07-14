@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class PacketStartGame extends Packet {
 
-    public static final int ID = 3;
+    public static final short ID = 3;
     public String opponent;
     
     public PacketStartGame(Remote r) {
