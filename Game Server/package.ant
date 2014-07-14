@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="package" name="Game Server">
+	<target name="package">
+		<ant antfile="build.xml" target="build" />
+		<unzip dest="bin/">
+			<fileset dir="../Game Commons/">
+				<include name="**/*.jar" />
+			</fileset>
+			<patternset>
+				<exclude name="META-INF/" />
+				<exclude name="**/*.html" />
+				<exclude name="**/*.css" />
+				<exclude name="package-list" />
+				<exclude name="resources" />
+			</patternset>
+		</unzip>
+		<jar basedir="bin/" destfile="server.jar" index="true" />
+	</target>
+</project>
