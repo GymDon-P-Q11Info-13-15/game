@@ -31,6 +31,8 @@ public abstract class Unit extends GameObject {
     }
 
     public abstract int getSpeed();
+    
+    public abstract int getRange();
 
     
     public boolean[] clicked(int phase){

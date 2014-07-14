@@ -37,4 +37,11 @@ public class Knight extends Unit {
 
 	return speed;
     }
+    
+    @Override
+    public int getRange() {
+
+	return range;
+
+    }
 }

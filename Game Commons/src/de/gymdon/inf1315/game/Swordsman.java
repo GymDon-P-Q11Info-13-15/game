@@ -7,7 +7,7 @@ public class Swordsman extends Unit {
 	this.x = x;
 	this.y = y;
 	speed = 5;
-	range = -1;
+	range = 1;
 	attack = 40;
 	defense = 70;
 	hp = 110;
@@ -36,5 +36,12 @@ public class Swordsman extends Unit {
     public int getSpeed() {
 
 	return speed;
+    }
+    
+    @Override
+    public int getRange() {
+
+	return range;
+
     }
 }

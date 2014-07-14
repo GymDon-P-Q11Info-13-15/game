@@ -29,8 +29,16 @@ public class Miner extends Unit {
 
     @Override
     public int getSpeed() {
-	// TODO Auto-generated method stub
+
 	return speed;
+
+    }
+    
+    @Override
+    public int getRange() {
+
+	return range;
+
     }
 
     @Override
