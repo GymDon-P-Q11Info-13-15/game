@@ -12,6 +12,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.event.MouseInputListener;
 
@@ -49,24 +50,30 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private int guiWidth;
     private int guiHeight;
     private int speed;
-    public boolean activeAction = false;
+    private boolean squareAction = false;
+    private boolean activeAction = false;
     public boolean attack = false;
     public boolean move = false;
     public boolean stack = false;
     public boolean spawn = false;
+    public boolean upgrade = false;
+    public Class<? extends Unit> spawnClass;
 
     public MapRenderer() {
 	controlList.add(gameStateButton);
     }
-    
+
     @Override
     public void render(Graphics2D g2do, int width, int height) {
+	Client.instance.game.gm.run();
 	cache = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = cache.createGraphics();
-	if(attack || move || stack || spawn)
+	if (attack || move || stack || spawn || upgrade)
 	    activeAction = true;
-	else
+	else {
 	    activeAction = false;
+	    squareAction = false;
+	}
 
 	Tile[][] map = Client.instance.game.map;
 	int mapWidth = map.length;
@@ -103,8 +110,9 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	Building[][] buildings = Client.instance.game.buildings;
 	for (int x = 0; x < buildings.length; x++) {
 	    for (int y = 0; y < buildings[x].length; y++) {
-		if (buildings[x][y] != null) {
-		    Texture tex = BuildingRenderMap.getTexture(buildings[x][y]);
+		Building b = buildings[x][y];
+		if (b != null) {
+		    Texture tex = BuildingRenderMap.getTexture(b);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
 		}
@@ -115,8 +123,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	Unit[][] units = Client.instance.game.units;
 	for (int x = 0; x < units.length; x++) {
 	    for (int y = 0; y < units[x].length; y++) {
-		if (units[x][y] != null) {
-		    Unit u = units[x][y];
+		Unit u = units[x][y];
+		if (u != null) {
 		    Texture tex = UnitRenderMap.getTexture(u);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
@@ -159,33 +167,39 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    guiGameObject.keepSizesUpToDate();
 	    BufferedImage img = guiGameObject.render();
 	    if (activeAction) {
-		if(attack)
+		if (attack) {
 		    speed = ((Unit) selected).getRange();
-		if(move)
+		    squareAction = true;
+		}
+		if (move)
 		    speed = ((Unit) selected).getSpeed();
-		if(stack)
+		if (stack)
 		    speed = ((Unit) selected).getSpeed();
-		if(spawn)
-		    speed = 1;
+		if (spawn) {
+		    speed = ((Building) selected).getSizeX();
+		    squareAction = true;
+		}
+		if (upgrade)
+		    speed = ((Building) selected).getSizeX();
 		Texture tex = StandardTexture.get("overlay_white");
 		g2d.translate(selected.x * tileSize, selected.y * tileSize);
 		for (int zx = -speed * tileSize; zx <= speed * tileSize; zx = zx + tileSize) {
 		    for (int zy = -speed * tileSize; zy <= speed * tileSize; zy = zy + tileSize) {
 			int mx = zx / tileSize + selected.x;
 			int my = zy / tileSize + selected.y;
-			if (mx >= 0 && mx < map.length && my >= 0 && my < map[0].length)
-			{
+			if (mx >= 0 && mx < map.length && my >= 0 && my < map[0].length) {
 			    int pzx = Math.abs(zx / tileSize);
 			    int pzy = Math.abs(zy / tileSize);
-			    if (map[mx][my].isWalkable() && (zx != 0 || zy != 0) && pzx + pzy <= speed)
-			    {
-				g2d.drawImage(tex.getImage(), zx, zy, tileSize, tileSize, tex);
+			    if (map[mx][my].isWalkable() && (zx != 0 || zy != 0)) {
+				if (squareAction)
+				    g2d.drawImage(tex.getImage(), zx, zy, tileSize, tileSize, tex);
+				else if (pzx + pzy <= speed)
+				    g2d.drawImage(tex.getImage(), zx, zy, tileSize, tileSize, tex);
 			    }
 			}
 		    }
 		}
-	    }
-	    if (img != null) {
+	    } else if (img != null) {
 		int x = guiPosX;
 		int y = guiPosY;
 		guiWidth = img.getWidth();
@@ -195,9 +209,9 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		if (guiPosY + guiHeight > this.height)
 		    y = (y - tileSize) - guiHeight;
 		if (x < 0)
-		    x = (selected.x + 1) * tileSize;
+		    x = guiPosX;
 		if (y < 0)
-		    y = (selected.y + 1) * tileSize;
+		    y = guiPosY;
 		g2d.drawImage(img, x, y, null);
 		guiDebugX = x;
 		guiDebugY = y;
@@ -232,11 +246,19 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	g2d.dispose();
 	g2do.drawImage(cache, 0, 0, null);
 
-	// Rendering Gold, Phase, etc.
+	// Rendering Round and Phase
 	int p = Client.instance.game.phase;
+	int r = Client.instance.game.round;
+	String phase = Client.instance.translation.translate("game.phase." + (p % 3 == 0 ? "build" : p % 3 == 1 ? "move" : p % 3 == 2 ? "attack" : "" + p), new Object[0]);
+	String round = Client.instance.translation.translate("game.round", new Object[0]) + " " + (r + 1);
 	g2do.setFont(Client.instance.translation.font.deriveFont(50F));
 	g2do.setColor(new Color(0xFFFFFF));
-	g2do.drawString(Client.instance.translation.translate("game.phase." + (p == 0 || p == 3 ? "build" : p == 1 || p == 4 ? "move" : p == 2 || p == 5 ? "attack" : "" + p), new Object[0]), 20, 50);
+	g2do.drawString(round + ": " + phase, 20, 50);
+
+	// Rendering Gold
+	g2do.setFont(Client.instance.translation.font.deriveFont(35F));
+	g2do.setColor(new Color(0xEDE275));
+	g2do.drawString(Client.instance.translation.translate("game.gold", new Object[0]) + ": " + "\u221E", 20, 100);
 
 	int botMargin = height / 32;
 	int buttonWidth = width - width / 4;
@@ -256,20 +278,19 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     public BufferedImage getMapBackground() {
 	return cache;
     }
-    
-    private void deactivate()
-    {
-	activeAction = false;
+
+    private void clearOptions() {
 	attack = false;
 	move = false;
 	stack = false;
 	spawn = false;
+	upgrade = false;
     }
 
-    private void clear() {
+    private void removeGui() {
 	selected = null;
 	guiGameObject = null;
-	this.deactivate();
+	this.clearOptions();
 	guiPosX = -1;
 	guiPosY = -1;
 	guiDebugX = -1;
@@ -279,6 +300,47 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	speed = -1;
 	if (mapCache != null)
 	    field = new boolean[mapCache.length][mapCache[0].length];
+    }
+
+    private void guiAction(int x, int y) {
+	Building[][] buildings = Client.instance.game.buildings;
+	Unit[][] units = Client.instance.game.units;
+
+	// Attacking
+	if (attack) {
+	}
+
+	// Moving
+	if (move) {
+	    units[x][y] = units[selected.x][selected.y];
+	    units[selected.x][selected.y] = null;
+	    units[x][y].x = x;
+	    units[x][y].y = y;
+	    this.removeGui();
+	}
+
+	// Stacking
+	if (stack && units[x][y] != null) {
+	    Client.instance.game.gm.stack(((Unit) selected), units[x][y]);
+	    this.removeGui();
+	}
+
+	// Spawning
+	if (spawn && units[x][y] == null) {
+	    try {
+		units[x][y] = spawnClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, x, y);
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+	    this.removeGui();
+	}
+
+	// Upgrade
+	if (upgrade) {
+	}
+
+	Client.instance.game.units = units;
+	Client.instance.game.buildings = buildings;
     }
 
     @Override
@@ -301,55 +363,56 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	int bx = gameStateButton.getX();
 	int by = gameStateButton.getY();
 	if (e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight()) {
-	    this.clear();
+	    this.removeGui();
 	    return;
 	}
+
 	// Clicking on guiGameObject
 	int gx = (int) ((e.getX() + scrollX) / zoom);
 	int gy = (int) ((e.getY() + scrollY) / zoom);
 	if (activeAction) {
-	    boolean clicked = false;
-	    // Ignoriert die NullPointerException (Das muss so, mehr oder weniger);
 	    for (int px = selected.x - speed; px <= selected.x + speed; px++) {
-		if(clicked)
-		    break;
 		for (int py = selected.y - speed; py <= selected.y + speed; py++) {
-		    if(Math.abs(px - selected.x) + Math.abs(py - selected.y) <= speed)
-		    {
-			if (x == px && y == py)
-			{
-			    clicked = true;
-			    if(stack)
-			    {
-				if(units[x][y] != null)
-				{
-				    Unit u = units[x][y];
-				    Client.instance.game.gm.stack(((Unit) selected), u);
-				    this.deactivate();
-				    this.clear();
-				}
-			    }
-			    break;
+		    if (x == selected.x && y == selected.y)
+			return;
+		    if (squareAction) {
+			if (x == px && y == py) {
+			    this.guiAction(x, y);
+			    return;
 			}
-		    }
-		    else if(px == selected.x + speed && py == selected.y + speed)
-		    {
-			clicked = true;
-			this.deactivate();
-			break;
+		    } else if (Math.abs(px - selected.x) + Math.abs(py - selected.y) <= speed) {
+			if (x == px && y == py) {
+			    this.guiAction(x, y);
+			    return;
+			}
 		    }
 		}
 	    }
+	    this.clearOptions();
 	    return;
 	}
 	if (gx >= guiDebugX && gx <= guiDebugX + guiWidth && gy >= guiDebugY && gy <= guiDebugY + guiHeight) {
 	    guiGameObject.mouseClicked(new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), gx - guiDebugX, gy - guiDebugY, e.getClickCount(), e.isPopupTrigger(), e.getButton()));
 	    return;
 	}
-	
+
 	if (e.getButton() == MouseEvent.BUTTON1 && !firstClick) {
 
 	    field = new boolean[mapWidth][mapHeight];
+
+	    // Clicking on Unit
+	    if (units[x][y] != null) {
+		field[x][y] = true;
+		Unit u = units[x][y];
+		selected = u;
+		actionPerformed(new ActionEvent(selected, ActionEvent.ACTION_PERFORMED, null));
+		guiGameObject = new GuiGameMenu(selected);
+		guiPosX = (x + 1) * tileSize;
+		guiPosY = (y + 1) * tileSize;
+		return;
+	    }
+
+	    // Clicking on Building
 	    for (int x1 = x; x1 > x1 - 6 && x1 >= 0; x1--) {
 		for (int y1 = y; y1 > y1 - 6 && y1 >= 0; y1--) {
 		    Building b = buildings[x1][y1];
@@ -365,17 +428,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		}
 	    }
 
-	    if (units[x][y] != null) {
-		field[x][y] = true;
-		Unit u = units[x][y];
-		selected = u;
-		actionPerformed(new ActionEvent(selected, ActionEvent.ACTION_PERFORMED, null));
-		guiGameObject = new GuiGameMenu(selected);
-		guiPosX = (x + 1) * tileSize;
-		guiPosY = (y + 1) * tileSize;
-		return;
-	    }
-
 	    if (mapCache[x][y].isWalkable()) {
 		Class<?>[] classes = new Class<?>[] { Archer.class, Knight.class, Spearman.class, Swordsman.class };
 		@SuppressWarnings("unchecked")
@@ -388,7 +440,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		}
 	    }
 
-	    this.clear();
+	    this.removeGui();
 	}
 	firstClick = false;
     }
@@ -404,25 +456,35 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	int x = (int) (((e.getX() + scrollX) / zoom) / tileSize);
 	int y = (int) (((e.getY() + scrollY) / zoom) / tileSize);
+	Building[][] buildings = Client.instance.game.buildings;
+	Unit[][] units = Client.instance.game.units;
 
 	if (x < 0 || x >= fieldHover.length || y < 0 || y >= fieldHover[x].length)
 	    return;
+
 	// Hovering over Button
 	int bx = gameStateButton.getX();
 	int by = gameStateButton.getY();
 	if (e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight())
 	    return;
+
 	// Hovering over guiGameObject
 	int gx = (int) ((e.getX() + scrollX) / zoom);
 	int gy = (int) ((e.getY() + scrollY) / zoom);
-	if (gx >= guiDebugX && gx <= guiDebugX + guiWidth && gy >= guiDebugY && gy <= guiDebugY + guiHeight) {
+	if (gx >= guiDebugX && gx <= guiDebugX + guiWidth && gy >= guiDebugY && gy <= guiDebugY + guiHeight && !activeAction) {
 	    guiGameObject.mouseMoved(new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), gx - guiDebugX, gy - guiDebugY, e.getClickCount(), e.isPopupTrigger()));
 	    return;
 	}
-	Building[][] buildings = Client.instance.game.buildings;
-	Unit[][] units = Client.instance.game.units;
 
 	fieldHover = new boolean[mapWidth][mapHeight];
+
+	// Hovering over Unit
+	if (units[x][y] != null) {
+	    fieldHover[x][y] = true;
+	    return;
+	}
+
+	// Hovering over Building
 	for (int x1 = x; x1 > x1 - 6 && x1 >= 0; x1--) {
 	    for (int y1 = y; y1 > y1 - 6 && y1 >= 0; y1--) {
 		Building b = buildings[x1][y1];
@@ -431,11 +493,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    return;
 		}
 	    }
-	}
-
-	if (units[x][y] != null) {
-	    fieldHover[x][y] = true;
-	    return;
 	}
     }
 

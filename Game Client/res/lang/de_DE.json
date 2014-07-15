@@ -43,6 +43,8 @@
 		"game.option.spawn": "Rekrutieren",
 		"game.option.stack": "Vereinen",
 		"game.option.upgrade": "Verbessern",
+		"game.gold": "Gold",
+		"game.round": "Runde",
 		"game.phase.build": "Bauphase",
 		"game.phase.move": "Bewegungsphase",
 		"game.phase.attack": "Angriffsphase",

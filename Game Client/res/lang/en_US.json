@@ -47,6 +47,8 @@
 		"game.option.spawn": "Recruit",
 		"game.option.stack": "Stack",
 		"game.option.upgrade": "Upgrade",
+		"game.gold": "Gold",
+		"game.round": "Round",
 		"game.phase.build": "Building Phase",
 		"game.phase.move": "Moving Phase",
 		"game.phase.attack": "Attacking Phase",

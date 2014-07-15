@@ -41,17 +41,32 @@ public class GameMechanics implements ActionListener {
 
     public void run() {
 
-	while (!won) { // Ablauf EINER Spielrunde (was ein Spieler machen darf)
+	if (!won) { // Ablauf EINER Spielrunde (was ein Spieler machen darf)
 		       // (Bauen -> Bewegen -> Kaempfen)
 
-	    game.phase = 0;
-	    
+	    // game.phase = 0;
 	    if(game.phase%3==0){
 		game.options[0]=false;
 		game.options[1]=false;
+		game.options[2]=false;
+		game.options[5]=true;
+		game.options[6]=true;
 	    }
+	    
 	    if(game.phase%3==1){
-		
+		game.options[0]=false;
+		game.options[1]=true;
+		game.options[2]=true;
+		game.options[5]=false;
+		game.options[6]=false;
+	    }
+	    
+	    if(game.phase%3==2){
+		game.options[0]=true;
+		game.options[1]=false;
+		game.options[2]=false;
+		game.options[5]=false;
+		game.options[6]=false;
 	    }
 	    
 	    // start round
@@ -71,7 +86,7 @@ public class GameMechanics implements ActionListener {
     }
 
     public String phaseButtonText() {
-	if (game.phase == 3 || game.phase == 5) {
+	if (game.phase % 3 == 2) {
 	    return "gui.game.endRound";
 	} else {
 	    return "gui.game.endPhase";
