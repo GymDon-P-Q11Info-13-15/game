@@ -72,7 +72,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	if (!recruit) {
 	    for (int i = 0; i < opt.length; i++) {
 		if (opt[i] && i != 0 && i != 1 && i != 2) {
-		    g2d.drawString(act[i] != "" ? Client.instance.translation.translate("game.option." + act[i], new Object[0]) : "", 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
+		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		    if (actionHover[i]) {
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);
@@ -113,16 +113,34 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	g2d.setColor(new Color(0xFFFFFF));
 	g2d.setFont(font);
 	int c = 0;
-	for (int i = 0; i < opt.length; i++) {
-	    if (opt[i] && i != 0 && i != 1 && i != 2) {
-		g2d.drawString(act[i] != "" ? Client.instance.translation.translate("game.option." + act[i], new Object[0]) : "", 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
-		if (actionHover[i]) {
-		    g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
-		    g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);
-		    g2d.fillRect(actionWidth[i] + hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
-		    g2d.fillRect(-hoverXExtra, actionHeight[i] + (spacing + actionHeight[i]) * c + hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);
+	if (!recruit) {
+	    for (int i = 0; i < opt.length; i++) {
+		if (opt[i] && i != 0 && i != 1 && i != 2) {
+		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
+		    if (actionHover[i]) {
+			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
+			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);
+			g2d.fillRect(actionWidth[i] + hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
+			g2d.fillRect(-hoverXExtra, actionHeight[i] + (spacing + actionHeight[i]) * c + hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);
+		    }
+		    c++;
 		}
-		c++;
+	    }
+	} else {
+	    for (int i = 0; i < classes.length; i++) {
+		@SuppressWarnings("unchecked")
+		Class<? extends Unit> clazz = (Class<? extends Unit>) classes[i];
+		try {
+		    Unit u = clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0);
+		    Texture tex = UnitRenderMap.getTexture(u);
+		    g2d.drawImage(tex.getImage(), (uW + spacing) * (i % 3), (uH + spacing) * (i / 3), uW, uH, tex);
+		} catch (Exception e1) {
+		    e1.printStackTrace();
+		}
+		if (recruitHover[i]) {
+		    Texture hTex = StandardTexture.get("hover");
+		    g2d.drawImage(hTex.getImage(), (uW + spacing) * (i % 3), (uH + spacing) * (i / 3), uW, uH, hTex);
+		}
 	    }
 	}
 	return image;
@@ -141,7 +159,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	int c = 0;
 	for (int i = 0; i < opt.length; i++) {
 	    if (opt[i] && i != 5 && i != 6) {
-		g2d.drawString(act[i] != "" ? Client.instance.translation.translate("game.option." + act[i], new Object[0]) : "", 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
+		g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		if (actionHover[i]) {
 		    g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
 		    g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);

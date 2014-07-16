@@ -311,7 +311,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	}
 
 	// Moving
-	if (move) {
+	if (move && units[x][y] == null) {
 	    units[x][y] = units[selected.x][selected.y];
 	    units[selected.x][selected.y] = null;
 	    units[x][y].x = x;
