@@ -6,11 +6,8 @@ import java.util.Random;
 
 public class GameMechanics implements ActionListener {
     Random r = new Random();
-    // Tile[][] map;
-    // Building[][] buildings;
-    // Unit[][] units;
     boolean[][] tempRange;
-    
+
     boolean won;
     public Game game;
 
@@ -21,10 +18,7 @@ public class GameMechanics implements ActionListener {
      * übergeben. (?)
      */
 
-    public GameMechanics() { // neue Welt mit Breite x und Höhe y
-	// this.map = Client.instance.map;
-	// buildings = Client.instance.buildings;
-	// units = Client.instance.units;
+    public GameMechanics() {
 	won = false;
     }
 
@@ -37,38 +31,42 @@ public class GameMechanics implements ActionListener {
     public void setMap(Tile[][] t) {
 	game.map = t;
     }
-    
 
     public void run() {
 
 	if (!won) { // Ablauf EINER Spielrunde (was ein Spieler machen darf)
-		       // (Bauen -> Bewegen -> Kaempfen)
+		    // (Bauen -> Bewegen -> Kaempfen)
 
-	    // game.phase = 0;
-	    if(game.phase%3==0){
-		game.options[0]=false;
-		game.options[1]=false;
-		game.options[2]=false;
-		game.options[5]=true;
-		game.options[6]=true;
+	    if (game.phase % 3 == 0) {
+		game.options[0] = false;
+		game.options[1] = false;
+		game.options[2] = false;
+		game.options[5] = true;
+		game.options[6] = true;
 	    }
-	    
-	    if(game.phase%3==1){
-		game.options[0]=false;
-		game.options[1]=true;
-		game.options[2]=true;
-		game.options[5]=false;
-		game.options[6]=false;
+
+	    if (game.phase % 3 == 1) {
+		game.options[0] = false;
+		game.options[1] = true;
+		game.options[2] = true;
+		game.options[5] = false;
+		game.options[6] = false;
 	    }
-	    
-	    if(game.phase%3==2){
-		game.options[0]=true;
-		game.options[1]=false;
-		game.options[2]=false;
-		game.options[5]=false;
-		game.options[6]=false;
+
+	    if (game.phase % 3 == 2) {
+		game.options[0] = true;
+		game.options[1] = false;
+		game.options[2] = false;
+		game.options[5] = false;
+		game.options[6] = false;
 	    }
-	    
+
+	    for (int a = 0; a < game.units.length; a++)
+		for (int b = 0; b < game.units[a].length; b++)
+		    if (game.units[a][b] != null)
+			if (game.units[a][b].getHP() <= 0)
+			    game.units[a][b] = null;
+
 	    // start round
 
 	    // phase = "building etc";
@@ -151,16 +149,18 @@ public class GameMechanics implements ActionListener {
      * @param u
      *            Unit
      * @param x
-     *            x-coordinate of the field to move to
- Archer    * @param y
+     *            x-coordinate of the field to move to Archer * @param y
      *            y-coordinate of the field to move to
      * @return true if move was possible, false otherwise
      */
     public boolean move(Unit u, int x, int y) {
+
 	getAccessableFields(u);
 	if (tempRange[x][y] == true) {
+	    game.units[u.x][u.y] = null;
 	    u.x = x;
 	    u.y = y;
+	    game.units[x][y] = u;
 	    return true;
 	} else
 	    return false;
@@ -213,15 +213,31 @@ public class GameMechanics implements ActionListener {
 
     private void step(int actualSpeed, int x, int y) {
 
-	if (game.map[x][y].isWalkable() && game.buildings[x][y] == null) { // can only walk if no building and walkable
-	    int newSpeed = (int) (actualSpeed - game.map[x][y].getGroundFactor()); // TODO: Hotfix by Simi, groundFactor is now double
-	    if (newSpeed >= 1 && x > 0 && y > 0) {
+	if (x < 0 || y < 0 || x >= tempRange.length || y >= tempRange[0].length)
+	    return;
+	if (game.map[x][y].isWalkable() && game.buildings[x][y] == null) { // can
+	    // only
+	    // walk
+	    // if
+	    // no
+	    // building
+	    // and
+	    // walkable
+	    int newSpeed = (int) (actualSpeed - game.map[x][y].getGroundFactor()); // TODO:
+										   // Hotfix
+										   // by
+										   // Simi,
+										   // groundFactor
+										   // is
+										   // now
+										   // double
+	    if (newSpeed >= 1) {
 		tempRange[x][y] = true;
 		step(newSpeed, x - 1, y);
 		step(newSpeed, x + 1, y);
 		step(newSpeed, x, y + 1);
 		step(newSpeed, x, y - 1);
-	    } else if (newSpeed > 0 && x > 0 && y > 0) {
+	    } else if (newSpeed > 0) {
 		tempRange[x][y] = true;
 		step(1, x - 1, y);
 		step(1, x + 1, y);
@@ -262,22 +278,20 @@ public class GameMechanics implements ActionListener {
     public void combat(Unit attacker, Unit defender, int round) {
 
 	if (round < 100) {
-	    if (attacker.range > defender.range)
-	    // Prüfen ob der Verteidiger sich wehren kann
+	    if (defender.range < Math.abs(attacker.x - defender.x) || defender.range < Math.abs(attacker.y - defender.y))
+	    // Pr�fen ob der Verteidiger sich wehren kann
 	    {
 		defender.setHP(defender.hp - r.nextInt(attacker.attack) * attacker.hp / 100);
-		
-
 		return;
 	    } else {
 		if (r.nextInt(81) >= strikechance(attacker, defender)) {
 		    defender.setHP(defender.hp - 1);
 		}
-		
+
 		if (r.nextInt(81) >= strikechance(defender, attacker)) {
 		    attacker.setHP(attacker.hp - 1);
 		}
-		
+
 	    }
 	    if (defender.hp > 0 && attacker.hp > 0) {
 		combat(attacker, defender, round + 1);
@@ -291,33 +305,37 @@ public class GameMechanics implements ActionListener {
 	}
 
     }
-    
-public void create(Player p,Unit u,Building b)
-    {
-if(p.gold < u.cost){System.err.println("More gold requiered");}
-else{
-   p.gold = p.gold - u.cost; 
-   if(u instanceof Archer && b instanceof Barracks)game.units[b.x-1][b.y]=new Archer(p,b.x-1,b.y); 
-   if(u instanceof Knight && b instanceof Barracks)game.units[b.x-1][b.y]=new Knight(p,b.x-1,b.y);
-   if(u instanceof Miner)game.units[b.x-1][b.y]=new Miner(p,b.x-1,b.y);
-   if(u instanceof Spearman)game.units[b.x-1][b.y]=new Spearman(p,b.x-1,b.y);
-   if(u instanceof Swordsman)game.units[b.x-1][b.y]=new Swordsman(p,b.x-1,b.y);
-   //if(u instanceof Scout)game.units[b.x-1][b.y]=new Scout(p,b.x-1,b.y);
+
+    public void create(Player p, Unit u, Building b) {
+	/*if (p.gold < u.cost) {
+	    System.err.println("More gold requiered");
+	} else {
+	    p.gold = p.gold - u.cost;*/
+	    if (u instanceof Archer && b instanceof Barracks)
+		game.units[u.x][u.y] = u;
+	    if (u instanceof Knight && b instanceof Barracks)
+		game.units[u.x][u.y] = u;
+	    if (u instanceof Miner)
+		game.units[u.x][u.y] = u;
+	    if (u instanceof Spearman)
+		game.units[u.x][u.y] = u;
+	    if (u instanceof Swordsman)
+		game.units[u.x][u.y] = u;
+	//}
     }
-    }
+
     @Override
-    
-public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
 
 	if (e.getSource() instanceof Unit) {
 	    Unit u = (Unit) e.getSource();
-	    game.options=u.clicked(game.phase % 3);
+	    game.options = u.clicked(game.phase % 3);
 	    System.out.println("Unit: (" + u.x + "|" + u.y + ")");
 	}
 
 	if (e.getSource() instanceof Building) {
 	    Building b = (Building) e.getSource();
-	    game.options=b.clicked(game.phase%3);
+	    game.options = b.clicked(game.phase % 3);
 	    System.out.println("Building: (" + b.x + "|" + b.y + ")");
 	}
     }

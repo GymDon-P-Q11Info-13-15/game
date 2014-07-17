@@ -53,7 +53,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private boolean squareAction = false;
     private boolean activeAction = false;
     private boolean[][] range;
-    private int attRange;
+    private int sRange;
     public boolean attack = false;
     public boolean move = false;
     public boolean stack = false;
@@ -85,7 +85,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	else {
 	    activeAction = false;
 	    squareAction = false;
-	    attRange = -1;
+	    sRange = 0;
 	    range = new boolean[map.length][map[0].length];
 	}
 	AffineTransform tx = g2d.getTransform();
@@ -132,7 +132,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = UnitRenderMap.getTexture(u);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
-		    g2d.drawString(Integer.toString(u.getHP()), x * tileSize, y * tileSize + tileSize);
+		    g2d.drawString(Integer.toString(u.getHP()), x * tileSize, y * tileSize - tileSize/4);
 		}
 	    }
 	}
@@ -172,46 +172,31 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    BufferedImage img = guiGameObject.render();
 	    if (activeAction) {
 		if (attack) {
-		    speed = 1;
+		    sRange = ((Unit) selected).getRange();
 		    squareAction = true;
 		}
 		if (move)
-		    //range = Client.instance.game.gm.getAccessableField(((Unit) selected));
+		    range = Client.instance.game.gm.getAccessableField(((Unit) selected));
 		if (stack)
-		    speed = ((Unit) selected).getSpeed();
+		    range = Client.instance.game.gm.getAccessableField(((Unit) selected));
 		if (spawn) {
-		    speed = ((Building) selected).getSizeX();
+		    sRange = ((Building) selected).getSizeX();
 		    squareAction = true;
 		}
 		if (upgrade)
-		    speed = ((Building) selected).getSizeX();
-		
+		    sRange = ((Building) selected).getSizeX();
+
 		Texture tex = StandardTexture.get("overlay_white");
 		for (int x = 0; x < range.length; x++) {
 		    for (int y = 0; y < range[x].length; y++) {
-			if(squareAction && Math.abs(x - selected.x) <= speed && Math.abs(y - selected.y) <= speed)
+			if (x == selected.x && y == selected.y) {
+			} else if (squareAction && Math.abs(x - selected.x) <= sRange && Math.abs(y - selected.y) <= sRange)
 			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
-			else if(range[x][y])
+			else if (range[x][y])
 			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
 		    }
 		}
-		/*g2d.translate(selected.x * tileSize, selected.y * tileSize);
-		for (int zx = -speed * tileSize; zx <= speed * tileSize; zx = zx + tileSize) {
-		    for (int zy = -speed * tileSize; zy <= speed * tileSize; zy = zy + tileSize) {
-			int mx = zx / tileSize + selected.x;
-			int my = zy / tileSize + selected.y;
-			if (mx >= 0 && mx < map.length && my >= 0 && my < map[0].length) {
-			    int pzx = Math.abs(zx / tileSize);
-			    int pzy = Math.abs(zy / tileSize);
-			    if (map[mx][my].isWalkable() && (zx != 0 || zy != 0)) {
-				if (squareAction)
-				    g2d.drawImage(tex.getImage(), zx, zy, tileSize, tileSize, tex);
-				else if (pzx + pzy <= speed)
-				    g2d.drawImage(tex.getImage(), zx, zy, tileSize, tileSize, tex);
-			    }
-			}
-		    }
-		}*/
+
 	    } else if (img != null) {
 		int x = guiPosX;
 		int y = guiPosY;
@@ -310,7 +295,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	guiDebugY = -1;
 	guiWidth = -1;
 	guiHeight = -1;
-	speed = -1;
 	if (mapCache != null)
 	    field = new boolean[mapCache.length][mapCache[0].length];
     }
@@ -320,28 +304,34 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	Unit[][] units = Client.instance.game.units;
 
 	// Attacking
-	if (attack) {
+	if (attack && units[x][y] != null) {
+	    Client.instance.game.gm.combat((Unit) selected, units[x][y], 0);
+	    this.removeGui();
+	}
+	
+	if (attack && buildings[x][y] != null) {
+	    // Client.instance.game.gm.combat((Unit) selected, buildings[x][y], 0);
+	    System.err.println("Why can't i fight buildings? I need METHODS for that...");
+	    this.removeGui();
 	}
 
 	// Moving
 	if (move && units[x][y] == null) {
-	    units[x][y] = units[selected.x][selected.y];
-	    units[selected.x][selected.y] = null;
-	    units[x][y].x = x;
-	    units[x][y].y = y;
+	    Client.instance.game.gm.move((Unit) selected, x, y);
 	    this.removeGui();
 	}
 
 	// Stacking
 	if (stack && units[x][y] != null) {
-	    Client.instance.game.gm.stack(((Unit) selected), units[x][y]);
+	    Client.instance.game.gm.stack((Unit) selected, units[x][y]);
 	    this.removeGui();
 	}
 
 	// Spawning
 	if (spawn && units[x][y] == null) {
 	    try {
-		units[x][y] = spawnClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, x, y);
+		Unit u = spawnClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, x, y);
+		Client.instance.game.gm.create(u.owner, u, (Building) selected);
 	    } catch (Exception e) {
 		e.printStackTrace();
 	    }
@@ -351,9 +341,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Upgrade
 	if (upgrade) {
 	}
-
-	Client.instance.game.units = units;
-	Client.instance.game.buildings = buildings;
     }
 
     @Override
@@ -384,22 +371,15 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	int gx = (int) ((e.getX() + scrollX) / zoom);
 	int gy = (int) ((e.getY() + scrollY) / zoom);
 	if (activeAction) {
-	    for (int px = selected.x - speed; px <= selected.x + speed; px++) {
-		for (int py = selected.y - speed; py <= selected.y + speed; py++) {
-		    if (x == selected.x && y == selected.y)
-			return;
-		    if (squareAction) {
-			if (x == px && y == py) {
-			    this.guiAction(x, y);
-			    return;
-			}
-		    } else if (Math.abs(px - selected.x) + Math.abs(py - selected.y) <= speed) {
-			if (x == px && y == py) {
-			    this.guiAction(x, y);
-			    return;
-			}
-		    }
-		}
+
+	    if (x == selected.x && y == selected.y)
+		return;
+	    else if (squareAction && Math.abs(x - selected.x) <= sRange && Math.abs(y - selected.y) <= sRange) {
+		this.guiAction(x, y);
+		return;
+	    } else if (range[x][y]) {
+		this.guiAction(x, y);
+		return;
 	    }
 	    this.clearOptions();
 	    return;

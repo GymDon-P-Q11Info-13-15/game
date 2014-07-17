@@ -33,11 +33,12 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
     private int hoverYExtra = 12;
     private int hoverSize = 3;
     private int hoverDifY = 12;
-    private boolean recruit = false;
-    private int uW = 64;
-    private int uH = 64;
+    private boolean newMenu = false;
+    private int tileSize = Client.instance.mapren.tileSize;
+    Class<?>[] castleClasses = new Class<?>[] { Spearman.class, Swordsman.class, Miner.class };
     Class<?>[] classes = new Class<?>[] { Archer.class, Knight.class, Spearman.class, Swordsman.class, Miner.class };
-    private boolean[] recruitHover = new boolean[classes.length];
+    private boolean[] newMenuHover = new boolean[classes.length];
+    private String recruitng;
 
     public GuiGameMenu(GameObject go) {
 	this.object = go;
@@ -48,6 +49,8 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	if (object instanceof Building) {
 	    if (object instanceof Castle)
 		return renderCastle();
+	    if (object instanceof Barracks)
+		return renderBarracks();
 	    if (object instanceof Mine)
 		return renderMine();
 	}
@@ -69,7 +72,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	g2d.setColor(new Color(0xFFFFFF));
 	g2d.setFont(font);
 	int c = 0;
-	if (!recruit) {
+	if (!newMenu) {
 	    for (int i = 0; i < opt.length; i++) {
 		if (opt[i] && i != 0 && i != 1 && i != 2) {
 		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
@@ -83,19 +86,65 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		}
 	    }
 	} else {
+	    recruitng = "castle";
+	    for (int i = 0; i < castleClasses.length; i++) {
+		@SuppressWarnings("unchecked")
+		Class<? extends Unit> clazz = (Class<? extends Unit>) castleClasses[i];
+		try {
+		    Unit u = clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0);
+		    Texture tex = UnitRenderMap.getTexture(u);
+		    g2d.drawImage(tex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, tex);
+		} catch (Exception e1) {
+		    e1.printStackTrace();
+		}
+		if (newMenuHover[i]) {
+		    Texture hTex = StandardTexture.get("hover");
+		    g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
+		}
+	    }
+	}
+	return image;
+    }
+
+    private BufferedImage renderBarracks() {
+	BufferedImage image = new BufferedImage(guiWidth, guiWidth, BufferedImage.TYPE_INT_ARGB);
+	Graphics2D g2d = image.createGraphics();
+	g2d.setColor(new Color(object.owner.color == Player.Color.RED ? 0x6C4824 : 0x6C4824));
+	g2d.fillRoundRect(0, 0, guiWidth, guiHeight, 10, 10);
+	g2d.setColor(new Color(object.owner.color == Player.Color.RED ? 0x7B5C3D : 0x7B5C3D));
+	g2d.fillRoundRect(5, 5, 490, 490, 5, 5);
+	g2d.translate(20, 20);
+	g2d.setColor(new Color(0xFFFFFF));
+	g2d.setFont(font);
+	int c = 0;
+	if (!newMenu) {
+	    for (int i = 0; i < opt.length; i++) {
+		if (opt[i] && i != 0 && i != 1 && i != 2) {
+		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
+		    if (actionHover[i]) {
+			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
+			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);
+			g2d.fillRect(actionWidth[i] + hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
+			g2d.fillRect(-hoverXExtra, actionHeight[i] + (spacing + actionHeight[i]) * c + hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);
+		    }
+		    c++;
+		}
+	    }
+	} else {
+	    recruitng = "barracks";
 	    for (int i = 0; i < classes.length; i++) {
 		@SuppressWarnings("unchecked")
 		Class<? extends Unit> clazz = (Class<? extends Unit>) classes[i];
 		try {
 		    Unit u = clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0);
 		    Texture tex = UnitRenderMap.getTexture(u);
-		    g2d.drawImage(tex.getImage(), (uW + spacing) * (i % 3), (uH + spacing) * (i / 3), uW, uH, tex);
+		    g2d.drawImage(tex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, tex);
 		} catch (Exception e1) {
 		    e1.printStackTrace();
 		}
-		if (recruitHover[i]) {
+		if (newMenuHover[i]) {
 		    Texture hTex = StandardTexture.get("hover");
-		    g2d.drawImage(hTex.getImage(), (uW + spacing) * (i % 3), (uH + spacing) * (i / 3), uW, uH, hTex);
+		    g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
 		}
 	    }
 	}
@@ -113,7 +162,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	g2d.setColor(new Color(0xFFFFFF));
 	g2d.setFont(font);
 	int c = 0;
-	if (!recruit) {
+	if (!newMenu) {
 	    for (int i = 0; i < opt.length; i++) {
 		if (opt[i] && i != 0 && i != 1 && i != 2) {
 		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
@@ -127,19 +176,20 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		}
 	    }
 	} else {
-	    for (int i = 0; i < classes.length; i++) {
+	    recruitng = "castle";
+	    for (int i = 0; i < castleClasses.length; i++) {
 		@SuppressWarnings("unchecked")
-		Class<? extends Unit> clazz = (Class<? extends Unit>) classes[i];
+		Class<? extends Unit> clazz = (Class<? extends Unit>) castleClasses[i];
 		try {
 		    Unit u = clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0);
 		    Texture tex = UnitRenderMap.getTexture(u);
-		    g2d.drawImage(tex.getImage(), (uW + spacing) * (i % 3), (uH + spacing) * (i / 3), uW, uH, tex);
+		    g2d.drawImage(tex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, tex);
 		} catch (Exception e1) {
 		    e1.printStackTrace();
 		}
-		if (recruitHover[i]) {
+		if (newMenuHover[i]) {
 		    Texture hTex = StandardTexture.get("hover");
-		    g2d.drawImage(hTex.getImage(), (uW + spacing) * (i % 3), (uH + spacing) * (i / 3), uW, uH, hTex);
+		    g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
 		}
 	    }
 	}
@@ -192,7 +242,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	    int y = e.getY() - 20;
 
 	    int c = 0;
-	    if (!recruit) {
+	    if (!newMenu) {
 		for (int i = 0; i < opt.length; i++) {
 		    if (opt[i]) {
 			if (x >= 0 && x <= actionWidth[i] && y >= (actionHeight[i] + spacing) * c && y <= actionHeight[i] + (spacing + actionHeight[i]) * c + hoverDifY + hoverYExtra) {
@@ -203,8 +253,8 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 			    if (act[i] == "stack" && object instanceof Unit)
 				Client.instance.mapren.stack = true;
 			    if (act[i] == "spawn" && object instanceof Building) {
-				recruit = true;
-				if (x >= (uW + spacing) * 0 && x <= uW + (uW + spacing) * 0 && y >= (uH + spacing) * 0 && y <= uH + (uH + spacing) * 0)
+				newMenu = true;
+				if (x >= (tileSize + spacing) * 0 && x <= tileSize + (tileSize + spacing) * 0 && y >= (tileSize + spacing) * 0 && y <= tileSize + (tileSize + spacing) * 0)
 				    Client.instance.mapren.spawn = true;
 			    }
 			    if (act[i] == "upgrade" && object instanceof Building)
@@ -214,10 +264,11 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		    }
 		}
 	    } else {
-		for (int i = 0; i < classes.length; i++) {
+		Class<?>[] clas = recruitng == "castle" ? castleClasses : classes;
+		for (int i = 0; i < clas.length; i++) {
 		    @SuppressWarnings("unchecked")
-		    Class<? extends Unit> clazz = (Class<? extends Unit>) classes[i];
-		    if (x >= (uW + spacing) * (i % 3) && x <= uW + (uW + spacing) * (i % 3) && y >= (uH + spacing) * (i / 3) && y <= uH + (uH + spacing) * (i / 3)) {
+		    Class<? extends Unit> clazz = (Class<? extends Unit>) clas[i];
+		    if (x >= (tileSize + spacing) * (i % 3) && x <= tileSize + (tileSize + spacing) * (i % 3) && y >= (tileSize + spacing) * (i / 3) && y <= tileSize + (tileSize + spacing) * (i / 3)) {
 			Client.instance.mapren.spawnClass = clazz;
 			Client.instance.mapren.spawn = true;
 		    }
@@ -252,7 +303,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	int y = e.getY() - 20;
 
 	int c = 0;
-	if (!recruit) {
+	if (!newMenu) {
 	    for (int i = 0; i < opt.length; i++) {
 		if (opt[i]) {
 		    if (x >= 0 && x <= actionWidth[i] && y >= (actionHeight[i] + spacing) * c && y <= actionHeight[i] + (spacing + actionHeight[i]) * c + hoverDifY + hoverYExtra)
@@ -263,10 +314,11 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		}
 	    }
 	} else {
-	    recruitHover = new boolean[classes.length];
-	    for (int i = 0; i < classes.length; i++) {
-		if (x >= (uW + spacing) * (i % 3) && x <= uW + (uW + spacing) * (i % 3) && y >= (uH + spacing) * (i / 3) && y <= uH + (uH + spacing) * (i / 3))
-		    recruitHover[i] = true;
+	    Class<?>[] clas = recruitng == "castle" ? castleClasses : classes;
+	    newMenuHover = new boolean[classes.length];
+	    for (int i = 0; i < clas.length; i++) {
+		if (x >= (tileSize + spacing) * (i % 3) && x <= tileSize + (tileSize + spacing) * (i % 3) && y >= (tileSize + spacing) * (i / 3) && y <= tileSize + (tileSize + spacing) * (i / 3))
+		    newMenuHover[i] = true;
 	    }
 	}
     }
