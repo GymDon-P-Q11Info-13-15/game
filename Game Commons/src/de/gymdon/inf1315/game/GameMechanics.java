@@ -213,31 +213,15 @@ public class GameMechanics implements ActionListener {
 
     private void step(int actualSpeed, int x, int y) {
 
-	if (game.map[x][y].isWalkable() && game.buildings[x][y] == null) { // can
-									   // only
-									   // walk
-									   // if
-									   // no
-									   // building
-									   // or
-									   // walkable
-	    int newSpeed = (int) (actualSpeed - game.map[x][y].getGroundFactor()); // TODO:
-										   // Hotfix
-										   // by
-										   // Simi,
-										   // groundFactor
-										   // is
-										   // now
-										   // double
-
-	    if (newSpeed >= 1) {
-
+	if (game.map[x][y].isWalkable() && game.buildings[x][y] == null) { // can only walk if no building and walkable
+	    int newSpeed = (int) (actualSpeed - game.map[x][y].getGroundFactor()); // TODO: Hotfix by Simi, groundFactor is now double
+	    if (newSpeed >= 1 && x > 0 && y > 0) {
 		tempRange[x][y] = true;
 		step(newSpeed, x - 1, y);
 		step(newSpeed, x + 1, y);
 		step(newSpeed, x, y + 1);
 		step(newSpeed, x, y - 1);
-	    } else if (newSpeed > 0) {
+	    } else if (newSpeed > 0 && x > 0 && y > 0) {
 		tempRange[x][y] = true;
 		step(1, x - 1, y);
 		step(1, x + 1, y);

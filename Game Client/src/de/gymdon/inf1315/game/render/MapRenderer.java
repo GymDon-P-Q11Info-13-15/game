@@ -52,6 +52,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private int speed;
     private boolean squareAction = false;
     private boolean activeAction = false;
+    private boolean[][] range;
+    private int attRange;
     public boolean attack = false;
     public boolean move = false;
     public boolean stack = false;
@@ -68,12 +70,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	Client.instance.game.gm.run();
 	cache = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = cache.createGraphics();
-	if (attack || move || stack || spawn || upgrade)
-	    activeAction = true;
-	else {
-	    activeAction = false;
-	    squareAction = false;
-	}
 
 	Tile[][] map = Client.instance.game.map;
 	int mapWidth = map.length;
@@ -84,6 +80,14 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	double h = (mapHeight * tileSize * zoom);
 	if (h < height)
 	    zoom /= h / height;
+	if (attack || move || stack || spawn || upgrade)
+	    activeAction = true;
+	else {
+	    activeAction = false;
+	    squareAction = false;
+	    attRange = -1;
+	    range = new boolean[map.length][map[0].length];
+	}
 	AffineTransform tx = g2d.getTransform();
 	g2d.translate(-scrollX, -scrollY);
 	g2d.scale(zoom, zoom);
@@ -168,11 +172,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    BufferedImage img = guiGameObject.render();
 	    if (activeAction) {
 		if (attack) {
-		    speed = ((Unit) selected).getRange();
+		    speed = 1;
 		    squareAction = true;
 		}
 		if (move)
-		    speed = ((Unit) selected).getSpeed();
+		    //range = Client.instance.game.gm.getAccessableField(((Unit) selected));
 		if (stack)
 		    speed = ((Unit) selected).getSpeed();
 		if (spawn) {
@@ -181,8 +185,17 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		}
 		if (upgrade)
 		    speed = ((Building) selected).getSizeX();
+		
 		Texture tex = StandardTexture.get("overlay_white");
-		g2d.translate(selected.x * tileSize, selected.y * tileSize);
+		for (int x = 0; x < range.length; x++) {
+		    for (int y = 0; y < range[x].length; y++) {
+			if(squareAction && Math.abs(x - selected.x) <= speed && Math.abs(y - selected.y) <= speed)
+			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
+			else if(range[x][y])
+			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
+		    }
+		}
+		/*g2d.translate(selected.x * tileSize, selected.y * tileSize);
 		for (int zx = -speed * tileSize; zx <= speed * tileSize; zx = zx + tileSize) {
 		    for (int zy = -speed * tileSize; zy <= speed * tileSize; zy = zy + tileSize) {
 			int mx = zx / tileSize + selected.x;
@@ -198,7 +211,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 			    }
 			}
 		    }
-		}
+		}*/
 	    } else if (img != null) {
 		int x = guiPosX;
 		int y = guiPosY;
