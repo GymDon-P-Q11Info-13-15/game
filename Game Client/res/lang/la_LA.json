@@ -17,7 +17,7 @@
 		"gui.game.endRound": "Orbis conficere",
 		"gui.game.endPhase": "Phase beenden",
 		"gui.game.continue": "Alea Pergere",
-		"gui.credits": "Credits",
+		"gui.credits": "Factum est ab:",
 		"gui.credits.lead": "Princeps",
 		"gui.credits.client": "Quodcumque",
 		"gui.credits.server": "Server",
@@ -57,7 +57,7 @@
 		"game.unit.mine": "Cuniculus",
 		"game.unit.spearman": "Hastatus",
 		"game.unit.swordsman": "Gladiator",
-		"game.player.red": "Lusor I",
-		"game.player.blue": "Lusor II"
+		"game.player.red": "Lusor Rubens",
+		"game.player.blue": "Lusor Caeruleus"
 	}
 }

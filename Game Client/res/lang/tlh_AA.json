@@ -53,7 +53,7 @@
 		"game.unit.mine": "Mine",
 		"game.unit.spearman": "Speerträger",
 		"game.unit.swordsman": "Schwertkämpfer",
-		"game.player.red": "Spieler I",
-		"game.player.blue": "Spieler II"
+		"game.player.red": "Spieler Rot",
+		"game.player.blue": "Spieler Blau"
 	}
 }
