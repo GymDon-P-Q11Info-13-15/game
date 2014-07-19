@@ -12,8 +12,7 @@ public class Castle extends Building {
 
     @Override
     public void occupy(Player p) {
-	// cannot be occupied
-	// sure can it be occupied, if occupied the game is over ;)
+
     }
 
     @Override
@@ -25,17 +24,4 @@ public class Castle extends Building {
     public int getSizeY() {
 	return 2;
     }
-
-    public boolean[] clicked(int phase) {
-	if(phase%3==0){
-	    options[5]=true;
-	}
-	else{
-	    options[5]=false;
-	}
-	
-	
-	return options;
-    }
-
 }

@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
+import de.gymdon.inf1315.game.Player.Color;
+
 public class GameMechanics implements ActionListener {
     Random r = new Random();
     boolean[][] tempRange;
@@ -36,37 +38,28 @@ public class GameMechanics implements ActionListener {
 
 	if (!won) { // Ablauf EINER Spielrunde (was ein Spieler machen darf)
 		    // (Bauen -> Bewegen -> Kaempfen)
-
-	    if (game.phase % 3 == 0) {
-		game.options[0] = false;
-		game.options[1] = false;
-		game.options[2] = false;
-		game.options[5] = true;
-		game.options[6] = true;
-	    }
-
-	    if (game.phase % 3 == 1) {
-		game.options[0] = false;
-		game.options[1] = true;
-		game.options[2] = true;
-		game.options[5] = false;
-		game.options[6] = false;
-	    }
-
-	    if (game.phase % 3 == 2) {
-		game.options[0] = true;
-		game.options[1] = false;
-		game.options[2] = false;
-		game.options[5] = false;
-		game.options[6] = false;
-	    }
-
+	    
 	    for (int a = 0; a < game.units.length; a++)
 		for (int b = 0; b < game.units[a].length; b++)
 		    if (game.units[a][b] != null)
 			if (game.units[a][b].getHP() <= 0)
 			    game.units[a][b] = null;
 
+	    for (int a = 0; a < game.buildings.length; a++)
+		for (int b = 0; b < game.buildings[a].length; b++)
+		    if (game.buildings[a][b] != null)
+		    {
+			if (game.buildings[a][b].getHP() <= 0 && !(game.buildings[a][b] instanceof Mine))
+			    game.buildings[a][b] = null;
+			else if (game.buildings[a][b].getHP() <= 0 && game.buildings[a][b] instanceof Mine)
+			    game.buildings[a][b].occupy(null);
+		    }
+	    
+	    if (game.buildings[1][game.mapgen.getMapHeight() / 2 - 1] == null)
+		won = true;
+	    if (game.buildings[game.mapgen.getMapWidth() - 3][game.mapgen.getMapHeight() / 2 - 1] == null)
+		won = true;
+		
 	    // start round
 
 	    // phase = "building etc";
@@ -303,7 +296,6 @@ public class GameMechanics implements ActionListener {
 	if (r.nextInt(101) >= b.defense) {
 	    b.hp = b.hp - u.attack * 125 * (int) ((75 + r.nextInt(51)) / 100);
 	}
-
     }
 
     public void create(Player p, Unit u, Building b) {
@@ -327,16 +319,9 @@ public class GameMechanics implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-	if (e.getSource() instanceof Unit) {
-	    Unit u = (Unit) e.getSource();
-	    game.options = u.clicked(game.phase % 3);
-	    System.out.println("Unit: (" + u.x + "|" + u.y + ")");
-	}
-
-	if (e.getSource() instanceof Building) {
-	    Building b = (Building) e.getSource();
-	    game.options = b.clicked(game.phase % 3);
-	    System.out.println("Building: (" + b.x + "|" + b.y + ")");
+	if (e.getSource() instanceof GameObject) {
+	    GameObject g = (GameObject) e.getSource();
+	    game.options = g.clicked(game.phase % 3);
 	}
     }
 }

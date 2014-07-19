@@ -13,35 +13,6 @@ public class Knight extends Unit {
 	hp = 100;
 	cost = 200;
 	combined = 0.25;
-    }
-
-    @Override
-    public void move(int x, int y) {
-	super.move(x, y);
-    }
-
-    @Override
-    public void attack() {
-
-    }
-
-    @Override
-    public void setHP(int hp) {
-
-	this.hp = hp;
-
-    }
-
-    @Override
-    public int getSpeed() {
-
-	return speed;
-    }
-    
-    @Override
-    public int getRange() {
-
-	return range;
-
+	super.resetSpeed();
     }
 }

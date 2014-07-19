@@ -13,35 +13,6 @@ public class Swordsman extends Unit {
 	hp = 110;
 	cost = 130;
 	combined = 0.1;
-    }
-
-    @Override
-    public void move(int x, int y) {
-	super.move(x, y);
-    }
-
-    @Override
-    public void attack() {
-
-    }
-
-    @Override
-    public void setHP(int hp) {
-
-	this.hp = hp;
-
-    }
-
-    @Override
-    public int getSpeed() {
-
-	return speed;
-    }
-    
-    @Override
-    public int getRange() {
-
-	return range;
-
+	super.resetSpeed();
     }
 }

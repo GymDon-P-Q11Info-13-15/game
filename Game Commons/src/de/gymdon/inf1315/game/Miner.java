@@ -13,38 +13,6 @@ public class Miner extends Unit {
 	hp = 100;
 	cost = 20;
 	combined = 0.01;
+	super.resetSpeed();
     }
-
-    @Override
-    public void attack() {
-	// TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setHP(int health) {
-	this.hp = health;
-
-    }
-
-    @Override
-    public int getSpeed() {
-
-	return speed;
-
-    }
-    
-    @Override
-    public int getRange() {
-
-	return range;
-
-    }
-
-    @Override
-    public boolean[] clicked(int phase) {
-	// TODO Auto-generated method stub
-		return null;
-    }
-
 }

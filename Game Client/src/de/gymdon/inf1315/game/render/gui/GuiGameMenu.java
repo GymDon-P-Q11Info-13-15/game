@@ -74,7 +74,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	int c = 0;
 	if (!newMenu) {
 	    for (int i = 0; i < opt.length; i++) {
-		if (opt[i] && i != 0 && i != 1 && i != 2) {
+		if (opt[i]) {
 		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		    if (actionHover[i]) {
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
@@ -119,7 +119,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	int c = 0;
 	if (!newMenu) {
 	    for (int i = 0; i < opt.length; i++) {
-		if (opt[i] && i != 0 && i != 1 && i != 2) {
+		if (opt[i]) {
 		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		    if (actionHover[i]) {
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
@@ -164,7 +164,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	int c = 0;
 	if (!newMenu) {
 	    for (int i = 0; i < opt.length; i++) {
-		if (opt[i] && i != 0 && i != 1 && i != 2) {
+		if (opt[i]) {
 		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		    if (actionHover[i]) {
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
@@ -208,7 +208,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	g2d.setFont(font);
 	int c = 0;
 	for (int i = 0; i < opt.length; i++) {
-	    if (opt[i] && i != 5 && i != 6) {
+	    if (opt[i]) {
 		g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		if (actionHover[i]) {
 		    g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);

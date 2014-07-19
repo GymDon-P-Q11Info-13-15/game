@@ -1,5 +1,6 @@
 package de.gymdon.inf1315.game;
 
+import de.gymdon.inf1315.game.Player.Color;
 import de.gymdon.inf1315.game.packet.Remote;
 
 public class Game {
@@ -13,9 +14,15 @@ public class Game {
     public boolean[] options;
     public int phase = 0;
     public int round = 0;
+    public Player red;
+    public Player blue;
 
     public Game(Remote clientA) {
-	options= new boolean[7];
+	options = new boolean[7];
+	red = new Player();
+	red.color = Color.RED;
+	blue = new Player();
+	blue.color = Color.BLUE;
 	this.clientA = clientA;
 	mapgen = new MapGenerator();
 	gm = new GameMechanics();
@@ -24,8 +31,17 @@ public class Game {
     }
 
     public Game(Remote clientA, Remote clientB) {
+	options = new boolean[7];
+	red = new Player();
+	red.color = Color.RED;
+	blue = new Player();
+	blue.color = Color.BLUE;
 	this.clientA = clientA;
 	this.clientB = clientB;
+	mapgen = new MapGenerator();
+	gm = new GameMechanics();
+	gm.game = this;
+	units = new Unit[mapgen.getMapWidth()][mapgen.getMapHeight()];
     }
 
     public boolean hasBothClients() {

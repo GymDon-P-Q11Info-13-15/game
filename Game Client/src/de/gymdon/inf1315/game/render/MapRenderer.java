@@ -44,13 +44,12 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private boolean[][] fieldHover;
     private boolean[][] field;
     private GuiGameMenu guiGameObject;
+    private int guiDestX;
+    private int guiDestY;
     private int guiPosX;
     private int guiPosY;
-    private int guiDebugX;
-    private int guiDebugY;
     private int guiWidth;
     private int guiHeight;
-    private int speed;
     private boolean squareAction = false;
     private boolean activeAction = false;
     private boolean[][] range;
@@ -71,6 +70,12 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	Client.instance.game.gm.run();
 	cache = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = cache.createGraphics();
+	if (attack || move || stack || spawn || upgrade)
+	    activeAction = true;
+	else {
+	    activeAction = false;
+	    squareAction = false;
+	}
 
 	Tile[][] map = Client.instance.game.map;
 	int mapWidth = map.length;
@@ -81,14 +86,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	double h = (mapHeight * tileSize * zoom);
 	if (h < height)
 	    zoom /= h / height;
-	if (attack || move || stack || spawn || upgrade)
-	    activeAction = true;
-	else {
-	    activeAction = false;
-	    squareAction = false;
-	    sRange = 0;
-	    range = new boolean[map.length][map[0].length];
-	}
+
 	AffineTransform tx = g2d.getTransform();
 	g2d.translate(-scrollX, -scrollY);
 	g2d.scale(zoom, zoom);
@@ -120,6 +118,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = BuildingRenderMap.getTexture(b);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
+		    g2d.drawString(Integer.toString(b.getHP()), x * tileSize, y * tileSize - tileSize / 4);
 		}
 	    }
 	}
@@ -133,7 +132,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = UnitRenderMap.getTexture(u);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
-		    g2d.drawString(Integer.toString(u.getHP()), x * tileSize, y * tileSize - tileSize/4);
+		    g2d.drawString(Integer.toString(u.getHP()), x * tileSize, y * tileSize - tileSize / 4);
 		}
 	    }
 	}
@@ -142,6 +141,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    fieldHover = new boolean[mapWidth][mapHeight];
 	if (field == null || field.length != mapWidth || field[0].length != mapHeight)
 	    field = new boolean[mapWidth][mapHeight];
+	if (range == null || range.length != mapWidth || range[0].length != mapHeight || !activeAction)
+	    range = new boolean[mapWidth][mapHeight];
 
 	// Rendering Click and Hover
 	for (int x = 0; x < fieldHover.length; x++) {
@@ -190,30 +191,31 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		Texture tex = StandardTexture.get("overlay_white");
 		for (int x = 0; x < range.length; x++) {
 		    for (int y = 0; y < range[x].length; y++) {
-			if (keepSelectedClear(x, y));
+			if (keepSelectedClear(x, y))
+			    ;
 			else if (squareAction && x >= selected.x - sRange && x <= selected.x + selected.getSizeX() - 1 + sRange && y >= selected.y - sRange && y <= selected.y + selected.getSizeY() - 1 + sRange)
 			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
-			else if (range[x][y])
+			else if (!squareAction && range[x][y])
 			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
 		    }
 		}
 
 	    } else if (img != null) {
-		int x = guiPosX;
-		int y = guiPosY;
+		int x = guiDestX;
+		int y = guiDestY;
 		guiWidth = img.getWidth();
 		guiHeight = img.getHeight();
-		if (guiPosX + guiWidth > this.width)
-		    x = (x - (selected.getSizeX() * tileSize)) - guiWidth;
-		if (guiPosY + guiHeight > this.height)
-		    y = (y - (selected.getSizeY() * tileSize)) - guiHeight;
+		if (guiDestX + guiWidth > this.width)
+		    x = x - (selected.getSizeX()) * tileSize - guiWidth;
+		if (guiDestY + guiHeight > this.height)
+		    y = y - (selected.getSizeY()) * tileSize - guiHeight;
 		if (x < 0)
-		    x = guiPosX;
+		    x = guiDestX;
 		if (y < 0)
-		    y = guiPosY;
+		    y = guiDestY;
 		g2d.drawImage(img, x, y, null);
-		guiDebugX = x;
-		guiDebugY = y;
+		guiPosX = x;
+		guiPosY = y;
 	    }
 	}
 
@@ -284,69 +286,93 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	stack = false;
 	spawn = false;
 	upgrade = false;
+	activeAction = false;
+	squareAction = false;
     }
 
     private void removeGui() {
 	selected = null;
 	guiGameObject = null;
 	this.clearOptions();
+	guiDestX = -1;
+	guiDestY = -1;
 	guiPosX = -1;
 	guiPosY = -1;
-	guiDebugX = -1;
-	guiDebugY = -1;
 	guiWidth = -1;
 	guiHeight = -1;
+	sRange = -1;
 	if (mapCache != null)
 	    field = new boolean[mapCache.length][mapCache[0].length];
     }
-    
-    private boolean keepSelectedClear(int x, int y)
-    {
+
+    private boolean keepSelectedClear(int x, int y) {
 	List<Integer> xC = new ArrayList<Integer>();
 	List<Integer> yC = new ArrayList<Integer>();
-	for(int a = 0; a < selected.getSizeX(); a++)
+	xC.clear();
+	yC.clear();
+	for (int a = 0; a < selected.getSizeX(); a++)
 	    xC.add(selected.x + a);
-	for(int b = 0; b < selected.getSizeY(); b++)
+	for (int b = 0; b < selected.getSizeY(); b++)
 	    yC.add(selected.y + b);
-	if(xC.contains(x) && yC.contains(y))
+	if (xC.contains(x) && yC.contains(y))
 	    return true;
 	else
 	    return false;
     }
-    
+
     private void guiAction(int x, int y) {
 	Building[][] buildings = Client.instance.game.buildings;
 	Unit[][] units = Client.instance.game.units;
 
+	Unit u = units[x][y];
+	Building b = null;
+	boolean n = false;
+	for (int x1 = x; x1 > x1 - 6 && x1 >= 0; x1--) {
+	    if (n)
+		break;
+	    for (int y1 = y; y1 > y1 - 6 && y1 >= 0; y1--) {
+		Building c = buildings[x1][y1];
+		if (c != null && c.getSizeX() + x1 > x && c.getSizeY() + y1 > y) {
+		    b = c;
+		    n = true;
+		    break;
+		}
+	    }
+	}
+
 	// Attacking
-	if (attack && units[x][y] != null) {
-	    Client.instance.game.gm.combat((Unit) selected, units[x][y], 0);
+	if (attack && u != null)// && u.owner != selected.owner)
+	{
+	    Client.instance.game.gm.combat((Unit) selected, u, 0);
 	    this.removeGui();
 	}
-	
-	if (attack && buildings[x][y] != null) {
-	    // Client.instance.game.gm.combat((Unit) selected, buildings[x][y], 0);
-	    System.err.println("Why can't i fight buildings? I need METHODS for that...");
+
+	if (attack && b != null)// && b.owner != selected.owner)
+	{
+	    Client.instance.game.gm.pillage((Unit) selected, b);
 	    this.removeGui();
 	}
 
 	// Moving
-	if (move && units[x][y] == null) {
+	if (move && u == null && b == null)
+	{
 	    Client.instance.game.gm.move((Unit) selected, x, y);
 	    this.removeGui();
 	}
 
 	// Stacking
-	if (stack && units[x][y] != null) {
+	if (stack && u != null)// && u.owner == selected.owner)
+	{
 	    Client.instance.game.gm.stack((Unit) selected, units[x][y]);
 	    this.removeGui();
 	}
 
 	// Spawning
-	if (spawn && units[x][y] == null) {
+	if (spawn && u == null && b == null)
+	{
 	    try {
-		Unit u = spawnClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, x, y);
-		Client.instance.game.gm.create(u.owner, u, (Building) selected);
+		Unit uu = spawnClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, x, y);
+		Client.instance.game.gm.create(uu.owner, uu, (Building) selected);
 	    } catch (Exception e) {
 		e.printStackTrace();
 	    }
@@ -354,8 +380,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	}
 
 	// Upgrade
-	if (upgrade) {
-	}
+	if (upgrade) {}
     }
 
     @Override
@@ -392,15 +417,15 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    else if (squareAction && x >= selected.x - sRange && x <= selected.x + selected.getSizeX() - 1 + sRange && y >= selected.y - sRange && y <= selected.y + selected.getSizeY() - 1 + sRange) {
 		this.guiAction(x, y);
 		return;
-	    } else if (range[x][y]) {
+	    } else if (!squareAction && range[x][y]) {
 		this.guiAction(x, y);
 		return;
 	    }
 	    this.clearOptions();
 	    return;
 	}
-	if (gx >= guiDebugX && gx <= guiDebugX + guiWidth && gy >= guiDebugY && gy <= guiDebugY + guiHeight) {
-	    guiGameObject.mouseClicked(new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), gx - guiDebugX, gy - guiDebugY, e.getClickCount(), e.isPopupTrigger(), e.getButton()));
+	if (gx >= guiPosX && gx <= guiPosX + guiWidth && gy >= guiPosY && gy <= guiPosY + guiHeight) {
+	    guiGameObject.mouseClicked(new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), gx - guiPosX, gy - guiPosY, e.getClickCount(), e.isPopupTrigger(), e.getButton()));
 	    return;
 	}
 
@@ -415,8 +440,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		selected = u;
 		actionPerformed(new ActionEvent(selected, ActionEvent.ACTION_PERFORMED, null));
 		guiGameObject = new GuiGameMenu(selected);
-		guiPosX = (x + u.getSizeX()) * tileSize;
-		guiPosY = (y + u.getSizeY()) * tileSize;
+		guiDestX = (selected.x + u.getSizeX()) * tileSize;
+		guiDestY = (selected.y + u.getSizeY()) * tileSize;
 		return;
 	    }
 
@@ -429,8 +454,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 			selected = b;
 			actionPerformed(new ActionEvent(selected, ActionEvent.ACTION_PERFORMED, null));
 			guiGameObject = new GuiGameMenu(selected);
-			guiPosX = (x + b.getSizeX()) * tileSize;
-			guiPosY = (y + b.getSizeY()) * tileSize;
+			guiDestX = (selected.x + b.getSizeX()) * tileSize;
+			guiDestY = (selected.y + b.getSizeY()) * tileSize;
 			return;
 		    }
 		}
@@ -479,8 +504,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Hovering over guiGameObject
 	int gx = (int) ((e.getX() + scrollX) / zoom);
 	int gy = (int) ((e.getY() + scrollY) / zoom);
-	if (gx >= guiDebugX && gx <= guiDebugX + guiWidth && gy >= guiDebugY && gy <= guiDebugY + guiHeight && !activeAction) {
-	    guiGameObject.mouseMoved(new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), gx - guiDebugX, gy - guiDebugY, e.getClickCount(), e.isPopupTrigger()));
+	if (gx >= guiPosX && gx <= guiPosX + guiWidth && gy >= guiPosY && gy <= guiPosY + guiHeight && !activeAction) {
+	    guiGameObject.mouseMoved(new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), gx - guiPosX, gy - guiPosY, e.getClickCount(), e.isPopupTrigger()));
 	    return;
 	}
 
