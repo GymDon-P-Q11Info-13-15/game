@@ -12,7 +12,8 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.event.MouseInputListener;
 
@@ -180,17 +181,17 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		if (stack)
 		    range = Client.instance.game.gm.getAccessableField(((Unit) selected));
 		if (spawn) {
-		    sRange = ((Building) selected).getSizeX();
+		    sRange = 1;
 		    squareAction = true;
 		}
 		if (upgrade)
-		    sRange = ((Building) selected).getSizeX();
+		    sRange = 1;
 
 		Texture tex = StandardTexture.get("overlay_white");
 		for (int x = 0; x < range.length; x++) {
 		    for (int y = 0; y < range[x].length; y++) {
-			if (x == selected.x && y == selected.y) {
-			} else if (squareAction && Math.abs(x - selected.x) <= sRange && Math.abs(y - selected.y) <= sRange)
+			if (keepSelectedClear(x, y));
+			else if (squareAction && x >= selected.x - sRange && x <= selected.x + selected.getSizeX() - 1 + sRange && y >= selected.y - sRange && y <= selected.y + selected.getSizeY() - 1 + sRange)
 			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
 			else if (range[x][y])
 			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
@@ -203,9 +204,9 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		guiWidth = img.getWidth();
 		guiHeight = img.getHeight();
 		if (guiPosX + guiWidth > this.width)
-		    x = (x - tileSize) - guiWidth;
+		    x = (x - (selected.getSizeX() * tileSize)) - guiWidth;
 		if (guiPosY + guiHeight > this.height)
-		    y = (y - tileSize) - guiHeight;
+		    y = (y - (selected.getSizeY() * tileSize)) - guiHeight;
 		if (x < 0)
 		    x = guiPosX;
 		if (y < 0)
@@ -298,7 +299,21 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	if (mapCache != null)
 	    field = new boolean[mapCache.length][mapCache[0].length];
     }
-
+    
+    private boolean keepSelectedClear(int x, int y)
+    {
+	List<Integer> xC = new ArrayList<Integer>();
+	List<Integer> yC = new ArrayList<Integer>();
+	for(int a = 0; a < selected.getSizeX(); a++)
+	    xC.add(selected.x + a);
+	for(int b = 0; b < selected.getSizeY(); b++)
+	    yC.add(selected.y + b);
+	if(xC.contains(x) && yC.contains(y))
+	    return true;
+	else
+	    return false;
+    }
+    
     private void guiAction(int x, int y) {
 	Building[][] buildings = Client.instance.game.buildings;
 	Unit[][] units = Client.instance.game.units;
@@ -372,9 +387,9 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	int gy = (int) ((e.getY() + scrollY) / zoom);
 	if (activeAction) {
 
-	    if (x == selected.x && y == selected.y)
+	    if (keepSelectedClear(x, y))
 		return;
-	    else if (squareAction && Math.abs(x - selected.x) <= sRange && Math.abs(y - selected.y) <= sRange) {
+	    else if (squareAction && x >= selected.x - sRange && x <= selected.x + selected.getSizeX() - 1 + sRange && y >= selected.y - sRange && y <= selected.y + selected.getSizeY() - 1 + sRange) {
 		this.guiAction(x, y);
 		return;
 	    } else if (range[x][y]) {
@@ -400,8 +415,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		selected = u;
 		actionPerformed(new ActionEvent(selected, ActionEvent.ACTION_PERFORMED, null));
 		guiGameObject = new GuiGameMenu(selected);
-		guiPosX = (x + 1) * tileSize;
-		guiPosY = (y + 1) * tileSize;
+		guiPosX = (x + u.getSizeX()) * tileSize;
+		guiPosY = (y + u.getSizeY()) * tileSize;
 		return;
 	    }
 

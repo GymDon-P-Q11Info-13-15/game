@@ -16,12 +16,14 @@ public class Castle extends Building {
 	// sure can it be occupied, if occupied the game is over ;)
     }
 
+    @Override
     public int getSizeX() {
-	return owner == null ? 2 : 1;
+	return 2;
     }
 
+    @Override
     public int getSizeY() {
-	return owner == null ? 2 : 1;
+	return 2;
     }
 
     public boolean[] clicked(int phase) {
