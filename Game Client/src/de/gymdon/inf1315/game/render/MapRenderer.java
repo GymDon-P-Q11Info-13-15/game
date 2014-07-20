@@ -132,10 +132,14 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = UnitRenderMap.getTexture(u);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
+		    g2d.setColor(Color.WHITE);
 		    g2d.drawString(Integer.toString(u.getHP()), x * tileSize, y * tileSize - tileSize / 4);
+		    g2d.setColor(u.owner == null ? Color.WHITE : u.owner.color == Client.instance.game.blue.color ? Color.BLUE : Color.RED);
+		    g2d.fillRect(x * tileSize, y * tileSize, tileSize / 4, tileSize / 4);
 		}
 	    }
 	}
+	g2d.setColor(Color.WHITE);
 
 	if (fieldHover == null || fieldHover.length != mapWidth || fieldHover[0].length != mapHeight)
 	    fieldHover = new boolean[mapWidth][mapHeight];
@@ -147,23 +151,22 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Rendering Click and Hover
 	for (int x = 0; x < fieldHover.length; x++) {
 	    for (int y = 0; y < fieldHover[x].length; y++) {
+		Building b = buildings[x][y];
+		Unit u = units[x][y];
 		if (fieldHover[x][y]) {
 		    Texture tex = StandardTexture.get("hover");
-		    Building b = buildings[x][y];
 		    if (b != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * b.getSizeX(), tileSize * b.getSizeY(), tex);
-		    else
-			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
+		    else if (u != null)
+			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * u.getSizeX(), tileSize * u.getSizeY(), tex);
 		}
 
 		if (field[x][y]) {
 		    Texture tex = StandardTexture.get("hover_clicked");
-		    Building b = buildings[x][y];
-		    if (b != null) {
+		    if (b != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * b.getSizeX(), tileSize * b.getSizeY(), tex);
-		    } else {
-			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
-		    }
+		    else if (u != null)
+			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize * u.getSizeX(), tileSize * u.getSizeY(), tex);
 		}
 	    }
 	}
@@ -341,13 +344,13 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	}
 
 	// Attacking
-	if (attack && u != null)// && u.owner != selected.owner)
+	if (attack && u != null && u.owner != selected.owner)
 	{
 	    Client.instance.game.gm.combat((Unit) selected, u, 0);
 	    this.removeGui();
 	}
 
-	if (attack && b != null)// && b.owner != selected.owner)
+	if (attack && b != null && b.owner != selected.owner)
 	{
 	    Client.instance.game.gm.pillage((Unit) selected, b);
 	    this.removeGui();
@@ -361,7 +364,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	}
 
 	// Stacking
-	if (stack && u != null)// && u.owner == selected.owner)
+	if (stack && u != null && u.owner == selected.owner)
 	{
 	    Client.instance.game.gm.stack((Unit) selected, units[x][y]);
 	    this.removeGui();
@@ -371,7 +374,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	if (spawn && u == null && b == null)
 	{
 	    try {
-		Unit uu = spawnClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, x, y);
+		Unit uu = spawnClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(((Building) selected).owner, x, y);
 		Client.instance.game.gm.create(uu.owner, uu, (Building) selected);
 	    } catch (Exception e) {
 		e.printStackTrace();

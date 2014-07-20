@@ -38,7 +38,7 @@ public class GameMechanics implements ActionListener {
 
 	if (!won) { // Ablauf EINER Spielrunde (was ein Spieler machen darf)
 		    // (Bauen -> Bewegen -> Kaempfen)
-	    
+
 	    for (int a = 0; a < game.units.length; a++)
 		for (int b = 0; b < game.units[a].length; b++)
 		    if (game.units[a][b] != null)
@@ -47,19 +47,18 @@ public class GameMechanics implements ActionListener {
 
 	    for (int a = 0; a < game.buildings.length; a++)
 		for (int b = 0; b < game.buildings[a].length; b++)
-		    if (game.buildings[a][b] != null)
-		    {
+		    if (game.buildings[a][b] != null) {
 			if (game.buildings[a][b].getHP() <= 0 && !(game.buildings[a][b] instanceof Mine))
 			    game.buildings[a][b] = null;
 			else if (game.buildings[a][b].getHP() <= 0 && game.buildings[a][b] instanceof Mine)
 			    game.buildings[a][b].occupy(null);
 		    }
-	    
+
 	    if (game.buildings[1][game.mapgen.getMapHeight() / 2 - 1] == null)
 		won = true;
 	    if (game.buildings[game.mapgen.getMapWidth() - 3][game.mapgen.getMapHeight() / 2 - 1] == null)
 		won = true;
-		
+
 	    // start round
 
 	    // phase = "building etc";
@@ -208,7 +207,23 @@ public class GameMechanics implements ActionListener {
 
 	if (x < 0 || y < 0 || x >= tempRange.length || y >= tempRange[0].length)
 	    return;
-	if (game.map[x][y].isWalkable() && game.buildings[x][y] == null) { // can
+
+	Building b = null;
+	boolean n = false;
+	for (int x1 = x; x1 > x1 - 6 && x1 >= 0; x1--) {
+	    if (n)
+		break;
+	    for (int y1 = y; y1 > y1 - 6 && y1 >= 0; y1--) {
+		Building c = game.buildings[x1][y1];
+		if (c != null && c.getSizeX() + x1 > x && c.getSizeY() + y1 > y) {
+		    b = c;
+		    n = true;
+		    break;
+		}
+	    }
+	}
+
+	if (game.map[x][y].isWalkable() && b == null) { // can
 	    // only
 	    // walk
 	    // if
@@ -299,21 +314,21 @@ public class GameMechanics implements ActionListener {
     }
 
     public void create(Player p, Unit u, Building b) {
-	/*if (p.gold < u.cost) {
-	    System.err.println("More gold requiered");
-	} else {
-	    p.gold = p.gold - u.cost;*/
-	    if (u instanceof Archer && b instanceof Barracks)
-		game.units[u.x][u.y] = u;
-	    if (u instanceof Knight && b instanceof Barracks)
-		game.units[u.x][u.y] = u;
-	    if (u instanceof Miner)
-		game.units[u.x][u.y] = u;
-	    if (u instanceof Spearman)
-		game.units[u.x][u.y] = u;
-	    if (u instanceof Swordsman)
-		game.units[u.x][u.y] = u;
-	//}
+	/*
+	 * if (p.gold < u.cost) { System.err.println("More gold requiered"); }
+	 * else { p.gold = p.gold - u.cost;
+	 */
+	if (u instanceof Archer && b instanceof Barracks)
+	    game.units[u.x][u.y] = u;
+	if (u instanceof Knight && b instanceof Barracks)
+	    game.units[u.x][u.y] = u;
+	if (u instanceof Miner)
+	    game.units[u.x][u.y] = u;
+	if (u instanceof Spearman)
+	    game.units[u.x][u.y] = u;
+	if (u instanceof Swordsman)
+	    game.units[u.x][u.y] = u;
+	// }
     }
 
     @Override
