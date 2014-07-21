@@ -6,13 +6,13 @@ public class Archer extends Unit {
 	this.owner = owner;
 	this.x = x;
 	this.y = y;
-	speed = 8;
-	range = 4;
-	attack = 20;
-	defense = 20;
-	hp = 100;
-	cost = 60;
-	combined = 0.2;
+	this.speed = 8;
+	this.range = 4;
+	this.attack = 20;
+	this.defense = 20;
+	this.hp = 100;
+	this.cost = 60;
+	this.combined = 0.2;
 	super.resetSpeed();
     }
 }

@@ -17,7 +17,7 @@ public class GuiMainMenu extends GuiScreen {
     private GuiButton newGame = new GuiButton(this, 0, 20, 20, "gui.game.new");
     private GuiButton options = new GuiButton(this, 1, 20, 20, "gui.options");
     private GuiButton credits = new GuiButton(this, 2, 20, 20, "gui.credits");
-    private GuiButton test = new GuiButton(this, 2, 20, 20, "gui.test");
+    private GuiButton test = new GuiButton(this, 2, 20, 20, "gui.offline");
     private GuiButton exit = new GuiButton(this, -1, 20, 20, "gui.exit");
 
     public GuiMainMenu() {

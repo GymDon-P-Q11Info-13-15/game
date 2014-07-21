@@ -40,7 +40,6 @@
 		"gui.server.select": "Selectio Serverorum",
 		"gui.back.mainmenu": "Redire ad primum visificum",
 		"gui.back": "Redire",
-		"gui.test": "Abdication",
 		"gui.exit": "Exire",
 		"game.option.attack": "Pugnare",
 		"game.option.move": "Movere",
@@ -57,6 +56,7 @@
 		"game.unit.mine": "Cuniculus",
 		"game.unit.spearman": "Hastatus",
 		"game.unit.swordsman": "Gladiator",
+		"game.player": "Lusor",
 		"game.player.red": "Lusor Rubens",
 		"game.player.blue": "Lusor Caeruleus"
 	}

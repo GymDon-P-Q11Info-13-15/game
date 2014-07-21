@@ -2,8 +2,6 @@ package de.gymdon.inf1315.game;
 
 import java.util.Random;
 
-import de.gymdon.inf1315.game.Player.Color;
-
 public class MapGenerator {
 
     private int mapWidth = 48;

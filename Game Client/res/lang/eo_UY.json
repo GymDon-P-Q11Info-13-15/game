@@ -34,7 +34,6 @@
 		"gui.server.select": "Servilo selektado",
 		"gui.back.mainmenu": "Reen al la ĉefa menuo",
 		"gui.back": "Reen",
-		"gui.test": "Testo",
 		"gui.exit": "Fini",
 		"game.unit.archer": "Arquero",
 		"game.unit.barracks": "Barakoj",
@@ -44,6 +43,7 @@
 		"game.unit.mine": "Mino",
 		"game.unit.spearman": "Lanco portanto",
 		"game.unit.swordsman": "Glavo batalanto",
+		"game.player": "Ludanto",
 		"game.player.red": "Ludanto ruĝa",
 		"game.player.blue": "Ludanto blua"
 	}

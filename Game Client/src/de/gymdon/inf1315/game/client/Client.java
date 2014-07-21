@@ -297,8 +297,8 @@ public class Client implements Runnable, WindowListener {
 	    game.mapgen.generateAll();
 	    game.map = game.mapgen.getMap();
 	    game.buildings = game.mapgen.getBuildings();
-	    game.buildings[1][game.mapgen.getMapHeight() / 2 - 1].owner = game.red;
-	    game.buildings[game.mapgen.getMapWidth() - 3][game.mapgen.getMapHeight() / 2 - 1].owner = game.blue;
+	    game.buildings[1][game.mapgen.getMapHeight() / 2 - 1].owner = game.player1;
+	    game.buildings[game.mapgen.getMapWidth() - 3][game.mapgen.getMapHeight() / 2 - 1].owner = game.player2;
 	}
 	setGuiScreen(null);
 	canvas.mapRenderer = mapren;

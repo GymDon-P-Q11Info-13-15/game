@@ -1,7 +1,8 @@
 package de.gymdon.inf1315.game;
 
 public abstract class Unit extends GameObject {
-    int speed, attack, range, cost, act_speed;
+    int speed, attack, range;
+    public int act_speed;
     double combined;
 
     boolean[] options = new boolean[] { true, true, true, false, false, false, false };
@@ -25,7 +26,7 @@ public abstract class Unit extends GameObject {
 	} else {
 	    options[0] = true;
 	}
-	if (act_speed == 0 || phase != 1) {
+	if (act_speed <= 0 || phase != 1) {
 	    options[1] = false;
 	} else {
 	    options[1] = true;

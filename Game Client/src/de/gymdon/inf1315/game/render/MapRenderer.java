@@ -19,6 +19,7 @@ import javax.swing.event.MouseInputListener;
 
 import de.gymdon.inf1315.game.*;
 import de.gymdon.inf1315.game.client.*;
+import de.gymdon.inf1315.game.render.gui.GuiEndMenu;
 import de.gymdon.inf1315.game.render.gui.GuiGameMenu;
 import de.gymdon.inf1315.game.render.gui.GuiButton;
 import de.gymdon.inf1315.game.render.gui.GuiPauseMenu;
@@ -57,9 +58,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     public boolean attack = false;
     public boolean move = false;
     public boolean stack = false;
+    public boolean build = false;
     public boolean spawn = false;
     public boolean upgrade = false;
     public Class<? extends Unit> spawnClass;
+    public Class<? extends Building> buildClass;
 
     public MapRenderer() {
 	controlList.add(gameStateButton);
@@ -70,7 +73,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	Client.instance.game.gm.run();
 	cache = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = cache.createGraphics();
-	if (attack || move || stack || spawn || upgrade)
+	if (attack || move || stack || build || spawn || upgrade)
 	    activeAction = true;
 	else {
 	    activeAction = false;
@@ -134,7 +137,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
 		    g2d.setColor(Color.WHITE);
 		    g2d.drawString(Integer.toString(u.getHP()), x * tileSize, y * tileSize - tileSize / 4);
-		    g2d.setColor(u.owner == null ? Color.WHITE : u.owner.color == Client.instance.game.blue.color ? Color.BLUE : Color.RED);
+		    g2d.setColor(u.owner == null ? Color.WHITE : u.owner.color.getColor());
 		    g2d.fillRect(x * tileSize, y * tileSize, tileSize / 4, tileSize / 4);
 		}
 	    }
@@ -184,6 +187,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    range = Client.instance.game.gm.getAccessableField(((Unit) selected));
 		if (stack)
 		    range = Client.instance.game.gm.getAccessableField(((Unit) selected));
+		if (build) {
+		    sRange = 1;
+		    squareAction = true;
+		}
 		if (spawn) {
 		    sRange = 1;
 		    squareAction = true;
@@ -250,19 +257,22 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	g2d.dispose();
 	g2do.drawImage(cache, 0, 0, null);
 
-	// Rendering Round and Phase
+	// Rendering Round and Phase and activePlayer
 	int p = Client.instance.game.phase;
 	int r = Client.instance.game.round;
 	String phase = Client.instance.translation.translate("game.phase." + (p % 3 == 0 ? "build" : p % 3 == 1 ? "move" : p % 3 == 2 ? "attack" : "" + p), new Object[0]);
 	String round = Client.instance.translation.translate("game.round", new Object[0]) + " " + (r + 1);
+	String player = Client.instance.translation.translate("game.player", new Object[0]);
 	g2do.setFont(Client.instance.translation.font.deriveFont(50F));
 	g2do.setColor(new Color(0xFFFFFF));
 	g2do.drawString(round + ": " + phase, 20, 50);
+	g2do.setColor(Client.instance.game.activePlayer.color.getColor());
+	g2do.drawString(player, 20, 105);
 
 	// Rendering Gold
 	g2do.setFont(Client.instance.translation.font.deriveFont(35F));
 	g2do.setColor(new Color(0xEDE275));
-	g2do.drawString(Client.instance.translation.translate("game.gold", new Object[0]) + ": " + "\u221E", 20, 100);
+	g2do.drawString(Client.instance.translation.translate("game.gold", new Object[0]) + ": " + Client.instance.game.activePlayer.gold, 20, 150);
 
 	int botMargin = height / 32;
 	int buttonWidth = width - width / 4;
@@ -277,6 +287,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	gameStateButton.setHeight(buttonHeight);
 	gameStateButton.setText(Client.instance.game.gm.phaseButtonText());
 	super.render(g2do, width, height);
+	if (Client.instance.game.gm.won) {
+	    Client.instance.setGuiScreen(new GuiEndMenu());
+	    firstClick = true;
+	}
     }
 
     public BufferedImage getMapBackground() {
@@ -287,6 +301,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	attack = false;
 	move = false;
 	stack = false;
+	build = false;
 	spawn = false;
 	upgrade = false;
 	activeAction = false;
@@ -344,35 +359,41 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	}
 
 	// Attacking
-	if (attack && u != null && u.owner != selected.owner)
-	{
+	if (attack && u != null && u.owner != selected.owner) {
 	    Client.instance.game.gm.combat((Unit) selected, u, 0);
 	    this.removeGui();
 	}
 
-	if (attack && b != null && b.owner != selected.owner)
-	{
+	if (attack && b != null && b.owner != selected.owner) {
 	    Client.instance.game.gm.pillage((Unit) selected, b);
 	    this.removeGui();
 	}
 
 	// Moving
-	if (move && u == null && b == null)
-	{
+	if (move && u == null && b == null) {
 	    Client.instance.game.gm.move((Unit) selected, x, y);
 	    this.removeGui();
 	}
 
 	// Stacking
-	if (stack && u != null && u.owner == selected.owner)
-	{
+	if (stack && u != null && u.owner == selected.owner) {
 	    Client.instance.game.gm.stack((Unit) selected, units[x][y]);
 	    this.removeGui();
 	}
 
+	// Building
+	if (build && u == null && b == null) {
+	    try {
+		Building bb = buildClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(((Unit) selected).owner, x, y);
+		Client.instance.game.gm.buildBuilding(bb, bb.x, bb.y);
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+	    this.removeGui();
+	}
+
 	// Spawning
-	if (spawn && u == null && b == null)
-	{
+	if (spawn && u == null && b == null) {
 	    try {
 		Unit uu = spawnClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(((Building) selected).owner, x, y);
 		Client.instance.game.gm.create(uu.owner, uu, (Building) selected);
@@ -383,7 +404,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	}
 
 	// Upgrade
-	if (upgrade) {}
+	if (upgrade) {
+	}
     }
 
     @Override
@@ -437,7 +459,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    field = new boolean[mapWidth][mapHeight];
 
 	    // Clicking on Unit
-	    if (units[x][y] != null) {
+	    if (units[x][y] != null && units[x][y].owner == Client.instance.game.activePlayer) {
 		field[x][y] = true;
 		Unit u = units[x][y];
 		selected = u;
@@ -452,7 +474,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    for (int x1 = x; x1 > x1 - 6 && x1 >= 0; x1--) {
 		for (int y1 = y; y1 > y1 - 6 && y1 >= 0; y1--) {
 		    Building b = buildings[x1][y1];
-		    if (b != null && b.getSizeX() + x1 > x && b.getSizeY() + y1 > y) {
+		    if (b != null && b.getSizeX() + x1 > x && b.getSizeY() + y1 > y && b.owner == Client.instance.game.activePlayer) {
 			field[x1][y1] = true;
 			selected = b;
 			actionPerformed(new ActionEvent(selected, ActionEvent.ACTION_PERFORMED, null));
@@ -461,18 +483,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 			guiDestY = (selected.y + b.getSizeY()) * tileSize;
 			return;
 		    }
-		}
-	    }
-
-	    if (mapCache[x][y].isWalkable()) {
-		Class<?>[] classes = new Class<?>[] { Archer.class, Knight.class, Spearman.class, Swordsman.class };
-		@SuppressWarnings("unchecked")
-		Class<? extends Unit> clazz = (Class<? extends Unit>) classes[Client.instance.random.nextInt(classes.length)];
-		try {
-		    Unit u = clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, x, y);
-		    units[x][y] = u;
-		} catch (Exception e1) {
-		    e1.printStackTrace();
 		}
 	    }
 

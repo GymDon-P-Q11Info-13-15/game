@@ -8,6 +8,7 @@ public class Castle extends Building {
 	this.y = y;
 	this.hp = 10000;
 	this.defense = 80;
+	this.cost = 0;
     }
 
     @Override

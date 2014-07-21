@@ -40,11 +40,12 @@
 		"gui.back.mainmenu": "Back to main menu",
 		"gui.back": "Back",
 		"gui.cancel": "Cancel",
-		"gui.test": "Test",
+		"gui.test": "Offline Game",
 		"gui.exit": "Exit",
 		"game.option.attack": "Attack",
 		"game.option.move": "Move",
 		"game.option.spawn": "Recruit",
+		"game.option.build": "Build",
 		"game.option.stack": "Stack",
 		"game.option.upgrade": "Upgrade",
 		"game.gold": "Gold",
@@ -60,6 +61,7 @@
 		"game.unit.mine": "Mine",
 		"game.unit.spearman": "Spearman",
 		"game.unit.swordsman": "Swordman",
+		"game.player": "Player",
 		"game.player.red": "Player Red",
 		"game.player.blue": "Player Blue"
 	}

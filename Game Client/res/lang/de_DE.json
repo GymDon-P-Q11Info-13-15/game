@@ -36,11 +36,12 @@
 		"gui.server.select": "Serverauswahl",
 		"gui.back.mainmenu": "Zurück zum Hauptmenü",
 		"gui.back": "Zurück",
-		"gui.test": "Test",
+		"gui.offline": "Offline Spiel",
 		"gui.exit": "Beenden",
 		"game.option.attack": "Angreifen",
 		"game.option.move": "Bewegen",
 		"game.option.spawn": "Rekrutieren",
+		"game.option.build": "Bauen",
 		"game.option.stack": "Vereinen",
 		"game.option.upgrade": "Verbessern",
 		"game.gold": "Gold",
@@ -56,6 +57,7 @@
 		"game.unit.mine": "Mine",
 		"game.unit.spearman": "Speerträger",
 		"game.unit.swordsman": "Schwertkämpfer",
+		"game.player": "Spieler",
 		"game.player.red": "Spieler Rot",
 		"game.player.blue": "Spieler Blau"
 	}

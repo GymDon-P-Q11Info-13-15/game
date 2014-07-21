@@ -8,6 +8,7 @@ public class Barracks extends Building {
 	this.y = y;
 	this.hp = 10000;
 	this.defense = 80;
+	this.cost = 300;
     }
 
     @Override

@@ -28,4 +28,9 @@ public abstract class GameObject {
     {
 	return hp;
     }
+    
+    public int getCost()
+    {
+	return cost;
+    }
 }
