@@ -224,7 +224,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		@SuppressWarnings("unchecked")
 		Class<? extends Building> clazz = (Class<? extends Building>) minerClasses[i];
 		try {
-		    Building b = clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0);
+		    Building b = clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(object.owner, 0, 0);
 		    Texture tex = BuildingRenderMap.getTexture(b);
 		    g2d.drawImage(tex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, tex);
 		    Font f = Client.instance.translation.font.deriveFont(20F);

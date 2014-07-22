@@ -10,7 +10,7 @@ public class BuildingRenderMap {
 
     public static Texture getTexture(Building b) {
 	if (b instanceof Barracks)
-	    return StandardTexture.get("sand_old");
+	    return b.owner == null ? null : StandardTexture.get("baracks_" + b.owner.color.name().toLowerCase());
 	if (b instanceof Castle)
 	    return b.owner == null ? StandardTexture.get("castle_big_neutral") : StandardTexture.get("castle_big_" + b.owner.color.name().toLowerCase());
 	if (b instanceof Mine)

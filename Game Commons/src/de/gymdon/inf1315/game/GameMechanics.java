@@ -172,7 +172,7 @@ public class GameMechanics implements ActionListener {
      *            y-coordinate of the field to build on
      * 
      */
-    public void buildBuilding(Player p, Building b, Miner u) {
+    public void buildBuilding(Player p, Building b) {
 	if (p.gold < b.cost) {
 	    System.err.println("More gold requiered");
 	} else {
