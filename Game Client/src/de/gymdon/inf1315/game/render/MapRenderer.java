@@ -150,7 +150,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    }
 		    g2d.translate(x * tileSize + lM, y * tileSize - tileSize / 2 + tM);
 		    for (int i = 0; i < 10; i++) {
-			if ((i+1) * 10 <= b.getHP()) {
+			if ((i+1) * 10 <= b.getHP()*100/pHP) {
 			    g2d.setColor(Color.GREEN);
 			    g2d.fillRect((bW - lM * 2) / 10 * i, 0, (bW - lM * 2) / 10, (bH / 4 - tM * 2));
 			} else {
@@ -195,7 +195,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    }
 		    g2d.translate(x * tileSize + lM, y * tileSize - tileSize / 2 + tM);
 		    for (int i = 0; i < 10; i++) {
-			if ((i+1) * 10 <= u.getHP()) {
+			if ((i+1) * 10 <= u.getHP()*100/ pHP) {
 			    Texture balken = StandardTexture.get("filled");
 			    g2d.drawImage(balken.getImage(), (uW - lM * 2) / 10 * i, 0, (uW - lM * 2) / 10, (uH / 4 - tM * 2), balken);
 			} else {
@@ -270,9 +270,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		Texture tex = StandardTexture.get("overlay_white");
 		for (int x = 0; x < range.length; x++) {
 		    for (int y = 0; y < range[x].length; y++) {
-			if (keepSelectedClear(x, y))
-			    ;
-			else if (squareAction && x >= selected.x - sRange && x <= selected.x + selected.getSizeX() - 1 + sRange && y >= selected.y - sRange && y <= selected.y + selected.getSizeY() - 1 + sRange)
+			if (keepSelectedClear(x, y));
+			else if (squareAction && x >= selected.x - sRange && x <= selected.x + selected.getSizeX() - 1 + sRange && y >= selected.y - sRange && y <= selected.y + selected.getSizeY() - 1 + sRange && map[x][y].isWalkable())
 			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
 			else if (!squareAction && range[x][y])
 			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
@@ -413,6 +412,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private void guiAction(int x, int y) {
 	Building[][] buildings = Client.instance.game.buildings;
 	Unit[][] units = Client.instance.game.units;
+	Tile[][] map = Client.instance.game.map;
 
 	Unit u = units[x][y];
 	Building b = null;
@@ -454,7 +454,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	}
 
 	// Building
-	if (build && u == null && b == null) {
+	if (build && u == null && b == null && map[x][y].isWalkable()) {
 	    try {
 		Building bb = buildClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(((Unit) selected).owner, x, y);
 		Client.instance.game.gm.buildBuilding(bb.owner, bb);
@@ -465,7 +465,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	}
 
 	// Spawning
-	if (spawn && u == null && b == null) {
+	if (spawn && u == null && b == null && map[x][y].isWalkable()) {
 	    try {
 		Unit uu = spawnClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(((Building) selected).owner, x, y);
 		Client.instance.game.gm.create(uu.owner, uu, (Building) selected);
