@@ -8,7 +8,7 @@
 		"updated.version": "Updatete %s auf Version %s",
 		"file.created": "Datei %s wurde erstellt",
 		"game.title": "Spielname",
-		"game.ended": "Spiel wurde beendet: %s",
+		"game.ended": "Spiel wurde beendet: %s hat gewonnen",
 		"gui.game.new": "Neues Spiel",
 		"gui.game.endRound": "Runde beenden",
 		"gui.game.endPhase": "Phase beenden",
@@ -57,8 +57,6 @@
 		"game.unit.mine": "Mine",
 		"game.unit.spearman": "Speerträger",
 		"game.unit.swordsman": "Schwertkämpfer",
-		"game.player": "Spieler",
-		"game.player.red": "Spieler Rot",
-		"game.player.blue": "Spieler Blau"
+		"game.player": "Spieler"
 	}
 }

@@ -56,8 +56,6 @@
 		"game.unit.mine": "Cuniculus",
 		"game.unit.spearman": "Hastatus",
 		"game.unit.swordsman": "Gladiator",
-		"game.player": "Lusor",
-		"game.player.red": "Lusor Rubens",
-		"game.player.blue": "Lusor Caeruleus"
+		"game.player": "Lusor"
 	}
 }

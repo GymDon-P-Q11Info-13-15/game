@@ -7,7 +7,9 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 import de.gymdon.inf1315.game.client.Client;
@@ -25,12 +27,13 @@ public class GuiEndMenu extends GuiScreen {
 
 	Client.instance.mapren.render(g2d, width, height);
 	g2d.drawImage(Client.instance.mapren.getMapBackground(), 0, 0, null);
+	String t = Client.instance.translation.translate("game.title");
 	Font f = Client.instance.translation.font.deriveFont(Font.BOLD, 120F);
 	g2d.setFont(f);
-	Rectangle2D bounds = g2d.getFontMetrics().getStringBounds(Client.instance.translation.translate("game.title"), g2d);
+	Rectangle2D bounds = g2d.getFontMetrics().getStringBounds(t, g2d);
 	int titleX = (int) (width / 2 - bounds.getCenterX());
 	int titleY = (int) (height / 3 - 50 + bounds.getCenterY());
-	GlyphVector gv = f.createGlyphVector(g2d.getFontRenderContext(), Client.instance.translation.translate("game.title"));
+	GlyphVector gv = f.createGlyphVector(g2d.getFontRenderContext(), t);
 	Shape outline = gv.getOutline();
 	g2d.translate(titleX, titleY);
 	{
@@ -42,22 +45,35 @@ public class GuiEndMenu extends GuiScreen {
 	    g2d.fill(outline);
 	}
 	g2d.translate(-titleX, -titleY);
-
-	int topMargin = height / 3;
+	
+	t = Client.instance.translation.translate("game.ended", Client.instance.translation.translate("game.player") + " " + (Client.instance.game.activePlayer == Client.instance.game.player1 ? 1 : 2));
+	f = Client.instance.translation.font.deriveFont(Font.BOLD, 50F);
+	g2d.setFont(f);
+	bounds = g2d.getFontMetrics().getStringBounds(t, g2d);
+	titleX = (int) (width / 2 - bounds.getCenterX());
+	titleY = (int) (height / 2 - bounds.getCenterY());
+	gv = f.createGlyphVector(g2d.getFontRenderContext(), t);
+	outline = gv.getOutline();
+	g2d.translate(titleX, titleY);
+	{
+	    g2d.setColor(Client.instance.game.activePlayer.color.getColor());
+	    g2d.setStroke(new BasicStroke(6F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
+	    g2d.draw(outline);
+	    g2d.setColor(new Color(0xc69c6d));
+	    g2d.setStroke(new BasicStroke(1));
+	    g2d.fill(outline);
+	}
+	g2d.translate(-titleX, -titleY);
+	
+	int botMargin = height / 8;
 	int buttonWidth = width - width / 4;
 	int buttonHeight = height / 10;
-	int buttonSpacing = buttonHeight / 4;
 	int leftMargin = width / 2 - buttonWidth / 2;
-	g2d.drawString(Client.instance.translation.translate("game.ended", new Object[0]), leftMargin, topMargin + buttonHeight);
 
 	mainMenu.setX(leftMargin);
-	mainMenu.setY(topMargin + (buttonHeight + buttonSpacing) * 1);
+	mainMenu.setY(height - botMargin - buttonHeight);
 	mainMenu.setWidth(buttonWidth);
 	mainMenu.setHeight(buttonHeight);
-
-	g2d.setColor(Color.WHITE);
-	g2d.setFont(Client.instance.translation.font.deriveFont(Font.BOLD, 12));
-	g2d.drawString("Seed: " + Client.instance.game.mapgen.getSeed(), buttonWidth, height - height / 16);
 	super.render(g2d, width, height);
     }
 

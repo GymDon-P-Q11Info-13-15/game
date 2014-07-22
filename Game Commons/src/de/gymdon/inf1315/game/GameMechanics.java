@@ -56,6 +56,9 @@ public class GameMechanics implements ActionListener {
 		won = true;
 	    if (game.buildings[game.mapgen.getMapWidth() - 3][game.mapgen.getMapHeight() / 2 - 1] == null)
 		won = true;
+	    
+	    if(game.round == 0)
+		game.GoldDif = 0;
 
 	    // start round
 

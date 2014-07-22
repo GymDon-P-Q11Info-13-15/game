@@ -77,7 +77,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	if (!newMenu) {
 	    for (int i = 0; i < opt.length; i++) {
 		if (opt[i]) {
-		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
+		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		    if (actionHover[i]) {
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);
@@ -129,7 +129,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	if (!newMenu) {
 	    for (int i = 0; i < opt.length; i++) {
 		if (opt[i]) {
-		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
+		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		    if (actionHover[i]) {
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);
@@ -180,7 +180,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	if (!newMenu) {
 	    for (int i = 0; i < opt.length; i++) {
 		if (opt[i]) {
-		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
+		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		    if (actionHover[i]) {
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);
@@ -208,7 +208,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	if (!newMenu) {
 	    for (int i = 0; i < opt.length; i++) {
 		if (opt[i]) {
-		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i], new Object[0]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
+		    g2d.drawString(Client.instance.translation.translate("game.option." + act[i]), 0, actionHeight[i] + (spacing + actionHeight[i]) * c);
 		    if (actionHover[i]) {
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, hoverSize, actionHeight[i] + hoverYExtra * 2);
 			g2d.fillRect(-hoverXExtra, (spacing + actionHeight[i]) * c - hoverYExtra + hoverDifY, actionWidth[i] + hoverXExtra * 2, hoverSize);
@@ -252,7 +252,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 
     public void keepSizesUpToDate() {
 	for (int i = 0; i < opt.length; i++) {
-	    String text = act[i] != "" ? Client.instance.translation.translate("game.option." + act[i], new Object[0]) : "";
+	    String text = act[i] != "" ? Client.instance.translation.translate("game.option." + act[i]) : "";
 	    actionWidth[i] = (int) (font.getStringBounds(text, frc).getWidth());
 	    actionHeight[i] = (int) (font.getStringBounds(text, frc).getHeight()) - 21;
 	}
@@ -297,9 +297,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 			    Client.instance.mapren.spawnClass = clazz;
 			    Client.instance.mapren.spawn = true;
 			}
-		    }
-		    else
-		    {
+		    } else {
 			@SuppressWarnings("unchecked")
 			Class<? extends Building> clazz = (Class<? extends Building>) clas[i];
 			if (x >= (tileSize + spacing) * (i % 3) && x <= tileSize + (tileSize + spacing) * (i % 3) && y >= (tileSize + spacing) * (i / 3) && y <= tileSize + (tileSize + spacing) * (i / 3)) {

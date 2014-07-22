@@ -2,6 +2,7 @@ package de.gymdon.inf1315.game.render;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -51,6 +53,12 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private int guiPosY;
     private int guiWidth;
     private int guiHeight;
+    private Font fontPlayer = Client.instance.translation.font.deriveFont(50F);
+    private Font fontGold = Client.instance.translation.font.deriveFont(35F);
+    private Font fontTiny = Client.instance.translation.font.deriveFont(20F);
+    private Color goldColor = new Color(0xEDE275);
+    private AffineTransform affinetransform = new AffineTransform();
+    private FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
     private boolean squareAction = false;
     private boolean activeAction = false;
     private boolean[][] range;
@@ -121,10 +129,20 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = BuildingRenderMap.getTexture(b);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
-		    g2d.drawString(Integer.toString(b.getHP()), x * tileSize, y * tileSize - tileSize / 4);
+		    g2d.setFont(fontTiny);
+		    g2d.setColor(Color.WHITE);
+		    g2d.drawString("" + b.getHP(), x * tileSize, y * tileSize - tileSize / 8);
+		    if(Client.instance.game.GoldDif != 0 && b.getIncome() != 0 && Client.instance.game.activePlayer == b.owner)
+		    {
+			g2d.setColor(goldColor);
+			int gWidth = (int) (fontTiny.getStringBounds("+ " + b.getIncome(), frc).getWidth());
+			int gHeight = (int) (fontTiny.getStringBounds("+ " + b.getIncome(), frc).getHeight());
+			g2d.drawString("+ " + b.getIncome(), x * tileSize + tex.getWidth() / (TILE_SIZE_NORMAL / tileSize) / 2 - gWidth/2, y * tileSize - gHeight);
+		    }
 		}
 	    }
 	}
+	g2d.setColor(Color.WHITE);
 
 	// Rendering Units
 	Unit[][] units = Client.instance.game.units;
@@ -135,8 +153,9 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = UnitRenderMap.getTexture(u);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
+		    g2d.setFont(fontTiny);
 		    g2d.setColor(Color.WHITE);
-		    g2d.drawString(Integer.toString(u.getHP()), x * tileSize, y * tileSize - tileSize / 4);
+		    g2d.drawString("" + u.getHP(), x * tileSize, y * tileSize - tileSize / 8);
 		    g2d.setColor(u.owner == null ? Color.WHITE : u.owner.color.getColor());
 		    g2d.fillRect(x * tileSize, y * tileSize, tileSize / 4, tileSize / 4);
 		}
@@ -260,24 +279,22 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Rendering Round and Phase and activePlayer
 	int p = Client.instance.game.phase;
 	int r = Client.instance.game.round;
-	String phase = Client.instance.translation.translate("game.phase." + (p % 3 == 0 ? "build" : p % 3 == 1 ? "move" : p % 3 == 2 ? "attack" : "" + p), new Object[0]);
-	String round = Client.instance.translation.translate("game.round", new Object[0]) + " " + (r + 1);
-	String player = Client.instance.translation.translate("game.player", new Object[0]);
-	g2do.setFont(Client.instance.translation.font.deriveFont(50F));
-	g2do.setColor(new Color(0xFFFFFF));
+	String phase = Client.instance.translation.translate("game.phase." + (p % 3 == 0 ? "build" : p % 3 == 1 ? "move" : p % 3 == 2 ? "attack" : p));
+	String round = Client.instance.translation.translate("game.round") + " " + (r + 1);
+	String player = Client.instance.translation.translate("game.player") + " " + (Client.instance.game.activePlayer == Client.instance.game.player1 ? 1 : 2);
+	g2do.setFont(fontPlayer);
+	g2do.setColor(Color.WHITE);
 	g2do.drawString(round + ": " + phase, 20, 50);
 	g2do.setColor(Client.instance.game.activePlayer.color.getColor());
 	g2do.drawString(player, 20, 105);
 
 	// Rendering Gold
-	g2do.setFont(Client.instance.translation.font.deriveFont(35F));
-	g2do.setColor(new Color(0xEDE275));
-	int goldDif = Client.instance.game.GoldDif;
-	String s1 = goldDif == 0 ? "" : " + " + goldDif;
-	String s = Client.instance.game.round == 0 ? "" : Client.instance.game.phase % 3 != 0 ? "" : s1;
-	int gold1 = Client.instance.game.activePlayer.gold;
-	String gold = Client.instance.game.round == 0 ? "" +  gold1 : Client.instance.game.phase % 3 != 0 ? "" + gold1 : "" + (gold1 - goldDif);
-	g2do.drawString(Client.instance.translation.translate("game.gold", new Object[0]) + ": " + gold + s, 20, 150);
+	g2do.setFont(fontGold);
+	g2do.setColor(goldColor);
+	int gold = Client.instance.game.activePlayer.gold;
+	String goldT = Client.instance.game.GoldDif == 0 ? "" + gold : "" + (gold - Client.instance.game.GoldDif);
+	String s = Client.instance.game.GoldDif == 0 ? "" : " + " + Client.instance.game.GoldDif;
+	g2do.drawString(Client.instance.translation.translate("game.gold") + ": " + goldT + s, 20, 150);
 
 	int botMargin = height / 32;
 	int buttonWidth = width - width / 4;
@@ -461,6 +478,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	if (e.getButton() == MouseEvent.BUTTON1 && !firstClick) {
 
+	    Client.instance.game.GoldDif  = 0;
 	    field = new boolean[mapWidth][mapHeight];
 
 	    // Clicking on Unit
@@ -518,6 +536,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	int by = gameStateButton.getY();
 	if (e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight())
 	    return;
+	Client.instance.game.GoldDif = 0;
 
 	// Hovering over guiGameObject
 	int gx = (int) ((e.getX() + scrollX) / zoom);

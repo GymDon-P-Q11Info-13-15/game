@@ -43,8 +43,6 @@
 		"game.unit.mine": "Mino",
 		"game.unit.spearman": "Lanco portanto",
 		"game.unit.swordsman": "Glavo batalanto",
-		"game.player": "Ludanto",
-		"game.player.red": "Ludanto ruĝa",
-		"game.player.blue": "Ludanto blua"
+		"game.player": "Ludanto"
 	}
 }
