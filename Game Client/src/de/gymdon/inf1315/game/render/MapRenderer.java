@@ -272,7 +272,12 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Rendering Gold
 	g2do.setFont(Client.instance.translation.font.deriveFont(35F));
 	g2do.setColor(new Color(0xEDE275));
-	g2do.drawString(Client.instance.translation.translate("game.gold", new Object[0]) + ": " + Client.instance.game.activePlayer.gold, 20, 150);
+	int goldDif = Client.instance.game.GoldDif;
+	String s1 = goldDif == 0 ? "" : " + " + goldDif;
+	String s = Client.instance.game.round == 0 ? "" : Client.instance.game.phase % 3 != 0 ? "" : s1;
+	int gold1 = Client.instance.game.activePlayer.gold;
+	String gold = Client.instance.game.round == 0 ? "" +  gold1 : Client.instance.game.phase % 3 != 0 ? "" + gold1 : "" + (gold1 - goldDif);
+	g2do.drawString(Client.instance.translation.translate("game.gold", new Object[0]) + ": " + gold + s, 20, 150);
 
 	int botMargin = height / 32;
 	int buttonWidth = width - width / 4;
@@ -385,7 +390,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	if (build && u == null && b == null) {
 	    try {
 		Building bb = buildClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(((Unit) selected).owner, x, y);
-		Client.instance.game.gm.buildBuilding(bb, bb.x, bb.y);
+		Client.instance.game.gm.buildBuilding(bb.owner, bb, (Miner) selected);
 	    } catch (Exception e) {
 		e.printStackTrace();
 	    }

@@ -2,7 +2,6 @@ package de.gymdon.inf1315.game;
 
 public class Mine extends Building {
 
-    private int income;
     public boolean superior = true;
 
     public Mine(int x, int y) {
@@ -29,10 +28,5 @@ public class Mine extends Building {
 	options[5] = false;
 
 	return options;
-    }
-    
-    public int getIncome()
-    {
-	return income;
     }
 }

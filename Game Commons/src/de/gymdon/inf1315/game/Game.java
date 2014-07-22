@@ -17,6 +17,7 @@ public class Game {
     public Player player1;
     public Player player2;
     public Player activePlayer;
+    public int GoldDif = 0;
 
     public Game(Remote clientA) {
 	this.clientA = clientA;

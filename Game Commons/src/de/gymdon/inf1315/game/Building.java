@@ -2,7 +2,8 @@ package de.gymdon.inf1315.game;
 
 public abstract class Building extends GameObject {
     boolean[] options = new boolean[] { false, false, false, false, false, true, false };
-
+    public int income;
+    
     public abstract void occupy(Player p);
     
     @Override
@@ -14,5 +15,10 @@ public abstract class Building extends GameObject {
 	}
 
 	return options;
+    }
+    
+    public int getIncome()
+    {
+	return income;
     }
 }

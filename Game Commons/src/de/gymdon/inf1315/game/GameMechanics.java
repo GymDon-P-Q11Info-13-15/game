@@ -98,11 +98,15 @@ public class GameMechanics implements ActionListener {
 		}
 	    }
 
+	    game.GoldDif = 0;
 	    for (int x = 0; x < game.buildings.length; x++) {
 		for (int y = 0; y < game.buildings[x].length; y++) {
 		    Building b = game.buildings[x][y];
-		    if (b != null && b instanceof Mine && b.owner == (game.activePlayer == game.player1 ? game.player1 : game.player2))
-			(game.activePlayer == game.player1 ? game.player1 : game.player2).gold += ((Mine) b).getIncome();
+		    if (b != null && b.owner == (game.activePlayer == game.player1 ? game.player1 : game.player2))
+		    {
+			(game.activePlayer == game.player1 ? game.player1 : game.player2).gold += b.getIncome();
+			game.GoldDif += b.getIncome();
+		    }
 		}
 	    }
 
@@ -118,11 +122,15 @@ public class GameMechanics implements ActionListener {
 		    }
 		}
 
+		game.GoldDif = 0;
 		for (int x = 0; x < game.buildings.length; x++) {
 		    for (int y = 0; y < game.buildings[x].length; y++) {
 			Building b = game.buildings[x][y];
-			if (b != null && b instanceof Mine && b.owner == (game.activePlayer == game.player1 ? game.player1 : game.player2))
-			    (game.activePlayer == game.player1 ? game.player1 : game.player2).gold += ((Mine) b).getIncome();
+			if (b != null && b.owner == (game.activePlayer == game.player1 ? game.player1 : game.player2))
+			{
+			    (game.activePlayer == game.player1 ? game.player1 : game.player2).gold += b.getIncome();
+			    game.GoldDif += b.getIncome();
+			}
 		    }
 		}
 
@@ -161,18 +169,12 @@ public class GameMechanics implements ActionListener {
      *            y-coordinate of the field to build on
      * 
      */
-    public void buildBuilding(Building b, int x, int y) {
-	if (x >= 0 && y >= 0 && x < game.buildings.length && y < game.buildings[0].length) {
-	    if (b.owner.gold < b.cost) {
-		System.err.println("More gold requiered");
-	    } else {
-		b.owner.gold -= b.cost;
-		if (game.buildings[x][y] == null) {
-		    game.buildings[x][y] = b;
-		}
-	    }
+    public void buildBuilding(Player p, Building b, Miner u) {
+	if (p.gold < b.cost) {
+	    System.err.println("More gold requiered");
 	} else {
-	    throw new IllegalArgumentException("Field position must be positive");
+	    p.gold -= b.cost;
+	    game.buildings[b.x][b.y] = b;
 	}
     }
 
@@ -333,7 +335,7 @@ public class GameMechanics implements ActionListener {
 
 	if (round < 100) {
 	    if (defender.range < Math.abs(attacker.x - defender.x) || defender.range < Math.abs(attacker.y - defender.y))
-	    // Prüfen ob der Verteidiger sich wehren kann
+	    // Prï¿½fen ob der Verteidiger sich wehren kann
 	    {
 		defender.setHP(defender.hp - r.nextInt(attacker.attack) * attacker.hp / 100);
 		return;
