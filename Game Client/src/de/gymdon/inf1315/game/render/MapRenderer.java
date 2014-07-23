@@ -165,7 +165,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 			g2d.setColor(goldColor);
 			int gWidth = (int) (fontTiny.getStringBounds("+ " + b.getIncome(), frc).getWidth());
 			int gHeight = (int) (fontTiny.getStringBounds("+ " + b.getIncome(), frc).getHeight());
-			g2d.drawString("+ " + b.getIncome(), x * tileSize + lW / 2 - gWidth / 2, y * tileSize - gHeight);
+			g2d.drawString("+ " + b.getIncome(), x * tileSize + lW / 2 - gWidth / 2, y * tileSize - gHeight * 2);
 		    }
 		}
 	    }
@@ -340,10 +340,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Rendering Gold
 	g2do.setFont(fontGold);
 	g2do.setColor(goldColor);
-	int gold = Client.instance.game.activePlayer.gold;
-	String goldT = Client.instance.game.GoldDif == 0 ? "" + gold : "" + (gold - Client.instance.game.GoldDif);
-	String s = Client.instance.game.GoldDif == 0 ? "" : " + " + Client.instance.game.GoldDif;
-	g2do.drawString(Client.instance.translation.translate("game.gold") + ": " + goldT + s, 20, 150);
+	String gold = Client.instance.game.GoldDif == 0 ? "" + Client.instance.game.activePlayer.gold : (Client.instance.game.activePlayer.gold - Client.instance.game.GoldDif) + " + " + Client.instance.game.GoldDif;
+	g2do.drawString(Client.instance.translation.translate("game.gold") + ": " + gold, 20, 150);
 
 	int botMargin = height / 32;
 	int buttonWidth = width - width / 4;
@@ -469,7 +467,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Spawning
 	if (spawn && u == null && b == null && map[x][y].isWalkable()) {
 	    try {
-		Unit uu = spawnClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(((Building) selected).owner, x, y);
+		Unit uu = spawnClass.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(selected.owner, x, y);
 		Client.instance.game.gm.create(uu.owner, uu, (Building) selected);
 	    } catch (Exception e) {
 		e.printStackTrace();

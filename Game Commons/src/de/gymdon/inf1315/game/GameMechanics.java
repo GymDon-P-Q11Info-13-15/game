@@ -92,7 +92,8 @@ public class GameMechanics implements ActionListener {
 	if (game.phase + 1 == 6) {
 	    game.round++;
 	    game.phase = 0;
-
+	    game.activePlayer = game.activePlayer == game.player1 ? game.player2 : game.player1;
+	    
 	    for (int x = 0; x < game.units.length; x++) {
 		for (int y = 0; y < game.units[x].length; y++) {
 		    Unit u = game.units[x][y];
@@ -100,7 +101,7 @@ public class GameMechanics implements ActionListener {
 			u.reset();
 		}
 	    }
-
+	    
 	    game.GoldDif = 0;
 	    for (int x = 0; x < game.buildings.length; x++) {
 		for (int y = 0; y < game.buildings[x].length; y++) {
@@ -112,11 +113,11 @@ public class GameMechanics implements ActionListener {
 		    }
 		}
 	    }
-
-	    game.activePlayer = game.activePlayer == game.player1 ? game.player2 : game.player1;
 	} else {
 	    game.phase++;
 	    if (game.phase % 3 == 0) {
+		game.activePlayer = game.activePlayer == game.player1 ? game.player2 : game.player1;
+		
 		for (int x = 0; x < game.units.length; x++) {
 		    for (int y = 0; y < game.units[x].length; y++) {
 			Unit u = game.units[x][y];
@@ -129,15 +130,13 @@ public class GameMechanics implements ActionListener {
 		for (int x = 0; x < game.buildings.length; x++) {
 		    for (int y = 0; y < game.buildings[x].length; y++) {
 			Building b = game.buildings[x][y];
-			if (b != null && b.owner == (game.activePlayer == game.player1 ? game.player1 : game.player2))
+			if (b != null && b.owner == (game.activePlayer == game.player1 ? game.player1 : game.player2) && game.round != 0)
 			{
 			    (game.activePlayer == game.player1 ? game.player1 : game.player2).gold += b.getIncome();
 			    game.GoldDif += b.getIncome();
 			}
 		    }
 		}
-
-		game.activePlayer = game.activePlayer == game.player1 ? game.player2 : game.player1;
 	    }
 	}
 
@@ -324,7 +323,6 @@ public class GameMechanics implements ActionListener {
 
     public int strikechance(Unit striker, Unit stroke) {
 	int attchance = 80 - (striker.attack + striker.hp / 4 - stroke.defense / 2 - stroke.hp / 4);
-	System.out.println(attchance);
 	if (attchance < 0) {
 	    return 5;
 	} else if (attchance > 75) {
@@ -359,8 +357,14 @@ public class GameMechanics implements ActionListener {
     }
 
     public void pillage(Unit u, Building b) {
-	if (r.nextInt(101) >= b.defense) {
-	    b.hp = b.hp - u.attack * 125 * (int) ((75 + r.nextInt(51)) / 100);
+	if(b instanceof Mine && b.owner == null)
+	{
+	    b.setHP(0);
+	    return;
+	}
+	if (r.nextInt(101) >= b.defense /2)
+	{
+	    b.setHP(b.hp - r.nextInt(u.attack) * u.hp / 100 * 125 * (int) ((75 + r.nextInt(51)) / 100));
 	}
     }
 

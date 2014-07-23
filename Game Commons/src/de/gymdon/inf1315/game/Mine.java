@@ -16,7 +16,7 @@ public class Mine extends Building {
     public void occupy(Player p) {
 	this.owner = p;
 	this.hp = 5000;
-	this.defense = 20;
+	this.defense = 40;
 	if(this.superior)
 	    this.income = 150;
 	else
