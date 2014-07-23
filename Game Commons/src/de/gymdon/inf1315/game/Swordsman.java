@@ -13,6 +13,6 @@ public class Swordsman extends Unit {
 	hp = 110;
 	cost = 130;
 	combined = 0.1;
-	super.resetSpeed();
+	super.reset();
     }
 }

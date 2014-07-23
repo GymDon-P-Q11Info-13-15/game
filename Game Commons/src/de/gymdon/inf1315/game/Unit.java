@@ -3,12 +3,14 @@ package de.gymdon.inf1315.game;
 public abstract class Unit extends GameObject {
     int speed, attack, range;
     public int act_speed;
+    public boolean attacked = false;
     double combined;
 
     boolean[] options = new boolean[] { true, true, true, false, false, false, false };
 
-    public void resetSpeed() {
+    public void reset() {
 	act_speed = speed;
+	attacked = false;
     }
 
     public int getSpeed() {
@@ -21,7 +23,7 @@ public abstract class Unit extends GameObject {
 
     @Override
     public boolean[] clicked(int phase) {
-	if (phase != 2) {
+	if (attacked || phase != 2) {
 	    options[0] = false;
 	} else {
 	    options[0] = true;

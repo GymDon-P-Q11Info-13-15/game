@@ -13,6 +13,6 @@ public class Spearman extends Unit {
 	hp = 100;
 	cost = 80;
 	combined = 0.1;
-	super.resetSpeed();
+	super.reset();
     }
 }

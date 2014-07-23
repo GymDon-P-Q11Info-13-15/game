@@ -129,12 +129,12 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = BuildingRenderMap.getTexture(b);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
-		    int bW = tex.getWidth() / (TILE_SIZE_NORMAL / tileSize);
-		    int bH = tex.getHeight() / (TILE_SIZE_NORMAL / tileSize);
+		    int lW = tex.getWidth() / (TILE_SIZE_NORMAL / tileSize);
+		    int lH = tex.getHeight() / (TILE_SIZE_NORMAL / tileSize) / 4;
 		    Texture layer = StandardTexture.get("layer");
-		    g2d.drawImage(layer.getImage(), x * tileSize, y * tileSize - tileSize / 2, bW, bH / 4, layer);
-		    int lM = bW / 16;
-		    int tM = bH / 16;
+		    g2d.drawImage(layer.getImage(), x * tileSize, y * tileSize - tileSize / 2, lW, lH, layer);
+		    int lM = lW / 16;
+		    int tM = lH / 4;
 		    int pHP = 0;
 		    try {
 			if(b instanceof Mine)
@@ -152,10 +152,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    for (int i = 0; i < 10; i++) {
 			if ((i+1) * 10 <= b.getHP()*100/pHP) {
 			    g2d.setColor(Color.GREEN);
-			    g2d.fillRect((bW - lM * 2) / 10 * i, 0, (bW - lM * 2) / 10, (bH / 4 - tM * 2));
+			    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
 			} else {
 			    g2d.setColor(Color.GRAY);
-			    g2d.fillRect((bW - lM * 2) / 10 * i, 0, (bW - lM * 2) / 10, (bH / 4 - tM * 2));
+			    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
 			}
 		    }
 		    g2d.translate(-(x * tileSize + lM), -(y * tileSize - tileSize / 2 + tM));
@@ -165,7 +165,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 			g2d.setColor(goldColor);
 			int gWidth = (int) (fontTiny.getStringBounds("+ " + b.getIncome(), frc).getWidth());
 			int gHeight = (int) (fontTiny.getStringBounds("+ " + b.getIncome(), frc).getHeight());
-			g2d.drawString("+ " + b.getIncome(), x * tileSize + bW / 2 - gWidth / 2, y * tileSize - gHeight);
+			g2d.drawString("+ " + b.getIncome(), x * tileSize + lW / 2 - gWidth / 2, y * tileSize - gHeight);
 		    }
 		}
 	    }
@@ -181,12 +181,12 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    Texture tex = UnitRenderMap.getTexture(u);
 		    if (tex != null)
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
-		    int uW = tex.getWidth() / (TILE_SIZE_NORMAL / tileSize);
-		    int uH = tex.getHeight() / (TILE_SIZE_NORMAL / tileSize);
+		    int lW = tex.getWidth() / (TILE_SIZE_NORMAL / tileSize);
+		    int lH = tex.getHeight() / (TILE_SIZE_NORMAL / tileSize) / 4;
 		    Texture layer = StandardTexture.get("layer");
-		    g2d.drawImage(layer.getImage(), x * tileSize, y * tileSize - tileSize / 2, uW, uH / 4, layer);
-		    int lM = uW / 16;
-		    int tM = uH / 16;
+		    g2d.drawImage(layer.getImage(), x * tileSize, y * tileSize - tileSize / 2, lW, lH, layer);
+		    int lM = lW / 16;
+		    int tM = lH / 4;
 		    int pHP = 0;
 		    try {
 			    pHP = u.getClass().getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0).getHP();
@@ -196,11 +196,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    g2d.translate(x * tileSize + lM, y * tileSize - tileSize / 2 + tM);
 		    for (int i = 0; i < 10; i++) {
 			if ((i+1) * 10 <= u.getHP()*100/ pHP) {
-			    Texture balken = StandardTexture.get("filled");
-			    g2d.drawImage(balken.getImage(), (uW - lM * 2) / 10 * i, 0, (uW - lM * 2) / 10, (uH / 4 - tM * 2), balken);
+			    g2d.setColor(Color.GREEN);
+			    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
 			} else {
-			    Texture balken = StandardTexture.get("empty");
-			    g2d.drawImage(balken.getImage(), (uW - lM * 2) / 10 * i, 0, (uW - lM * 2) / 10, (uH / 4 - tM * 2), balken);
+			    g2d.setColor(Color.GRAY);
+			    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
 			}
 		    }
 		    g2d.translate(-(x * tileSize + lM), -(y * tileSize - tileSize / 2 + tM));
@@ -433,11 +433,13 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Attacking
 	if (attack && u != null && u.owner != selected.owner) {
 	    Client.instance.game.gm.combat((Unit) selected, u, 0);
+	    Client.instance.game.units[selected.x][selected.y].attacked = true;
 	    this.removeGui();
 	}
 
 	if (attack && b != null && b.owner != selected.owner) {
 	    Client.instance.game.gm.pillage((Unit) selected, b);
+	    Client.instance.game.units[selected.x][selected.y].attacked = true;
 	    this.removeGui();
 	}
 

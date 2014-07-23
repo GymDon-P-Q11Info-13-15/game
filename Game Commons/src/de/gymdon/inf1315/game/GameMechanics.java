@@ -97,7 +97,7 @@ public class GameMechanics implements ActionListener {
 		for (int y = 0; y < game.units[x].length; y++) {
 		    Unit u = game.units[x][y];
 		    if (u != null)
-			u.resetSpeed();
+			u.reset();
 		}
 	    }
 
@@ -121,7 +121,7 @@ public class GameMechanics implements ActionListener {
 		    for (int y = 0; y < game.units[x].length; y++) {
 			Unit u = game.units[x][y];
 			if (u != null)
-			    u.resetSpeed();
+			    u.reset();
 		    }
 		}
 

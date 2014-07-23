@@ -13,7 +13,7 @@ public class Miner extends Unit {
 	hp = 100;
 	cost = 20;
 	combined = 0.01;
-	super.resetSpeed();
+	super.reset();
     }
     
     @Override

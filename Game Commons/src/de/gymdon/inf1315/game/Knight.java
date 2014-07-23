@@ -13,6 +13,6 @@ public class Knight extends Unit {
 	hp = 100;
 	cost = 200;
 	combined = 0.25;
-	super.resetSpeed();
+	super.reset();
     }
 }

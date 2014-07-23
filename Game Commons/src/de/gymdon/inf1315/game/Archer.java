@@ -13,6 +13,6 @@ public class Archer extends Unit {
 	this.hp = 100;
 	this.cost = 60;
 	this.combined = 0.2;
-	super.resetSpeed();
+	super.reset();
     }
 }
