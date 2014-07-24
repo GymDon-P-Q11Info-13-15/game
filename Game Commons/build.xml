@@ -10,8 +10,8 @@
     <property name="Game Server.location" value="../Game Server"/>
     <property name="ECLIPSE_HOME" value="../../../../../Applications/eclipse/standard"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.7"/>
-    <property name="source" value="1.7"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
     <path id="Game Commons.classpath">
         <pathelement location="bin"/>
         <pathelement location="lib/gson/2.2.2/gson.jar"/>
