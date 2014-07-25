@@ -153,7 +153,7 @@ public class GameMechanics implements ActionListener {
     public void stack(Unit a, Unit b) {
 	getAccessableFields(a);
 	if (tempRange[b.x][b.y] == true) {
-	    if ((a.getHP() + b.getHP()) >= 120) {
+	    if ((a.getHP() + b.getHP()) <= 120) {
 		b.setHP(a.getHP() + b.getHP());
 		game.units[a.x][a.y] = null;
 	    }
@@ -334,7 +334,7 @@ public class GameMechanics implements ActionListener {
 
     public void combat(Unit attacker, Unit defender, int round) {
 
-	if (round < 100) {
+	if (round < 200) {
 	    if (defender.range < Math.abs(attacker.x - defender.x) || defender.range < Math.abs(attacker.y - defender.y))
 	    // Pr�fen ob der Verteidiger sich wehren kann
 	    {
@@ -361,11 +361,9 @@ public class GameMechanics implements ActionListener {
 	{
 	    b.setHP(0);
 	    return;
-	}
-	if (r.nextInt(101) >= b.defense /2)
-	{
+	}	
 	    b.setHP(b.hp - r.nextInt(u.attack) * u.hp / 100 * 125 * (int) ((75 + r.nextInt(51)) / 100));
-	}
+	
     }
 
     public void create(Player p, Unit u, Building b) {
