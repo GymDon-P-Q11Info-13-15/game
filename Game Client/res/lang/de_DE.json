@@ -7,7 +7,6 @@
 		"protocol.timeout": "Timeout",
 		"updated.version": "Updatete %s auf Version %s",
 		"file.created": "Datei %s wurde erstellt",
-		"game.title": "Spielname",
 		"game.ended": "Spiel wurde beendet: %s hat gewonnen",
 		"gui.game.new": "Neues Spiel",
 		"gui.game.endRound": "Runde beenden",
