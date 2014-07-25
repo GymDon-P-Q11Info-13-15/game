@@ -54,5 +54,7 @@ public abstract class Packet {
 	register(PacketHeartbeat.class);
 	register(PacketKick.class);
 	register(PacketStartGame.class);
+	register(PacketGameAction.class);
+	register(PacketGameInfo.class);
     }
 }
