@@ -7,7 +7,7 @@
 		"protocol.timeout": "Timeout",
 		"updated.version": "Updated %s to version %s",
 		"file.created": "Created file %s",
-		"game.title": "Game Title",
+		"game.title": "War of Mines",
 		"game.ended": "Game ended: %s won",
 		"gui.game.new": "New Game",
 		"gui.game.endRound": "End Round",
