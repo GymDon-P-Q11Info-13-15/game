@@ -36,17 +36,25 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
     private int hoverDifY = 12;
     private boolean newMenu = false;
     private int tileSize = Client.instance.mapren.tileSize;
-    Class<?>[] minerClasses = new Class<?>[] { Barracks.class };
-    Class<?>[] castleClasses = new Class<?>[] { Spearman.class, Swordsman.class, Miner.class };
-    Class<?>[] classes = new Class<?>[] { Archer.class, Knight.class, Spearman.class, Swordsman.class, Miner.class };
-    private boolean[] newMenuHover = new boolean[classes.length];
-    private String newMenuCommand;
+    private Class<?>[] minerClasses = new Class<?>[] { Barracks.class };
+    private Class<?>[] castleClasses = new Class<?>[] { Spearman.class, Swordsman.class, Miner.class };
+    private Class<?>[] barracksClasses = new Class<?>[] { Archer.class, Knight.class, Spearman.class, Swordsman.class };
+    private Class<?>[][] classes = new Class<?>[][] { minerClasses, castleClasses, barracksClasses };
+    private Class<?>[] actClasses;
+    private boolean[] newMenuHover;
+    private boolean err = false;
 
     public GuiGameMenu(GameObject go) {
 	this.object = go;
     }
 
     public BufferedImage render() {
+	for (int i = 0; i < opt.length; i++) {
+	    String text = act[i] != "" ? Client.instance.translation.translate("game.option." + act[i]) : "";
+	    actionWidth[i] = (int) (font.getStringBounds(text, frc).getWidth());
+	    actionHeight[i] = (int) (font.getStringBounds(text, frc).getHeight()) - 21;
+	}
+	
 	// Buildings
 	if (object instanceof Building) {
 	    if (object instanceof Castle)
@@ -64,7 +72,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
     }
 
     private BufferedImage renderCastle() {
-	BufferedImage image = new BufferedImage(guiWidth, guiWidth, BufferedImage.TYPE_INT_ARGB);
+	BufferedImage image = new BufferedImage(guiWidth, guiHeight, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = image.createGraphics();
 	g2d.setColor(new Color(0x6C4824));
 	g2d.fillRoundRect(0, 0, guiWidth, guiHeight, 10, 10);
@@ -88,10 +96,10 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		}
 	    }
 	} else {
-	    newMenuCommand = "castle";
-	    for (int i = 0; i < castleClasses.length; i++) {
+	    actClasses = classes[1];
+	    for (int i = 0; i < actClasses.length; i++) {
 		@SuppressWarnings("unchecked")
-		Class<? extends Unit> clazz = (Class<? extends Unit>) castleClasses[i];
+		Class<? extends Unit> clazz = (Class<? extends Unit>) actClasses[i];
 		try {
 		    Unit u = clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0);
 		    Texture tex = UnitRenderMap.getTexture(u);
@@ -106,9 +114,21 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		} catch (Exception e1) {
 		    e1.printStackTrace();
 		}
-		if (newMenuHover[i]) {
-		    Texture hTex = StandardTexture.get("hover");
-		    g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
+		if (newMenuHover != null) {
+		    if (newMenuHover[i]) {
+			Texture hTex = StandardTexture.get("hover");
+			g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
+		    }
+		}
+		if (err)
+		{
+		    Font f = Client.instance.translation.font.deriveFont(50F);
+		    String te = Client.instance.translation.translate("game.gold.missing");
+		    int cWidth = (int) (f.getStringBounds(te, frc).getWidth());
+		    int cHeight = (int) (f.getStringBounds(te, frc).getHeight());
+		    g2d.setFont(f);
+		    g2d.setColor(new Color(0xEDE275));
+		    g2d.drawString(te, (guiWidth - 40)/2 - cWidth /2, guiHeight - 40);
 		}
 	    }
 	}
@@ -116,7 +136,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
     }
 
     private BufferedImage renderBarracks() {
-	BufferedImage image = new BufferedImage(guiWidth, guiWidth, BufferedImage.TYPE_INT_ARGB);
+	BufferedImage image = new BufferedImage(guiWidth, guiHeight, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = image.createGraphics();
 	g2d.setColor(new Color(0x6C4824));
 	g2d.fillRoundRect(0, 0, guiWidth, guiHeight, 10, 10);
@@ -140,10 +160,10 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		}
 	    }
 	} else {
-	    newMenuCommand = "all";
-	    for (int i = 0; i < classes.length; i++) {
+	    actClasses = classes[2];
+	    for (int i = 0; i < actClasses.length; i++) {
 		@SuppressWarnings("unchecked")
-		Class<? extends Unit> clazz = (Class<? extends Unit>) classes[i];
+		Class<? extends Unit> clazz = (Class<? extends Unit>) actClasses[i];
 		try {
 		    Unit u = clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0);
 		    Texture tex = UnitRenderMap.getTexture(u);
@@ -157,9 +177,21 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		} catch (Exception e1) {
 		    e1.printStackTrace();
 		}
-		if (newMenuHover[i]) {
-		    Texture hTex = StandardTexture.get("hover");
-		    g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
+		if (newMenuHover != null) {
+		    if (newMenuHover[i]) {
+			Texture hTex = StandardTexture.get("hover");
+			g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
+		    }
+		}
+		if (err)
+		{
+		    Font f = Client.instance.translation.font.deriveFont(50F);
+		    String te = Client.instance.translation.translate("game.gold.missing");
+		    int cWidth = (int) (f.getStringBounds(te, frc).getWidth());
+		    int cHeight = (int) (f.getStringBounds(te, frc).getHeight());
+		    g2d.setFont(f);
+		    g2d.setColor(new Color(0xEDE275));
+		    g2d.drawString(te, (guiWidth - 40)/2 - cWidth /2, guiHeight - 40);
 		}
 	    }
 	}
@@ -167,7 +199,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
     }
 
     private BufferedImage renderMine() {
-	BufferedImage image = new BufferedImage(guiWidth, guiWidth, BufferedImage.TYPE_INT_ARGB);
+	BufferedImage image = new BufferedImage(guiWidth, guiHeight, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = image.createGraphics();
 	g2d.setColor(new Color(0x6C4824));
 	g2d.fillRoundRect(0, 0, guiWidth, guiHeight, 10, 10);
@@ -195,7 +227,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
     }
 
     private BufferedImage renderUnit() {
-	BufferedImage image = new BufferedImage(guiWidth, guiWidth, BufferedImage.TYPE_INT_ARGB);
+	BufferedImage image = new BufferedImage(guiWidth, guiHeight, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = image.createGraphics();
 	g2d.setColor(new Color(0x6C4824));
 	g2d.fillRoundRect(0, 0, guiWidth, guiHeight, 10, 10);
@@ -219,10 +251,10 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		}
 	    }
 	} else {
-	    newMenuCommand = "miner";
-	    for (int i = 0; i < minerClasses.length; i++) {
+	    actClasses = classes[0];
+	    for (int i = 0; i < actClasses.length; i++) {
 		@SuppressWarnings("unchecked")
-		Class<? extends Building> clazz = (Class<? extends Building>) minerClasses[i];
+		Class<? extends Building> clazz = (Class<? extends Building>) actClasses[i];
 		try {
 		    Building b = clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(object.owner, 0, 0);
 		    Texture tex = BuildingRenderMap.getTexture(b);
@@ -236,9 +268,21 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		} catch (Exception e1) {
 		    e1.printStackTrace();
 		}
-		if (newMenuHover[i]) {
-		    Texture hTex = StandardTexture.get("hover");
-		    g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
+		if (newMenuHover != null) {
+		    if (newMenuHover[i]) {
+			Texture hTex = StandardTexture.get("hover");
+			g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
+		    }
+		}
+		if (err)
+		{
+		    Font f = Client.instance.translation.font.deriveFont(50F);
+		    String te = Client.instance.translation.translate("game.gold.missing");
+		    int cWidth = (int) (f.getStringBounds(te, frc).getWidth());
+		    int cHeight = (int) (f.getStringBounds(te, frc).getHeight());
+		    g2d.setFont(f);
+		    g2d.setColor(new Color(0xEDE275));
+		    g2d.drawString(te, (guiWidth - 40)/2 - cWidth /2, guiHeight - 40);
 		}
 	    }
 	}
@@ -249,20 +293,13 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
     public void render(Graphics2D g2d, int width, int height) {
 	g2d.drawImage(render(), 0, 0, null);
     }
-
-    public void keepSizesUpToDate() {
-	for (int i = 0; i < opt.length; i++) {
-	    String text = act[i] != "" ? Client.instance.translation.translate("game.option." + act[i]) : "";
-	    actionWidth[i] = (int) (font.getStringBounds(text, frc).getWidth());
-	    actionHeight[i] = (int) (font.getStringBounds(text, frc).getHeight()) - 21;
-	}
-    }
-
+    
     @Override
     public void mouseClicked(MouseEvent e) {
 	if (e.getButton() == MouseEvent.BUTTON1) {
 	    int x = e.getX() - 20;
 	    int y = e.getY() - 20;
+	    err = false;
 
 	    int c = 0;
 	    if (!newMenu) {
@@ -275,12 +312,10 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 				Client.instance.mapren.move = true;
 			    if (act[i] == "stack" && object instanceof Unit)
 				Client.instance.mapren.stack = true;
-			    if (act[i] == "build" && object instanceof Miner) {
+			    if (act[i] == "build" && object instanceof Miner)
 				newMenu = true;
-			    }
-			    if (act[i] == "spawn" && object instanceof Building) {
+			    if (act[i] == "spawn" && object instanceof Building)
 				newMenu = true;
-			    }
 			    if (act[i] == "upgrade" && object instanceof Building)
 				Client.instance.mapren.upgrade = true;
 			}
@@ -288,21 +323,36 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		    }
 		}
 	    } else {
-		Class<?>[] clas = newMenuCommand == "all" ? classes : newMenuCommand == "castle" ? castleClasses : newMenuCommand == "miner" ? minerClasses : null;
-		for (int i = 0; i < clas.length; i++) {
-		    if (newMenuCommand != "miner") {
+		for (int i = 0; i < actClasses.length; i++) {
+		    if (Unit.class.isAssignableFrom(actClasses[0])) {
 			@SuppressWarnings("unchecked")
-			Class<? extends Unit> clazz = (Class<? extends Unit>) clas[i];
+			Class<? extends Unit> clazz = (Class<? extends Unit>) actClasses[i];
 			if (x >= (tileSize + spacing) * (i % 3) && x <= tileSize + (tileSize + spacing) * (i % 3) && y >= (tileSize + spacing) * (i / 3) && y <= tileSize + (tileSize + spacing) * (i / 3)) {
 			    Client.instance.mapren.spawnClass = clazz;
-			    Client.instance.mapren.spawn = true;
+			    try {
+				if (Client.instance.game.activePlayer.gold < clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0).cost) {
+				    err = true;
+				}
+				else
+				    Client.instance.mapren.spawn = true;
+			    } catch (Exception e1) {
+				e1.printStackTrace();
+			    }
 			}
-		    } else {
+		    } else if (Building.class.isAssignableFrom(actClasses[0])) {
 			@SuppressWarnings("unchecked")
-			Class<? extends Building> clazz = (Class<? extends Building>) clas[i];
+			Class<? extends Building> clazz = (Class<? extends Building>) actClasses[i];
 			if (x >= (tileSize + spacing) * (i % 3) && x <= tileSize + (tileSize + spacing) * (i % 3) && y >= (tileSize + spacing) * (i / 3) && y <= tileSize + (tileSize + spacing) * (i / 3)) {
 			    Client.instance.mapren.buildClass = clazz;
-			    Client.instance.mapren.build = true;
+			    try {
+				if (Client.instance.game.activePlayer.gold < clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0).cost) {
+				    err = true;
+				}
+				else
+				    Client.instance.mapren.build = true;
+			    } catch (Exception e1) {
+				e1.printStackTrace();
+			    }
 			}
 		    }
 		}
@@ -347,9 +397,9 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		}
 	    }
 	} else {
-	    Class<?>[] clas = newMenuCommand == "all" ? classes : newMenuCommand == "castle" ? castleClasses : newMenuCommand == "miner" ? minerClasses : null;
-	    newMenuHover = new boolean[clas.length];
-	    for (int i = 0; i < clas.length; i++) {
+	    if(actClasses != null)
+		newMenuHover = new boolean[actClasses.length];
+	    for (int i = 0; i < actClasses.length; i++) {
 		if (x >= (tileSize + spacing) * (i % 3) && x <= tileSize + (tileSize + spacing) * (i % 3) && y >= (tileSize + spacing) * (i / 3) && y <= tileSize + (tileSize + spacing) * (i / 3))
 		    newMenuHover[i] = true;
 	    }

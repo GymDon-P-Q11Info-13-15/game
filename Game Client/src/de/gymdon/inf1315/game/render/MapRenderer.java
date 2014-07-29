@@ -245,7 +245,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	// Rendering Menu
 	if (guiGameObject != null) {
-	    guiGameObject.keepSizesUpToDate();
 	    BufferedImage img = guiGameObject.render();
 	    if (activeAction) {
 		if (attack) {

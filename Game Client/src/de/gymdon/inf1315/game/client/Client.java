@@ -103,10 +103,11 @@ public class Client implements Runnable, WindowListener {
 
 	    if (System.currentTimeMillis() - lastTimer1 > 1000) {
 		lastTimer1 += 1000;
-		if (DEBUG) {
-		    if (translation != null) {
+		if (translation != null) {
+		    frame.setTitle(translation.translate("game.title"));
+		    if (DEBUG) {
 			frame.setTitle(translation.translate("game.title") + " - " + ticks + "TPS " + frames + "FPS");
-			System.out.println(translation.translate("game.title") + " - " + ticks + "TPS " + frames + "FPS");
+			System.out.println(frame.getTitle());
 		    }
 		}
 		this.tps = ticks;

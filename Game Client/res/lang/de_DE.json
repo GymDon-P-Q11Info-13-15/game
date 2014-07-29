@@ -44,6 +44,7 @@
 		"game.option.stack": "Vereinen",
 		"game.option.upgrade": "Verbessern",
 		"game.gold": "Gold",
+		"game.gold.missing": "Zu wenig Gold!",
 		"game.round": "Runde",
 		"game.phase.build": "Bauphase",
 		"game.phase.move": "Bewegungsphase",

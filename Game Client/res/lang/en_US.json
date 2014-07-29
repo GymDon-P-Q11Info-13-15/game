@@ -49,6 +49,7 @@
 		"game.option.stack": "Stack",
 		"game.option.upgrade": "Upgrade",
 		"game.gold": "Gold",
+		"game.gold.missing": "More Gold required!",
 		"game.round": "Round",
 		"game.phase.build": "Building Phase",
 		"game.phase.move": "Moving Phase",
