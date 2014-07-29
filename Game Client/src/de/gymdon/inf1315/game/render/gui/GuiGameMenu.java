@@ -54,7 +54,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 	    actionWidth[i] = (int) (font.getStringBounds(text, frc).getWidth());
 	    actionHeight[i] = (int) (font.getStringBounds(text, frc).getHeight()) - 21;
 	}
-	
+
 	// Buildings
 	if (object instanceof Building) {
 	    if (object instanceof Castle)
@@ -120,15 +120,14 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 			g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
 		    }
 		}
-		if (err)
-		{
+		if (err) {
 		    Font f = Client.instance.translation.font.deriveFont(50F);
 		    String te = Client.instance.translation.translate("game.gold.missing");
 		    int cWidth = (int) (f.getStringBounds(te, frc).getWidth());
 		    int cHeight = (int) (f.getStringBounds(te, frc).getHeight());
 		    g2d.setFont(f);
 		    g2d.setColor(new Color(0xEDE275));
-		    g2d.drawString(te, (guiWidth - 40)/2 - cWidth /2, guiHeight - 40);
+		    g2d.drawString(te, (guiWidth - 40) / 2 - cWidth / 2, guiHeight - 40);
 		}
 	    }
 	}
@@ -183,15 +182,14 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 			g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
 		    }
 		}
-		if (err)
-		{
+		if (err) {
 		    Font f = Client.instance.translation.font.deriveFont(50F);
 		    String te = Client.instance.translation.translate("game.gold.missing");
 		    int cWidth = (int) (f.getStringBounds(te, frc).getWidth());
 		    int cHeight = (int) (f.getStringBounds(te, frc).getHeight());
 		    g2d.setFont(f);
 		    g2d.setColor(new Color(0xEDE275));
-		    g2d.drawString(te, (guiWidth - 40)/2 - cWidth /2, guiHeight - 40);
+		    g2d.drawString(te, (guiWidth - 40) / 2 - cWidth / 2, guiHeight - 40);
 		}
 	    }
 	}
@@ -274,15 +272,13 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 			g2d.drawImage(hTex.getImage(), (tileSize + spacing) * (i % 3), (tileSize + spacing) * (i / 3), tileSize, tileSize, hTex);
 		    }
 		}
-		if (err)
-		{
+		if (err) {
 		    Font f = Client.instance.translation.font.deriveFont(50F);
 		    String te = Client.instance.translation.translate("game.gold.missing");
 		    int cWidth = (int) (f.getStringBounds(te, frc).getWidth());
-		    int cHeight = (int) (f.getStringBounds(te, frc).getHeight());
 		    g2d.setFont(f);
 		    g2d.setColor(new Color(0xEDE275));
-		    g2d.drawString(te, (guiWidth - 40)/2 - cWidth /2, guiHeight - 40);
+		    g2d.drawString(te, (guiWidth - 40) / 2 - cWidth / 2, guiHeight - 40);
 		}
 	    }
 	}
@@ -293,7 +289,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
     public void render(Graphics2D g2d, int width, int height) {
 	g2d.drawImage(render(), 0, 0, null);
     }
-    
+
     @Override
     public void mouseClicked(MouseEvent e) {
 	if (e.getButton() == MouseEvent.BUTTON1) {
@@ -332,8 +328,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 			    try {
 				if (Client.instance.game.activePlayer.gold < clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0).cost) {
 				    err = true;
-				}
-				else
+				} else
 				    Client.instance.mapren.spawn = true;
 			    } catch (Exception e1) {
 				e1.printStackTrace();
@@ -347,8 +342,7 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 			    try {
 				if (Client.instance.game.activePlayer.gold < clazz.getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0).cost) {
 				    err = true;
-				}
-				else
+				} else
 				    Client.instance.mapren.build = true;
 			    } catch (Exception e1) {
 				e1.printStackTrace();
@@ -396,9 +390,8 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		    c++;
 		}
 	    }
-	} else {
-	    if(actClasses != null)
-		newMenuHover = new boolean[actClasses.length];
+	} else if (actClasses != null) {
+	    newMenuHover = new boolean[actClasses.length];
 	    for (int i = 0; i < actClasses.length; i++) {
 		if (x >= (tileSize + spacing) * (i % 3) && x <= tileSize + (tileSize + spacing) * (i % 3) && y >= (tileSize + spacing) * (i / 3) && y <= tileSize + (tileSize + spacing) * (i / 3))
 		    newMenuHover[i] = true;

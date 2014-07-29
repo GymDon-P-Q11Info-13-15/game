@@ -45,6 +45,8 @@
 		"game.option.upgrade": "Verbessern",
 		"game.gold": "Gold",
 		"game.gold.missing": "Zu wenig Gold!",
+		"game.stack.wrongClass": "Falsche Klasse!",
+		"game.stack.hpErr": "Zusammen zu viel HP!",
 		"game.round": "Runde",
 		"game.phase.build": "Bauphase",
 		"game.phase.move": "Bewegungsphase",

@@ -56,8 +56,8 @@ public class GameMechanics implements ActionListener {
 		won = true;
 	    if (game.buildings[game.mapgen.getMapWidth() - 3][game.mapgen.getMapHeight() / 2 - 1] == null)
 		won = true;
-	    
-	    if(game.round == 0)
+
+	    if (game.round == 0)
 		game.GoldDif = 0;
 
 	    // start round
@@ -93,7 +93,7 @@ public class GameMechanics implements ActionListener {
 	    game.round++;
 	    game.phase = 0;
 	    game.activePlayer = game.activePlayer == game.player1 ? game.player2 : game.player1;
-	    
+
 	    for (int x = 0; x < game.units.length; x++) {
 		for (int y = 0; y < game.units[x].length; y++) {
 		    Unit u = game.units[x][y];
@@ -101,13 +101,12 @@ public class GameMechanics implements ActionListener {
 			u.reset();
 		}
 	    }
-	    
+
 	    game.GoldDif = 0;
 	    for (int x = 0; x < game.buildings.length; x++) {
 		for (int y = 0; y < game.buildings[x].length; y++) {
 		    Building b = game.buildings[x][y];
-		    if (b != null && b.owner == (game.activePlayer == game.player1 ? game.player1 : game.player2))
-		    {
+		    if (b != null && b.owner == (game.activePlayer == game.player1 ? game.player1 : game.player2)) {
 			(game.activePlayer == game.player1 ? game.player1 : game.player2).gold += b.getIncome();
 			game.GoldDif += b.getIncome();
 		    }
@@ -117,7 +116,7 @@ public class GameMechanics implements ActionListener {
 	    game.phase++;
 	    if (game.phase % 3 == 0) {
 		game.activePlayer = game.activePlayer == game.player1 ? game.player2 : game.player1;
-		
+
 		for (int x = 0; x < game.units.length; x++) {
 		    for (int y = 0; y < game.units[x].length; y++) {
 			Unit u = game.units[x][y];
@@ -130,8 +129,7 @@ public class GameMechanics implements ActionListener {
 		for (int x = 0; x < game.buildings.length; x++) {
 		    for (int y = 0; y < game.buildings[x].length; y++) {
 			Building b = game.buildings[x][y];
-			if (b != null && b.owner == (game.activePlayer == game.player1 ? game.player1 : game.player2) && game.round != 0)
-			{
+			if (b != null && b.owner == (game.activePlayer == game.player1 ? game.player1 : game.player2) && game.round != 0) {
 			    (game.activePlayer == game.player1 ? game.player1 : game.player2).gold += b.getIncome();
 			    game.GoldDif += b.getIncome();
 			}
@@ -201,30 +199,15 @@ public class GameMechanics implements ActionListener {
 	    u.y = y;
 	    game.units[x][y] = u;
 	    return true;
-	} else
+	} else {
 	    return false;
-
-	/*
-	 * int xold = u.x; // Bisherige Koordinaten der Unit int yold = u.y; int
-	 * spd = u.getSpeed(); // Speed der Unit int effspd = (int) Math.abs((x
-	 * - xold) + (y - yold - 1)); // Effektiv // benoetigte // Speed, um //
-	 * zum neuen // Feld zu // gelangen // (Feldmalus // einberechnet)
-	 * 
-	 * if (effspd < 1) { effspd = 1;
-	 * 
-	 * }
-	 * 
-	 * if (effspd <= spd) {
-	 * 
-	 * }
-	 */
+	}
 
     }
 
     public void getAccessableFields(Unit a) {
 	tempRange = new boolean[game.map.length][game.map[0].length];
-	step(a.act_speed, a.x, a.y, true);
-
+	step(a.act_speed, a.x, a.y);
     }
 
     /**
@@ -236,7 +219,7 @@ public class GameMechanics implements ActionListener {
      */
     public boolean[][] getAccessableField(Unit a) {
 	tempRange = new boolean[game.map.length][game.map[0].length];
-	step(a.act_speed, a.x, a.y, true);
+	step(a.act_speed, a.x, a.y);
 	return tempRange;
     }
 
@@ -250,14 +233,11 @@ public class GameMechanics implements ActionListener {
 
     }
 
-    private void step(int actualSpeed, int x, int y, boolean first) {
+    private void step(int actualSpeed, int x, int y) {
 
 	if (x < 0 || y < 0 || x >= tempRange.length || y >= tempRange[0].length)
 	    return;
 
-	Unit u = null;
-	if (!first)
-	    u = game.units[x][y];
 	Building b = null;
 	boolean n = false;
 	for (int x1 = x; x1 > x1 - 6 && x1 >= 0; x1--) {
@@ -273,7 +253,7 @@ public class GameMechanics implements ActionListener {
 	    }
 	}
 
-	if (game.map[x][y].isWalkable() && b == null && u == null) { // can
+	if (game.map[x][y].isWalkable() && b == null) { // can
 	    // only
 	    // walk
 	    // if
@@ -291,16 +271,16 @@ public class GameMechanics implements ActionListener {
 										   // double
 	    if (newSpeed >= 1) {
 		tempRange[x][y] = true;
-		step(newSpeed, x - 1, y, false);
-		step(newSpeed, x + 1, y, false);
-		step(newSpeed, x, y + 1, false);
-		step(newSpeed, x, y - 1, false);
+		step(newSpeed, x - 1, y);
+		step(newSpeed, x + 1, y);
+		step(newSpeed, x, y + 1);
+		step(newSpeed, x, y - 1);
 	    } else if (newSpeed > 0) {
 		tempRange[x][y] = true;
-		step(1, x - 1, y, false);
-		step(1, x + 1, y, false);
-		step(1, x, y + 1, false);
-		step(1, x, y - 1, false);
+		step(1, x - 1, y);
+		step(1, x + 1, y);
+		step(1, x, y + 1);
+		step(1, x, y - 1);
 	    } else { // Movement-points used -> field not accessible
 
 	    }
@@ -357,13 +337,12 @@ public class GameMechanics implements ActionListener {
     }
 
     public void pillage(Unit u, Building b) {
-	if(b instanceof Mine && b.owner == null)
-	{
+	if (b instanceof Mine && b.owner == null) {
 	    b.setHP(0);
 	    return;
-	}	
-	    b.setHP(b.hp - r.nextInt(u.attack) * u.hp / 100 * 125 * (int) ((75 + r.nextInt(51)) / 100));
-	
+	}
+	b.setHP(b.hp - r.nextInt(u.attack) * u.hp / 100 * 125 * (int) ((75 + r.nextInt(51)) / 100));
+
     }
 
     public void create(Player p, Unit u, Building b) {

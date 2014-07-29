@@ -50,6 +50,8 @@
 		"game.option.upgrade": "Upgrade",
 		"game.gold": "Gold",
 		"game.gold.missing": "More Gold required!",
+		"game.stack.wrongClass": "Wrong Class!",
+		"game.stack.hpErr": "Together, too much HP!",
 		"game.round": "Round",
 		"game.phase.build": "Building Phase",
 		"game.phase.move": "Moving Phase",

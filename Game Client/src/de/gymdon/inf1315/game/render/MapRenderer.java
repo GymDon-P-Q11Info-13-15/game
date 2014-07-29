@@ -53,16 +53,20 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private int guiPosY;
     private int guiWidth;
     private int guiHeight;
-    private Font fontPlayer = Client.instance.translation.font.deriveFont(50F);
-    private Font fontGold = Client.instance.translation.font.deriveFont(35F);
-    private Font fontTiny = Client.instance.translation.font.deriveFont(20F);
-    private Color goldColor = new Color(0xEDE275);
+    private static final Font fontPlayer = Client.instance.translation.font.deriveFont(50F);
+    private static final Font fontGold = Client.instance.translation.font.deriveFont(35F);
+    private static final Font fontTiny = Client.instance.translation.font.deriveFont(25F);
+    private static final Color goldColor = new Color(0xEDE275);
+    private static final Color errorColor = new Color(0xEDE275);
     private AffineTransform affinetransform = new AffineTransform();
     private FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
     private boolean squareAction = false;
     private boolean activeAction = false;
     private boolean[][] range;
     private int sRange;
+    private boolean stackErrHP = false;
+    private boolean stackErrClass = false;
+    private GameObject errObject;
     public boolean attack = false;
     public boolean move = false;
     public boolean stack = false;
@@ -137,20 +141,18 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    int tM = lH / 4;
 		    int pHP = 0;
 		    try {
-			if(b instanceof Mine)
-			{
+			if (b instanceof Mine) {
 			    Building bb = b.getClass().getConstructor(Integer.TYPE, Integer.TYPE).newInstance(0, 0);
 			    bb.occupy(null);
 			    pHP = bb.getHP();
-			}
-			else
+			} else
 			    pHP = b.getClass().getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0).getHP();
 		    } catch (Exception e) {
 			e.printStackTrace();
 		    }
 		    g2d.translate(x * tileSize + lM, y * tileSize - tileSize / 2 + tM);
 		    for (int i = 0; i < 10; i++) {
-			if ((i+1) * 10 <= b.getHP()*100/pHP) {
+			if ((i + 1) * 10 <= b.getHP() * 100 / pHP) {
 			    g2d.setColor(Color.GREEN);
 			    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
 			} else {
@@ -179,8 +181,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		Unit u = units[x][y];
 		if (u != null) {
 		    Texture tex = UnitRenderMap.getTexture(u);
-		    if (tex != null)
+		    if (tex != null && u.owner == Client.instance.game.player1) {
 			g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
+		    } else if (tex != null && u.owner == Client.instance.game.player2) {
+			g2d.drawImage(tex.getImage(), x * tileSize + tileSize, y * tileSize, -tex.getWidth() / (TILE_SIZE_NORMAL / tileSize), tex.getHeight() / (TILE_SIZE_NORMAL / tileSize), tex);
+		    }
 		    int lW = tex.getWidth() / (TILE_SIZE_NORMAL / tileSize);
 		    int lH = tex.getHeight() / (TILE_SIZE_NORMAL / tileSize) / 4;
 		    Texture layer = StandardTexture.get("layer");
@@ -189,13 +194,13 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    int tM = lH / 4;
 		    int pHP = 0;
 		    try {
-			    pHP = u.getClass().getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0).getHP();
+			pHP = u.getClass().getConstructor(Player.class, Integer.TYPE, Integer.TYPE).newInstance(null, 0, 0).getHP();
 		    } catch (Exception e) {
 			e.printStackTrace();
 		    }
 		    g2d.translate(x * tileSize + lM, y * tileSize - tileSize / 2 + tM);
 		    for (int i = 0; i < 10; i++) {
-			if ((i+1) * 10 <= u.getHP()*100/ pHP) {
+			if ((i + 1) * 10 <= u.getHP() * 100 / pHP) {
 			    g2d.setColor(Color.GREEN);
 			    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
 			} else {
@@ -269,10 +274,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		Texture tex = StandardTexture.get("overlay_white");
 		for (int x = 0; x < range.length; x++) {
 		    for (int y = 0; y < range[x].length; y++) {
-			if (keepSelectedClear(x, y));
+			if (keepSelectedClear(x, y))
+			    ;
 			else if (squareAction && x >= selected.x - sRange && x <= selected.x + selected.getSizeX() - 1 + sRange && y >= selected.y - sRange && y <= selected.y + selected.getSizeY() - 1 + sRange && map[x][y].isWalkable())
 			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
-			else if (!squareAction && range[x][y])
+			else if (!squareAction && range[x][y] && (!move ? true : units[x][y] == null))
 			    g2d.drawImage(tex.getImage(), x * tileSize, y * tileSize, tileSize, tileSize, tex);
 		    }
 		}
@@ -295,6 +301,26 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		guiPosY = y;
 	    }
 	}
+
+	// Rendering Stacking Error(s)
+	if (stackErrClass && errObject != null) {
+	    stackErrHP = false;
+	    String te = Client.instance.translation.translate("game.stack.wrongClass");
+	    int cWidth = (int) (fontTiny.getStringBounds(te, frc).getWidth());
+	    g2d.setFont(fontTiny);
+	    g2d.setColor(errorColor);
+	    g2d.drawString(te, (errObject.x * tileSize + tileSize / 2) - cWidth / 2, errObject.y * tileSize);
+	}
+	g2d.setColor(Color.WHITE);
+
+	if (stackErrHP && errObject != null) {
+	    String te = Client.instance.translation.translate("game.stack.hpErr");
+	    int cWidth = (int) (fontTiny.getStringBounds(te, frc).getWidth());
+	    g2d.setFont(fontTiny);
+	    g2d.setColor(errorColor);
+	    g2d.drawString(te, (errObject.x * tileSize + tileSize / 2) - cWidth / 2, errObject.y * tileSize);
+	}
+	g2d.setColor(Color.WHITE);
 
 	g2d.setTransform(tx);
 
@@ -448,8 +474,17 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	// Stacking
 	if (stack && u != null && u.owner == selected.owner) {
-	    Client.instance.game.gm.stack((Unit) selected, units[x][y]);
-	    this.removeGui();
+	    if (!(u.getClass().equals(selected.getClass()))) {
+		stackErrClass = true;
+		errObject = u;
+	    } else if (u.getHP() + ((Unit) selected).getHP() > 120) {
+		stackErrHP = true;
+		errObject = u;
+	    } else {
+		Client.instance.game.gm.stack((Unit) selected, units[x][y]);
+		this.removeGui();
+	    }
+
 	}
 
 	// Building
@@ -507,13 +542,12 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	int gx = (int) ((e.getX() + scrollX) / zoom);
 	int gy = (int) ((e.getY() + scrollY) / zoom);
 	if (activeAction) {
-
 	    if (keepSelectedClear(x, y))
 		return;
 	    else if (squareAction && x >= selected.x - sRange && x <= selected.x + selected.getSizeX() - 1 + sRange && y >= selected.y - sRange && y <= selected.y + selected.getSizeY() - 1 + sRange) {
 		this.guiAction(x, y);
 		return;
-	    } else if (!squareAction && range[x][y]) {
+	    } else if (!squareAction && range[x][y] && (!move ? true : units[x][y] == null)) {
 		this.guiAction(x, y);
 		return;
 	    }
@@ -590,6 +624,17 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Hovering over guiGameObject
 	int gx = (int) ((e.getX() + scrollX) / zoom);
 	int gy = (int) ((e.getY() + scrollY) / zoom);
+	if (activeAction) {
+	    if (squareAction && x >= selected.x - sRange && x <= selected.x + selected.getSizeX() - 1 + sRange && y >= selected.y - sRange && y <= selected.y + selected.getSizeY() - 1 + sRange)
+		;
+	    else if (!squareAction && range[x][y] && (!move ? true : units[x][y] == null))
+		;
+	    else {
+		stackErrClass = false;
+		stackErrHP = false;
+		errObject = null;
+	    }
+	}
 	if (gx >= guiPosX && gx <= guiPosX + guiWidth && gy >= guiPosY && gy <= guiPosY + guiHeight && !activeAction) {
 	    guiGameObject.mouseMoved(new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), gx - guiPosX, gy - guiPosY, e.getClickCount(), e.isPopupTrigger()));
 	    return;

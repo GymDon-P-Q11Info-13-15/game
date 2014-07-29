@@ -33,7 +33,7 @@ public abstract class Unit extends GameObject {
 	} else {
 	    options[1] = true;
 	}
-	if (hp <= 100 || phase != 1) {
+	if (hp > 100 || phase != 1) {
 	    options[2] = false;
 	} else {
 	    options[2] = true;
