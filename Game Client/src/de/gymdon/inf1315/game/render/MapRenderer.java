@@ -67,6 +67,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private boolean stackErrHP = false;
     private boolean stackErrClass = false;
     private GameObject errObject;
+    private int healthOptionRAM;
+    private boolean healthUpToDate = false;
     public boolean attack = false;
     public boolean move = false;
     public boolean stack = false;
@@ -150,14 +152,32 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    } catch (Exception e) {
 			e.printStackTrace();
 		    }
+
 		    g2d.translate(x * tileSize + lM, y * tileSize - tileSize / 2 + tM);
-		    for (int i = 0; i < 10; i++) {
-			if ((i + 1) * 10 <= b.getHP() * 100 / pHP) {
-			    g2d.setColor(Color.GREEN);
-			    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
-			} else {
-			    g2d.setColor(Color.GRAY);
-			    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
+		    {
+			// Relative (Lebensbalken)
+			if (Client.instance.preferences.game.health == 0 || Client.instance.preferences.game.health == 2) {
+			    for (int i = 0; i < 10; i++) {
+				if ((i + 1) * 10 <= b.getHP() * 100 / pHP) {
+				    g2d.setColor(Color.GREEN);
+				    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
+				} else {
+				    g2d.setColor(Color.GRAY);
+				    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
+				}
+			    }
+			}
+
+			// Absolute (Zahl)
+			if (Client.instance.preferences.game.health == 1 || Client.instance.preferences.game.health == 2) {
+			    Font f = fontTiny.deriveFont(fontTiny.getStyle(), 11 / (TILE_SIZE_NORMAL / tileSize) * b.getSizeX());
+			    g2d.setFont(f);
+			    if (Client.instance.preferences.game.health == 1)
+				g2d.setColor(Color.WHITE);
+			    else if (Client.instance.preferences.game.health == 2)
+				g2d.setColor(Color.BLACK);
+			    int gWidth = (int) (f.getStringBounds("" + b.getHP(), frc).getWidth());
+			    g2d.drawString("" + b.getHP(), (lW - lM * 2) / 2 - gWidth / 2, lH - tM * 2);
 			}
 		    }
 		    g2d.translate(-(x * tileSize + lM), -(y * tileSize - tileSize / 2 + tM));
@@ -198,14 +218,32 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		    } catch (Exception e) {
 			e.printStackTrace();
 		    }
+
 		    g2d.translate(x * tileSize + lM, y * tileSize - tileSize / 2 + tM);
-		    for (int i = 0; i < 10; i++) {
-			if ((i + 1) * 10 <= u.getHP() * 100 / pHP) {
-			    g2d.setColor(Color.GREEN);
-			    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
-			} else {
-			    g2d.setColor(Color.GRAY);
-			    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
+		    {
+			// Relative (Lebensbalken)
+			if (Client.instance.preferences.game.health == 0 || Client.instance.preferences.game.health == 2) {
+			    for (int i = 0; i < 10; i++) {
+				if ((i + 1) * 10 <= u.getHP() * 100 / pHP) {
+				    g2d.setColor(Color.GREEN);
+				    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
+				} else {
+				    g2d.setColor(Color.GRAY);
+				    g2d.fillRect((lW - lM * 2) / 10 * i, 0, (lW - lM * 2) / 10, (lH - tM * 2));
+				}
+			    }
+			}
+
+			// Absolute (Zahl)
+			if (Client.instance.preferences.game.health == 1 || Client.instance.preferences.game.health == 2) {
+			    Font f = fontTiny.deriveFont(fontTiny.getStyle(), 11 / (TILE_SIZE_NORMAL / tileSize) * u.getSizeX());
+			    g2d.setFont(f);
+			    if (Client.instance.preferences.game.health == 1)
+				g2d.setColor(Color.WHITE);
+			    else if (Client.instance.preferences.game.health == 2)
+				g2d.setColor(Color.BLACK);
+			    int gWidth = (int) (f.getStringBounds("" + u.getHP(), frc).getWidth());
+			    g2d.drawString("" + u.getHP(), (lW - lM * 2) / 2 - gWidth / 2, lH - tM * 2);
 			}
 		    }
 		    g2d.translate(-(x * tileSize + lM), -(y * tileSize - tileSize / 2 + tM));
@@ -720,6 +758,18 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		else if (key == KeyEvent.VK_ESCAPE) {
 		    Client.instance.setGuiScreen(new GuiPauseMenu());
 		    firstClick = true;
+		    if (healthUpToDate) {
+			Client.instance.preferences.game.health = healthOptionRAM;
+			healthUpToDate = false;
+		    }
+		} else if (key == Client.instance.preferences.game.absoluteKey) {
+		    if (!healthUpToDate)
+			healthOptionRAM = Client.instance.preferences.game.health;
+		    healthUpToDate = true;
+		    Client.instance.preferences.game.health = 1;
+		} else if (key == Client.instance.preferences.game.collapseKey) {
+		    this.removeGui();
+		    firstClick = false;
 		}
 	    }
 	}
@@ -739,6 +789,15 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    scrollX = (int) (mapWidth * tileSize * zoom - width);
 	if (scrollY > (int) (mapHeight * tileSize * zoom - height))
 	    scrollY = (int) (mapHeight * tileSize * zoom - height);
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+	super.keyReleased(e);
+
+	if (e.getKeyCode() == Client.instance.preferences.game.absoluteKey) {
+	    Client.instance.preferences.game.health = healthOptionRAM;
+	}
     }
 
     @Override

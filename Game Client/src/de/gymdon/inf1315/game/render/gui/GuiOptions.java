@@ -26,18 +26,27 @@ public class GuiOptions extends GuiScreen {
 
     // Sections
     private GuiButton videoButton = new GuiButton(this, 0, 100, 200, "gui.options.video");
+    private GuiButton languageButton = new GuiButton(this, 0, 100, 200, "gui.options.language");
+    private GuiButton gameButton = new GuiButton(this, 0, 100, 200, "gui.options.game");
     // -- Video
     private GuiButton videoVsyncButton = new GuiButton(this, 0, 100, 200, "gui.options.video.vsync." + (Client.instance.preferences.video.vsync ? "on" : "off"));
     private GuiButton videoFullscreenButton = new GuiButton(this, 0, 100, 200, "gui.options.video.fullscreen." + (Client.instance.preferences.video.fullscreen ? "on" : "off"));
     // -- Language
-    private GuiButton languageButton = new GuiButton(this, 0, 100, 200, "gui.options.language");
     private List<GuiButton> languageButtons = new ArrayList<GuiButton>();
     // -- Game Options
-    private GuiButton gameButton = new GuiButton(this, 0, 100, 200, "gui.options.game");
     private GuiButton gameArrowButton = new GuiButton(this, 0, 100, 200, "gui.options.game.arrow");
     private GuiButton gameZoomButton = new GuiButton(this, 0, 100, 200, "gui.options.game.zoom." + (Client.instance.preferences.game.invertZoom ? "inverted" : "normal"));
+    private GuiButton gameHealthButton = new GuiButton(this, 0, 100, 200, "gui.options.game.health." + (Client.instance.preferences.game.health == 0 ? "relative" : Client.instance.preferences.game.health == 1 ? "absolute" : "both"));
+    private GuiButton gameKeysButton = new GuiButton(this, 0, 100, 200, "gui.options.game.keys");
     // -- Arrows
     private List<GuiButton> arrowButtons = new ArrayList<GuiButton>();
+    // -- Keys
+    private boolean keyDefinition = false;
+    private int kDefID = 0;
+    private int BC = backButton.getBorderColor();
+    private int BCK = 0xFF8C00;
+    private GuiButton absoluteKeyButton = new GuiButton(this, 1, 100, 200, "gui.options.game.keys.absolute").setTextData(KeyEvent.getKeyText(Client.instance.preferences.game.absoluteKey)).setBorderColor(kDefID == 1 ? BCK : BC);
+    private GuiButton collapseKeyButton = new GuiButton(this, 2, 100, 200, "gui.options.game.keys.collapse").setTextData(KeyEvent.getKeyText(Client.instance.preferences.game.collapseKey)).setBorderColor(kDefID == 2 ? BCK : BC);
 
     private Stack<Section> sectionStack = new Stack<Section>();
 
@@ -59,8 +68,12 @@ public class GuiOptions extends GuiScreen {
 	languageButtons.clear();
 	gameButton = new GuiButton(this, 0, 100, 200, "gui.options.game");
 	gameArrowButton = new GuiButton(this, 0, 100, 200, "gui.options.game.arrow");
-	gameZoomButton = new GuiButton(this, 0, 100, 200, "gui.options.game.zoom." + (Client.instance.preferences.game.invertZoom ? "inverted" : "normal"));
 	arrowButtons.clear();
+	gameZoomButton = new GuiButton(this, 0, 100, 200, "gui.options.game.zoom." + (Client.instance.preferences.game.invertZoom ? "inverted" : "normal"));
+	gameHealthButton = new GuiButton(this, 0, 100, 200, "gui.options.game.health." + (Client.instance.preferences.game.health == 0 ? "relative" : Client.instance.preferences.game.health == 1 ? "absolute" : "both"));
+	gameKeysButton = new GuiButton(this, 0, 100, 200, "gui.options.game.keys");
+	absoluteKeyButton = new GuiButton(this, 1, 100, 200, "gui.options.game.keys.absolute").setTextData(KeyEvent.getKeyText(Client.instance.preferences.game.absoluteKey)).setBorderColor(kDefID == 1 ? BCK : BC);
+	collapseKeyButton = new GuiButton(this, 2, 100, 200, "gui.options.game.keys.collapse").setTextData(KeyEvent.getKeyText(Client.instance.preferences.game.collapseKey)).setBorderColor(kDefID == 2 ? BCK : BC);
 	setSection(section);
     }
 
@@ -127,6 +140,14 @@ public class GuiOptions extends GuiScreen {
 	    gameZoomButton.setY(topMargin);
 	    gameZoomButton.setWidth(buttonWidthSmall);
 	    gameZoomButton.setHeight(buttonHeight);
+	    gameHealthButton.setX(leftMargin);
+	    gameHealthButton.setY(topMargin + buttonHeight + buttonSpacing);
+	    gameHealthButton.setWidth(buttonWidthSmall);
+	    gameHealthButton.setHeight(buttonHeight);
+	    gameKeysButton.setX(leftMargin + buttonWidthSmall + buttonSpacing);
+	    gameKeysButton.setY(topMargin + buttonHeight + buttonSpacing);
+	    gameKeysButton.setWidth(buttonWidthSmall);
+	    gameKeysButton.setHeight(buttonHeight);
 	} else if (section == Section.ARROWS) {
 	    int i = 0;
 	    for (GuiButton b : arrowButtons) {
@@ -136,6 +157,15 @@ public class GuiOptions extends GuiScreen {
 		b.setHeight(buttonHeight);
 		i++;
 	    }
+	} else if (section == Section.KEYS) {
+	    absoluteKeyButton.setX(leftMargin);
+	    absoluteKeyButton.setY(topMargin);
+	    absoluteKeyButton.setWidth(buttonWidthSmall);
+	    absoluteKeyButton.setHeight(buttonHeight);
+	    collapseKeyButton.setX(leftMargin + buttonWidthSmall + buttonSpacing);
+	    collapseKeyButton.setY(topMargin);
+	    collapseKeyButton.setWidth(buttonWidthSmall);
+	    collapseKeyButton.setHeight(buttonHeight);
 	}
 	super.render(g2d, width, height);
     }
@@ -150,7 +180,7 @@ public class GuiOptions extends GuiScreen {
     public void actionPerformed(ActionEvent e) {
 	if (e.getID() == ActionEvent.ACTION_PERFORMED) {
 	    // Buttons
-	    if (e.getSource() instanceof GuiButton) {
+	    if (e.getSource() instanceof GuiButton && !keyDefinition) {
 		GuiButton button = (GuiButton) e.getSource();
 		if (button == backButton) {
 		    setSection(sectionStack.isEmpty() ? null : sectionStack.peek(), true);
@@ -158,10 +188,10 @@ public class GuiOptions extends GuiScreen {
 		    setSection(Section.VIDEO);
 		} else if (button == videoVsyncButton) {
 		    Client.instance.preferences.video.vsync = !Client.instance.preferences.video.vsync;
-		    videoVsyncButton.setText("gui.options.video.vsync." + (Client.instance.preferences.video.vsync ? "on" : "off"));
+		    this.rebuild();
 		} else if (button == videoFullscreenButton) {
 		    Client.instance.preferences.video.fullscreen = !Client.instance.preferences.video.fullscreen;
-		    videoFullscreenButton.setText("gui.options.video.fullscreen." + (Client.instance.preferences.video.fullscreen ? "on" : "off"));
+		    this.rebuild();
 		    Client.instance.setFullscreen(Client.instance.preferences.video.fullscreen);
 		} else if (button == languageButton) {
 		    setSection(Section.LANGUAGE);
@@ -179,7 +209,23 @@ public class GuiOptions extends GuiScreen {
 		    setSection(Section.ARROWS);
 		} else if (button == gameZoomButton) {
 		    Client.instance.preferences.game.invertZoom = !Client.instance.preferences.game.invertZoom;
-		    gameZoomButton.setText("gui.options.game.zoom." + (Client.instance.preferences.game.invertZoom ? "inverted" : "normal"));
+		    this.rebuild();
+		} else if (button == gameHealthButton) {
+		    if (Client.instance.preferences.game.health < 2 && Client.instance.preferences.game.health >= 0)
+			Client.instance.preferences.game.health++;
+		    else
+			Client.instance.preferences.game.health = 0;
+		    this.rebuild();
+		} else if (button == gameKeysButton) {
+		    setSection(Section.KEYS);
+		} else if (button == absoluteKeyButton) {
+		    keyDefinition = true;
+		    kDefID = absoluteKeyButton.getId();
+		    this.rebuild();
+		} else if (button == collapseKeyButton) {
+		    keyDefinition = true;
+		    kDefID = collapseKeyButton.getId();
+		    this.rebuild();
 		} else if (arrowButtons.contains(button)) {
 		    Client.instance.preferences.game.arrow = button.getId();
 		    this.rebuild();
@@ -191,8 +237,25 @@ public class GuiOptions extends GuiScreen {
 	    // Keys
 	    if (e.getSource() instanceof KeyEvent) {
 		int key = ((KeyEvent) e.getSource()).getKeyCode();
-		if (key == KeyEvent.VK_ESCAPE)
-		    actionPerformed(new ActionEvent(backButton, ActionEvent.ACTION_PERFORMED, null));
+
+		// Keys Pressed
+		if (!keyDefinition) {
+		    if (key == KeyEvent.VK_ESCAPE)
+			actionPerformed(new ActionEvent(backButton, ActionEvent.ACTION_PERFORMED, null));
+		}
+
+		// Key Definitions
+		else if (keyDefinition) {
+		    if (key == KeyEvent.VK_ESCAPE)
+			;
+		    else if (kDefID == absoluteKeyButton.getId())
+			Client.instance.preferences.game.absoluteKey = key;
+		    else if (kDefID == collapseKeyButton.getId())
+			Client.instance.preferences.game.collapseKey = key;
+		    keyDefinition = false;
+		    kDefID = 0;
+		    this.rebuild();
+		}
 	    }
 	}
     }
@@ -245,6 +308,8 @@ public class GuiOptions extends GuiScreen {
 	case GAME:
 	    controlList.add(gameArrowButton);
 	    controlList.add(gameZoomButton);
+	    controlList.add(gameHealthButton);
+	    controlList.add(gameKeysButton);
 	    break;
 	case ARROWS:
 	    arrowButtons.clear();
@@ -263,11 +328,15 @@ public class GuiOptions extends GuiScreen {
 	    }
 	    controlList.addAll(arrowButtons);
 	    break;
+	case KEYS:
+	    controlList.add(absoluteKeyButton);
+	    controlList.add(collapseKeyButton);
+	    break;
 	}
 	controlList.add(backButton);
     }
 
     private enum Section {
-	MAIN, VIDEO, LANGUAGE, GAME, ARROWS;
+	MAIN, VIDEO, LANGUAGE, GAME, ARROWS, KEYS;
     }
 }
