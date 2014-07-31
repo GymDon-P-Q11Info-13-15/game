@@ -747,6 +747,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    // Keys
 	    if (e.getSource() instanceof KeyEvent) {
 		int key = ((KeyEvent) e.getSource()).getKeyCode();
+		int modifiers = ((KeyEvent) e.getSource()).getModifiers();
 		if (key == KeyEvent.VK_LEFT)
 		    scrollX -= tileSize / 4;
 		else if (key == KeyEvent.VK_RIGHT)
@@ -762,14 +763,17 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 			Client.instance.preferences.game.health = healthOptionRAM;
 			healthUpToDate = false;
 		    }
-		} else if (key == Client.instance.preferences.game.absoluteKey) {
+		} else if (key == Client.instance.preferences.game.absoluteKey.getKeyCode() && modifiers == Client.instance.preferences.game.absoluteKey.getModifiers()) {
 		    if (!healthUpToDate)
 			healthOptionRAM = Client.instance.preferences.game.health;
 		    healthUpToDate = true;
 		    Client.instance.preferences.game.health = 1;
-		} else if (key == Client.instance.preferences.game.collapseKey) {
+		} else if (key == Client.instance.preferences.game.collapseKey.getKeyCode() && modifiers == Client.instance.preferences.game.collapseKey.getModifiers()) {
 		    this.removeGui();
 		    firstClick = false;
+		} else if (key == Client.instance.preferences.game.fullscreenKey.getKeyCode() && modifiers == Client.instance.preferences.game.fullscreenKey.getModifiers()) {
+		    Client.instance.preferences.video.fullscreen = !Client.instance.preferences.video.fullscreen;
+		    Client.instance.setFullscreen(Client.instance.preferences.video.fullscreen);
 		}
 	    }
 	}
@@ -778,7 +782,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     @Override
     public void keyPressed(KeyEvent e) {
 	super.keyPressed(e);
-
 	if (scrollX < 0)
 	    scrollX = 0;
 	if (scrollY < 0)
@@ -794,8 +797,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     @Override
     public void keyReleased(KeyEvent e) {
 	super.keyReleased(e);
-
-	if (e.getKeyCode() == Client.instance.preferences.game.absoluteKey) {
+	
+	if (e.getKeyCode() == Client.instance.preferences.game.absoluteKey.getKeyCode() || e.getModifiers() == Client.instance.preferences.game.absoluteKey.getModifiers()) {
 	    Client.instance.preferences.game.health = healthOptionRAM;
 	}
     }

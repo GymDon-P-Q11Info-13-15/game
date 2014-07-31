@@ -35,8 +35,9 @@ public class Preferences {
 	public int arrow = 0;
 	public boolean invertZoom = false;
 	public int health = 0;
-	public int absoluteKey = KeyEvent.VK_F;
-	public int collapseKey = KeyEvent.VK_SPACE;
+	public KeyEvent absoluteKey;
+	public KeyEvent collapseKey;
+	public KeyEvent fullscreenKey;
     }
 
     public void write(Writer writer) throws IOException {

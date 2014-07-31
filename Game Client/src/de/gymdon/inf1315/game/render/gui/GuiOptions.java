@@ -45,8 +45,9 @@ public class GuiOptions extends GuiScreen {
     private int kDefID = 0;
     private int BC = backButton.getBorderColor();
     private int BCK = 0xFF8C00;
-    private GuiButton absoluteKeyButton = new GuiButton(this, 1, 100, 200, "gui.options.game.keys.absolute").setTextData(KeyEvent.getKeyText(Client.instance.preferences.game.absoluteKey)).setBorderColor(kDefID == 1 ? BCK : BC);
-    private GuiButton collapseKeyButton = new GuiButton(this, 2, 100, 200, "gui.options.game.keys.collapse").setTextData(KeyEvent.getKeyText(Client.instance.preferences.game.collapseKey)).setBorderColor(kDefID == 2 ? BCK : BC);
+    private GuiButton absoluteKeyButton = new GuiButton(this, 1, 100, 200, "gui.options.game.keys.absolute").setTextData(Client.instance.preferences.game.absoluteKey == null ? "" : (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.absoluteKey.getModifiers()) + (Client.instance.preferences.game.absoluteKey.getModifiers() == 0 || KeyEvent.getKeyModifiersText(Client.instance.preferences.game.absoluteKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.absoluteKey.getKeyCode())) ? "" : " + ")) + (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.absoluteKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.absoluteKey.getKeyCode())) ? "" : KeyEvent.getKeyText(Client.instance.preferences.game.absoluteKey.getKeyCode()))).setBorderColor(kDefID == 1 ? BCK : BC);
+    private GuiButton collapseKeyButton = new GuiButton(this, 2, 100, 200, "gui.options.game.keys.collapse").setTextData(Client.instance.preferences.game.collapseKey == null ? "" : (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.collapseKey.getModifiers()) + (Client.instance.preferences.game.collapseKey.getModifiers() == 0 || KeyEvent.getKeyModifiersText(Client.instance.preferences.game.collapseKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.collapseKey.getKeyCode())) ? "" : " + ")) + (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.collapseKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.collapseKey.getKeyCode())) ? "" : KeyEvent.getKeyText(Client.instance.preferences.game.collapseKey.getKeyCode()))).setBorderColor(kDefID == 2 ? BCK : BC);
+    private GuiButton fullscreenKeyButton = new GuiButton(this, 3, 100, 200, "gui.options.game.keys.fullscreen").setTextData(Client.instance.preferences.game.fullscreenKey == null ? "" : (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.fullscreenKey.getModifiers()) + (Client.instance.preferences.game.fullscreenKey.getModifiers() == 0 || KeyEvent.getKeyModifiersText(Client.instance.preferences.game.fullscreenKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.fullscreenKey.getKeyCode())) ? "" : " + ")) + (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.fullscreenKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.fullscreenKey.getKeyCode())) ? "" : KeyEvent.getKeyText(Client.instance.preferences.game.fullscreenKey.getKeyCode()))).setBorderColor(kDefID == 3 ? BCK : BC);
 
     private Stack<Section> sectionStack = new Stack<Section>();
 
@@ -72,8 +73,9 @@ public class GuiOptions extends GuiScreen {
 	gameZoomButton = new GuiButton(this, 0, 100, 200, "gui.options.game.zoom." + (Client.instance.preferences.game.invertZoom ? "inverted" : "normal"));
 	gameHealthButton = new GuiButton(this, 0, 100, 200, "gui.options.game.health." + (Client.instance.preferences.game.health == 0 ? "relative" : Client.instance.preferences.game.health == 1 ? "absolute" : "both"));
 	gameKeysButton = new GuiButton(this, 0, 100, 200, "gui.options.game.keys");
-	absoluteKeyButton = new GuiButton(this, 1, 100, 200, "gui.options.game.keys.absolute").setTextData(KeyEvent.getKeyText(Client.instance.preferences.game.absoluteKey)).setBorderColor(kDefID == 1 ? BCK : BC);
-	collapseKeyButton = new GuiButton(this, 2, 100, 200, "gui.options.game.keys.collapse").setTextData(KeyEvent.getKeyText(Client.instance.preferences.game.collapseKey)).setBorderColor(kDefID == 2 ? BCK : BC);
+	absoluteKeyButton = new GuiButton(this, 1, 100, 200, "gui.options.game.keys.absolute").setTextData(Client.instance.preferences.game.absoluteKey == null ? "" : (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.absoluteKey.getModifiers()) + (Client.instance.preferences.game.absoluteKey.getModifiers() == 0 || KeyEvent.getKeyModifiersText(Client.instance.preferences.game.absoluteKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.absoluteKey.getKeyCode())) ? "" : " + ")) + (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.absoluteKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.absoluteKey.getKeyCode())) ? "" : KeyEvent.getKeyText(Client.instance.preferences.game.absoluteKey.getKeyCode()))).setBorderColor(kDefID == 1 ? BCK : BC);
+	collapseKeyButton = new GuiButton(this, 2, 100, 200, "gui.options.game.keys.collapse").setTextData(Client.instance.preferences.game.collapseKey == null ? "" : (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.collapseKey.getModifiers()) + (Client.instance.preferences.game.collapseKey.getModifiers() == 0 || KeyEvent.getKeyModifiersText(Client.instance.preferences.game.collapseKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.collapseKey.getKeyCode())) ? "" : " + ")) + (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.collapseKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.collapseKey.getKeyCode())) ? "" : KeyEvent.getKeyText(Client.instance.preferences.game.collapseKey.getKeyCode()))).setBorderColor(kDefID == 2 ? BCK : BC);
+	fullscreenKeyButton = new GuiButton(this, 3, 100, 200, "gui.options.game.keys.fullscreen").setTextData(Client.instance.preferences.game.fullscreenKey == null ? "" : (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.fullscreenKey.getModifiers()) + (Client.instance.preferences.game.fullscreenKey.getModifiers() == 0 || KeyEvent.getKeyModifiersText(Client.instance.preferences.game.fullscreenKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.fullscreenKey.getKeyCode())) ? "" : " + ")) + (KeyEvent.getKeyModifiersText(Client.instance.preferences.game.fullscreenKey.getModifiers()).contains(KeyEvent.getKeyText(Client.instance.preferences.game.fullscreenKey.getKeyCode())) ? "" : KeyEvent.getKeyText(Client.instance.preferences.game.fullscreenKey.getKeyCode()))).setBorderColor(kDefID == 3 ? BCK : BC);
 	setSection(section);
     }
 
@@ -160,12 +162,16 @@ public class GuiOptions extends GuiScreen {
 	} else if (section == Section.KEYS) {
 	    absoluteKeyButton.setX(leftMargin);
 	    absoluteKeyButton.setY(topMargin);
-	    absoluteKeyButton.setWidth(buttonWidthSmall);
+	    absoluteKeyButton.setWidth(buttonWidth);
 	    absoluteKeyButton.setHeight(buttonHeight);
-	    collapseKeyButton.setX(leftMargin + buttonWidthSmall + buttonSpacing);
-	    collapseKeyButton.setY(topMargin);
-	    collapseKeyButton.setWidth(buttonWidthSmall);
+	    collapseKeyButton.setX(leftMargin);
+	    collapseKeyButton.setY(topMargin + buttonHeight + buttonSpacing);
+	    collapseKeyButton.setWidth(buttonWidth);
 	    collapseKeyButton.setHeight(buttonHeight);
+	    fullscreenKeyButton.setX(leftMargin);
+	    fullscreenKeyButton.setY(topMargin + (buttonHeight + buttonSpacing)* 2);
+	    fullscreenKeyButton.setWidth(buttonWidth);
+	    fullscreenKeyButton.setHeight(buttonHeight);
 	}
 	super.render(g2d, width, height);
     }
@@ -226,6 +232,10 @@ public class GuiOptions extends GuiScreen {
 		    keyDefinition = true;
 		    kDefID = collapseKeyButton.getId();
 		    this.rebuild();
+		} else if (button == fullscreenKeyButton) {
+		    keyDefinition = true;
+		    kDefID = fullscreenKeyButton.getId();
+		    this.rebuild();
 		} else if (arrowButtons.contains(button)) {
 		    Client.instance.preferences.game.arrow = button.getId();
 		    this.rebuild();
@@ -246,17 +256,34 @@ public class GuiOptions extends GuiScreen {
 
 		// Key Definitions
 		else if (keyDefinition) {
-		    if (key == KeyEvent.VK_ESCAPE)
-			;
+		    if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN || key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT)
+		    {
+			keyDefinition = false;
+			kDefID = 0;
+		    }
 		    else if (kDefID == absoluteKeyButton.getId())
-			Client.instance.preferences.game.absoluteKey = key;
+			Client.instance.preferences.game.absoluteKey = (KeyEvent) e.getSource();
 		    else if (kDefID == collapseKeyButton.getId())
-			Client.instance.preferences.game.collapseKey = key;
-		    keyDefinition = false;
-		    kDefID = 0;
+			Client.instance.preferences.game.collapseKey = (KeyEvent) e.getSource();
+		    else if (kDefID == fullscreenKeyButton.getId())
+			Client.instance.preferences.game.fullscreenKey = (KeyEvent) e.getSource();
 		    this.rebuild();
 		}
 	    }
+	}
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+	super.keyReleased(e);
+
+	// Key Definitions
+	if (keyDefinition) {
+	    if (!(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isMetaDown() || e.isShiftDown())) {
+		keyDefinition = false;
+		kDefID = 0;
+	    }
+	    this.rebuild();
 	}
     }
 
@@ -331,6 +358,7 @@ public class GuiOptions extends GuiScreen {
 	case KEYS:
 	    controlList.add(absoluteKeyButton);
 	    controlList.add(collapseKeyButton);
+	    controlList.add(fullscreenKeyButton);
 	    break;
 	}
 	controlList.add(backButton);

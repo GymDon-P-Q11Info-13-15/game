@@ -40,6 +40,7 @@
 		"gui.options.game.keys": "Keyboard settings",
 		"gui.options.game.keys.absolute": "Absolute HP Display: %s",
 		"gui.options.game.keys.collapse": "Collapse GUI: %s",
+		"gui.options.game.keys.fullscreen": "Fullscreen: %s",
 		"gui.server.select": "Server selection",
 		"gui.server.start": "Join Server",
 		"gui.server.add": "Add Server",

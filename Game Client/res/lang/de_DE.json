@@ -39,6 +39,7 @@
 		"gui.options.game.keys": "Tastatureinstellungen",
 		"gui.options.game.keys.absolute": "Absolute HP Anzeige: %s",
 		"gui.options.game.keys.collapse": "GUI schließen: %s",
+		"gui.options.game.keys.fullscreen": "Vollbild: %s",
 		"gui.server.select": "Serverauswahl",
 		"gui.back.mainmenu": "Zurück zum Hauptmenü",
 		"gui.back": "Zurück",
