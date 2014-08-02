@@ -124,7 +124,6 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		    Font f = Client.instance.translation.font.deriveFont(50F);
 		    String te = Client.instance.translation.translate("game.gold.missing");
 		    int cWidth = (int) (f.getStringBounds(te, frc).getWidth());
-		    int cHeight = (int) (f.getStringBounds(te, frc).getHeight());
 		    g2d.setFont(f);
 		    g2d.setColor(new Color(0xEDE275));
 		    g2d.drawString(te, (guiWidth - 40) / 2 - cWidth / 2, guiHeight - 40);
@@ -186,7 +185,6 @@ public class GuiGameMenu extends Gui implements MouseInputListener {
 		    Font f = Client.instance.translation.font.deriveFont(50F);
 		    String te = Client.instance.translation.translate("game.gold.missing");
 		    int cWidth = (int) (f.getStringBounds(te, frc).getWidth());
-		    int cHeight = (int) (f.getStringBounds(te, frc).getHeight());
 		    g2d.setFont(f);
 		    g2d.setColor(new Color(0xEDE275));
 		    g2d.drawString(te, (guiWidth - 40) / 2 - cWidth / 2, guiHeight - 40);

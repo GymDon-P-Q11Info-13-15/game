@@ -16,6 +16,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.event.MouseInputListener;
 
@@ -67,8 +69,11 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private boolean stackErrHP = false;
     private boolean stackErrClass = false;
     private GameObject errObject;
-    private int healthOptionRAM;
+    private int healthOptionRAM = -1;
     private boolean healthUpToDate = false;
+    private int phaseTime = 120;
+    private int leftTime = phaseTime;
+    private Timer phaseTimer;
     public boolean attack = false;
     public boolean move = false;
     public boolean stack = false;
@@ -84,6 +89,28 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
     @Override
     public void render(Graphics2D g2do, int width, int height) {
+	if(Client.instance.currentScreen == null && phaseTimer == null)
+	{
+	    phaseTimer = new Timer();
+	    phaseTimer.schedule(new TimerTask() {
+		    @Override
+		    public void run() {
+			if(leftTime > 0)
+			    leftTime--;
+			else
+			{
+			    leftTime = phaseTime;
+			    Client.instance.mapren.actionPerformed(new ActionEvent(gameStateButton, ActionEvent.ACTION_PERFORMED, null));
+			}
+		    }
+		  }, 1000, 1000);
+	}
+	else if(Client.instance.currentScreen != null && phaseTimer != null)
+	{
+	    phaseTimer.cancel();
+	    phaseTimer.purge();
+	    phaseTimer = null;
+	}
 	Client.instance.game.gm.run();
 	cache = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 	Graphics2D g2d = cache.createGraphics();
@@ -388,7 +415,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	g2d.dispose();
 	g2do.drawImage(cache, 0, 0, null);
 
-	// Rendering Round and Phase and activePlayer
+	// Rendering Round, Phase and activePlayer
 	int p = Client.instance.game.phase;
 	int r = Client.instance.game.round;
 	String phase = Client.instance.translation.translate("game.phase." + (p % 3 == 0 ? "build" : p % 3 == 1 ? "move" : p % 3 == 2 ? "attack" : p));
@@ -400,11 +427,19 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	g2do.setColor(Client.instance.game.activePlayer.color.getColor());
 	g2do.drawString(player, 20, 105);
 
-	// Rendering Gold
+	// Rendering Gold and phaseTimer
 	g2do.setFont(fontGold);
 	g2do.setColor(goldColor);
 	String gold = Client.instance.game.GoldDif == 0 ? "" + Client.instance.game.activePlayer.gold : (Client.instance.game.activePlayer.gold - Client.instance.game.GoldDif) + " + " + Client.instance.game.GoldDif;
 	g2do.drawString(Client.instance.translation.translate("game.gold") + ": " + gold, 20, 150);
+	g2do.setFont(fontGold);
+	if(leftTime > 15)
+	    g2do.setColor(Color.WHITE);
+	else if(leftTime % 2 == 0)
+	    g2do.setColor(Color.RED);
+	else
+	    g2do.setColor(Color.WHITE);
+	g2do.drawString(leftTime / 60 + ":" + ("00" + leftTime % 60).substring(Integer.toString(leftTime % 60).length()), 20, 200);
 
 	int botMargin = height / 32;
 	int buttonWidth = width - width / 4;
@@ -555,7 +590,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     @Override
     public void mouseClicked(MouseEvent e) {
 	super.mouseClicked(e);
-
+	
 	if (mapCache == null)
 	    return;
 	int mapWidth = mapCache.length;
@@ -736,7 +771,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    if (e.getSource() instanceof GuiButton) {
 		GuiButton button = (GuiButton) e.getSource();
 		if (button == gameStateButton)
+		{
 		    Client.instance.game.gm.nextPhase();
+		    leftTime = phaseTime;
+		}
 	    }
 
 	    // GameObjects
@@ -798,8 +836,9 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     public void keyReleased(KeyEvent e) {
 	super.keyReleased(e);
 	
-	if (e.getKeyCode() == Client.instance.preferences.game.absoluteKey.getKeyCode() || e.getModifiers() == Client.instance.preferences.game.absoluteKey.getModifiers()) {
+	if (e.getKeyCode() == Client.instance.preferences.game.absoluteKey.getKeyCode() && e.getModifiers() == Client.instance.preferences.game.absoluteKey.getModifiers()) {
 	    Client.instance.preferences.game.health = healthOptionRAM;
+	    healthUpToDate = false;
 	}
     }
 

@@ -84,8 +84,8 @@ public class GuiCredits extends GuiScreen {
 	    // Keys
 	    if (e.getSource() instanceof KeyEvent) {
 		int key = ((KeyEvent) e.getSource()).getKeyCode();
-		if (key == KeyEvent.VK_ESCAPE) {
-		}
+		if (key == KeyEvent.VK_ESCAPE)
+		    actionPerformed(new ActionEvent(backButton, ActionEvent.ACTION_PERFORMED, null));
 	    }
 	}
     }

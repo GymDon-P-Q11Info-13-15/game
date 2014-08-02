@@ -7,19 +7,17 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 import de.gymdon.inf1315.game.client.Client;
 
 public class GuiEndMenu extends GuiScreen {
 
-    private GuiButton mainMenu = new GuiButton(this, -1, 20, 20, "gui.back.mainmenu");
+    private GuiButton backButton = new GuiButton(this, -1, 20, 20, "gui.back");
 
     public GuiEndMenu() {
-	controlList.add(mainMenu);
+	controlList.add(backButton);
     }
 
     @Override
@@ -70,10 +68,10 @@ public class GuiEndMenu extends GuiScreen {
 	int buttonHeight = height / 10;
 	int leftMargin = width / 2 - buttonWidth / 2;
 
-	mainMenu.setX(leftMargin);
-	mainMenu.setY(height - botMargin - buttonHeight);
-	mainMenu.setWidth(buttonWidth);
-	mainMenu.setHeight(buttonHeight);
+	backButton.setX(leftMargin);
+	backButton.setY(height - botMargin - buttonHeight);
+	backButton.setWidth(buttonWidth);
+	backButton.setHeight(buttonHeight);
 	super.render(g2d, width, height);
     }
 
@@ -83,15 +81,15 @@ public class GuiEndMenu extends GuiScreen {
 	    // Buttons
 	    if (e.getSource() instanceof GuiButton) {
 		GuiButton button = (GuiButton) e.getSource();
-		if (button == mainMenu)
-		    Client.instance.setGuiScreen(new GuiMainMenu());
+		if (button == backButton)
+		    Client.instance.setGuiScreen(new GuiCredits(new GuiMainMenu()));
 	    }
 
 	    // Keys
 	    if (e.getSource() instanceof KeyEvent) {
 		int key = ((KeyEvent) e.getSource()).getKeyCode();
 		if (key == KeyEvent.VK_ESCAPE) {
-		    actionPerformed(new ActionEvent(mainMenu, ActionEvent.ACTION_PERFORMED, null));
+		    actionPerformed(new ActionEvent(backButton, ActionEvent.ACTION_PERFORMED, null));
 		    Client.instance.mapren.firstClick = false;
 		}
 	    }

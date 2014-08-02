@@ -41,7 +41,6 @@ public class GuiOptions extends GuiScreen {
     // -- Arrows
     private List<GuiButton> arrowButtons = new ArrayList<GuiButton>();
     // -- Keys
-    private boolean keyDefinition = false;
     private int kDefID = 0;
     private int BC = backButton.getBorderColor();
     private int BCK = 0xFF8C00;
@@ -186,7 +185,7 @@ public class GuiOptions extends GuiScreen {
     public void actionPerformed(ActionEvent e) {
 	if (e.getID() == ActionEvent.ACTION_PERFORMED) {
 	    // Buttons
-	    if (e.getSource() instanceof GuiButton && !keyDefinition) {
+	    if (e.getSource() instanceof GuiButton && kDefID == 0) {
 		GuiButton button = (GuiButton) e.getSource();
 		if (button == backButton) {
 		    setSection(sectionStack.isEmpty() ? null : sectionStack.peek(), true);
@@ -225,15 +224,12 @@ public class GuiOptions extends GuiScreen {
 		} else if (button == gameKeysButton) {
 		    setSection(Section.KEYS);
 		} else if (button == absoluteKeyButton) {
-		    keyDefinition = true;
 		    kDefID = absoluteKeyButton.getId();
 		    this.rebuild();
 		} else if (button == collapseKeyButton) {
-		    keyDefinition = true;
 		    kDefID = collapseKeyButton.getId();
 		    this.rebuild();
 		} else if (button == fullscreenKeyButton) {
-		    keyDefinition = true;
 		    kDefID = fullscreenKeyButton.getId();
 		    this.rebuild();
 		} else if (arrowButtons.contains(button)) {
@@ -249,18 +245,15 @@ public class GuiOptions extends GuiScreen {
 		int key = ((KeyEvent) e.getSource()).getKeyCode();
 
 		// Keys Pressed
-		if (!keyDefinition) {
+		if (kDefID == 0) {
 		    if (key == KeyEvent.VK_ESCAPE)
 			actionPerformed(new ActionEvent(backButton, ActionEvent.ACTION_PERFORMED, null));
 		}
 
 		// Key Definitions
-		else if (keyDefinition) {
+		else if (kDefID != 0) {
 		    if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN || key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT)
-		    {
-			keyDefinition = false;
 			kDefID = 0;
-		    }
 		    else if (kDefID == absoluteKeyButton.getId())
 			Client.instance.preferences.game.absoluteKey = (KeyEvent) e.getSource();
 		    else if (kDefID == collapseKeyButton.getId())
@@ -278,11 +271,9 @@ public class GuiOptions extends GuiScreen {
 	super.keyReleased(e);
 
 	// Key Definitions
-	if (keyDefinition) {
-	    if (!(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isMetaDown() || e.isShiftDown())) {
-		keyDefinition = false;
+	if (kDefID != 0) {
+	    if (!(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isMetaDown() || e.isShiftDown()))
 		kDefID = 0;
-	    }
 	    this.rebuild();
 	}
     }
