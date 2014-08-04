@@ -1,7 +1,9 @@
 package de.gymdon.inf1315.game.render;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Composite;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -26,6 +28,7 @@ import de.gymdon.inf1315.game.client.*;
 import de.gymdon.inf1315.game.render.gui.GuiEndMenu;
 import de.gymdon.inf1315.game.render.gui.GuiGameMenu;
 import de.gymdon.inf1315.game.render.gui.GuiButton;
+import de.gymdon.inf1315.game.render.gui.GuiMainMenu;
 import de.gymdon.inf1315.game.render.gui.GuiPauseMenu;
 import de.gymdon.inf1315.game.render.gui.GuiScreen;
 
@@ -74,6 +77,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private int phaseTime = 120;
     private int leftTime = phaseTime;
     private Timer phaseTimer;
+    private int tutorialPhase = -1;
+    private int tutorialPhases = 5;
     public boolean attack = false;
     public boolean move = false;
     public boolean stack = false;
@@ -87,26 +92,30 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	controlList.add(gameStateButton);
     }
 
+    public void tutorial() {
+	tutorialPhase = 0;
+    }
+
     @Override
     public void render(Graphics2D g2do, int width, int height) {
-	if(Client.instance.currentScreen == null && phaseTimer == null)
-	{
+	if (Client.instance.currentScreen == null && phaseTimer == null) {
 	    phaseTimer = new Timer();
 	    phaseTimer.schedule(new TimerTask() {
-		    @Override
-		    public void run() {
-			if(leftTime > 0)
-			    leftTime--;
-			else
-			{
-			    leftTime = phaseTime;
-			    Client.instance.mapren.actionPerformed(new ActionEvent(gameStateButton, ActionEvent.ACTION_PERFORMED, null));
-			}
+		@Override
+		public void run() {
+		    if (leftTime > 0)
+			leftTime--;
+		    else {
+			leftTime = phaseTime;
+			Client.instance.mapren.actionPerformed(new ActionEvent(gameStateButton, ActionEvent.ACTION_PERFORMED, null));
 		    }
-		  }, 1000, 1000);
-	}
-	else if(Client.instance.currentScreen != null && phaseTimer != null)
-	{
+		}
+	    }, 1000, 1000);
+	} else if (Client.instance.currentScreen != null && phaseTimer != null) {
+	    phaseTimer.cancel();
+	    phaseTimer.purge();
+	    phaseTimer = null;
+	} else if (Client.instance.currentScreen == null && phaseTimer != null && tutorialPhase >= 0) {
 	    phaseTimer.cancel();
 	    phaseTimer.purge();
 	    phaseTimer = null;
@@ -433,13 +442,174 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	String gold = Client.instance.game.GoldDif == 0 ? "" + Client.instance.game.activePlayer.gold : (Client.instance.game.activePlayer.gold - Client.instance.game.GoldDif) + " + " + Client.instance.game.GoldDif;
 	g2do.drawString(Client.instance.translation.translate("game.gold") + ": " + gold, 20, 150);
 	g2do.setFont(fontGold);
-	if(leftTime > 15)
+	if (leftTime > 15)
 	    g2do.setColor(Color.WHITE);
-	else if(leftTime % 2 == 0)
+	else if (leftTime % 2 == 0)
 	    g2do.setColor(Color.RED);
 	else
 	    g2do.setColor(Color.WHITE);
 	g2do.drawString(leftTime / 60 + ":" + ("00" + leftTime % 60).substring(Integer.toString(leftTime % 60).length()), 20, 200);
+
+	// Rendering TutorialText
+	g2do.setFont(fontPlayer);
+	g2do.setColor(Color.WHITE);
+	String toText = "";
+	String tText = "";
+	int toX = 0;
+	int toY = 0;
+	if (tutorialPhase == 0) {
+	    toText = round + ": " + phase;
+	    tText = Client.instance.translation.translate("tutorial.round");
+	    toX = 20;
+	    toY = 50;
+	}
+	if (tutorialPhase == 1) {
+	    toText = player;
+	    tText = Client.instance.translation.translate("tutorial.player");
+	    toX = 20;
+	    toY = 105;
+	}
+	if (tutorialPhase == 2) {
+	    toText = Client.instance.translation.translate("game.gold") + ": " + gold;
+	    tText = Client.instance.translation.translate("tutorial.gold");
+	    toX = 20;
+	    toY = 150;
+	}
+	if (tutorialPhase == 3) {
+	    toText = leftTime / 60 + ":" + ("00" + leftTime % 60).substring(Integer.toString(leftTime % 60).length());
+	    tText = Client.instance.translation.translate("tutorial.timer");
+	    toX = 20;
+	    toY = 200;
+	}
+	if (tutorialPhase == 4) {
+	    int tileSize = (int) (this.tileSize * zoom);
+	    tText = Client.instance.translation.translate("tutorial.gameobject");
+	    toX = (buildings[1][mapHeight / 2 - 1].x + buildings[1][mapHeight / 2 - 1].getSizeX()) * tileSize - scrollX;
+	    toY = (buildings[1][mapHeight / 2 - 1].y + buildings[1][mapHeight / 2 - 1].getSizeY()) * tileSize - scrollY;
+	}
+	if (tutorialPhase == 5) {
+	    tText = Client.instance.translation.translate("tutorial.button", Client.instance.translation.translate("game.phase.build"), Client.instance.translation.translate("game.phase.move"), Client.instance.translation.translate("game.phase.attack"));
+	    toX = gameStateButton.getX();
+	    toY = gameStateButton.getY();
+	}
+	if (toX != 0 && toY != 0 && tText != "") {
+	    int tSize = mapWidth * this.tileSize / 4;
+	    int tt = ((int) ((tSize / 2) * Math.sin(Math.PI / 12)));
+	    int toWidth = (int) (fontPlayer.getStringBounds(toText, frc).getWidth());
+	    int tWidth = (int) (fontPlayer.getStringBounds(tText, frc).getWidth());
+	    int tHeight = (int) (fontPlayer.getStringBounds(tText, frc).getHeight());
+	    int sW = 0;
+	    int bW = 0;
+	    int tPosX = 0;
+	    int tPosY = 0;
+	    boolean rightSide = false;
+	    if (toX < width / 2 && toY < height / 2) {
+		sW = -11;
+		bW = -2;
+		tPosX = tSize / 2 + toX + toWidth;
+		tPosY = tt + toY;
+		rightSide = false;
+	    }
+	    if (toX < width / 2 && toY > height / 2) {
+		sW = 11;
+		bW = 2;
+		tPosX = tSize / 2 + toX + toWidth;
+		tPosY = -tt + toY;
+		rightSide = false;
+	    }
+	    if (toX > width / 2 && toY < height / 2) {
+		sW = -(180 - 11 - 2);
+		bW = -2;
+		tPosX = -(tSize / 2) + toX - toWidth;
+		tPosY = tt + toY;
+		rightSide = true;
+	    }
+	    if (toX > width / 2 && toY > height / 2) {
+		sW = 180 - 11 - 2;
+		bW = 2;
+		tPosX = -(tSize / 2) + toX - toWidth;
+		tPosY = -tt + toY;
+		rightSide = true;
+	    }
+	    g2do.fillArc(-tSize / 2 + toX + toWidth, -tSize / 2 + toY, tSize, tSize, sW, bW);
+	    String[] tTextA = tText.split(" ");
+	    String inrow = "";
+	    List<String> rowText = new ArrayList<String>();
+	    int row = 0;
+	    int sRow = 0;
+	    boolean outOfScreen = false;
+	    BufferedImage tTextImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
+	    Graphics2D g2t = tTextImage.createGraphics();
+	    g2t.setFont(fontPlayer);
+	    g2t.setColor(Color.WHITE);
+	    for (int i = 0; i < tTextA.length; i++) {
+		tWidth = (int) (fontPlayer.getStringBounds(inrow + tTextA[i], frc).getWidth());
+		tHeight = (int) (fontPlayer.getStringBounds(inrow + tTextA[i], frc).getHeight());
+		if (rightSide && !outOfScreen) {
+		    if (tPosX - tWidth > 0)
+			inrow += tTextA[i] + " ";
+		    else {
+			rowText.add(inrow);
+			inrow = "";
+			i--;
+			row++;
+		    }
+		    if (i == tTextA.length - 1)
+		    {
+			rowText.add(inrow);
+		    }
+		    if (tPosY + tHeight / 2 + (tHeight * row) > height)
+		    {
+			int rrr = row - 1;
+			while (tPosY + tHeight / 2 + (tHeight * rrr) > height);
+			{
+			    rrr--;
+			}
+			row += (row - rrr);
+			outOfScreen = true;
+		    }
+		} else if (!rightSide && !outOfScreen) {
+		    if (tPosX + tWidth <= width && !rightSide)
+			inrow += tTextA[i] + " ";
+		    else {
+			rowText.add(inrow);
+			inrow = "";
+			i--;
+			row++;
+		    }
+		    if (i == tTextA.length - 1)
+		    {
+			rowText.add(inrow);
+		    }
+		    if (tPosY + (tHeight * row) > height)
+			outOfScreen = true;
+		} else {
+		    inrow = "";
+		    rowText.clear();
+		    i = -1;
+		    row = -row;
+		    sRow = row;
+		    float alphaLevel = 0F;
+		    Composite newComposite = AlphaComposite.getInstance(AlphaComposite.CLEAR, alphaLevel);
+		    Composite c = g2t.getComposite();
+		    g2t.setComposite(newComposite);
+		    g2t.fillRect(0, 0, width, height);
+		    g2t.setComposite(c);
+		    outOfScreen = false;
+		}
+	    }
+	    
+	    for(int i = 0; i < rowText.size(); i++)
+	    {
+		int inWidth = (int) (fontPlayer.getStringBounds(rowText.get(i), frc).getWidth());
+		if (rightSide)
+		    g2t.drawString(rowText.get(i), tPosX - inWidth, tPosY + tHeight / 2 + (tHeight * (i + sRow)));
+		else
+		    g2t.drawString(rowText.get(i), tPosX, tPosY + (tHeight * (i + sRow)));
+	    }
+	    g2t.dispose();
+	    g2do.drawImage(tTextImage, 0, 0, width, height, null);
+	}
 
 	int botMargin = height / 32;
 	int buttonWidth = width - width / 4;
@@ -452,14 +622,19 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	gameStateButton.setY(height - botMargin - buttonHeight);
 	gameStateButton.setWidth(buttonWidthVerySmall);
 	gameStateButton.setHeight(buttonHeight);
-	gameStateButton.setText(Client.instance.game.gm.phaseButtonText());
+	if (tutorialPhase >= 0)
+	    gameStateButton.setText("tutorial.goOn");
+	else
+	    gameStateButton.setText(Client.instance.game.gm.phaseButtonText());
+	if (tutorialPhase == tutorialPhases)
+	    gameStateButton.setText("gui.back.mainmenu");
 	super.render(g2do, width, height);
 	if (Client.instance.game.gm.won) {
 	    Client.instance.setGuiScreen(new GuiEndMenu());
 	    firstClick = true;
 	}
     }
-
+    
     public BufferedImage getMapBackground() {
 	return cache;
     }
@@ -590,7 +765,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     @Override
     public void mouseClicked(MouseEvent e) {
 	super.mouseClicked(e);
-	
+
 	if (mapCache == null)
 	    return;
 	int mapWidth = mapCache.length;
@@ -636,7 +811,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
 	    Client.instance.game.GoldDif = 0;
 	    field = new boolean[mapWidth][mapHeight];
-
 	    // Clicking on Unit
 	    if (units[x][y] != null && units[x][y].owner == Client.instance.game.activePlayer) {
 		field[x][y] = true;
@@ -770,9 +944,13 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    // Buttons
 	    if (e.getSource() instanceof GuiButton) {
 		GuiButton button = (GuiButton) e.getSource();
-		if (button == gameStateButton)
-		{
-		    Client.instance.game.gm.nextPhase();
+		if (button == gameStateButton) {
+		    if (tutorialPhase >= 0)
+			tutorialPhase++;
+		    else
+			Client.instance.game.gm.nextPhase();
+		    if (tutorialPhase == tutorialPhases + 1)
+			Client.instance.setGuiScreen(new GuiMainMenu());
 		    leftTime = phaseTime;
 		}
 	    }
@@ -835,7 +1013,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     @Override
     public void keyReleased(KeyEvent e) {
 	super.keyReleased(e);
-	
+
 	if (e.getKeyCode() == Client.instance.preferences.game.absoluteKey.getKeyCode() && e.getModifiers() == Client.instance.preferences.game.absoluteKey.getModifiers()) {
 	    Client.instance.preferences.game.health = healthOptionRAM;
 	    healthUpToDate = false;

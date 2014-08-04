@@ -17,14 +17,12 @@ public class GuiMainMenu extends GuiScreen {
     private GuiButton newGame = new GuiButton(this, 0, 20, 20, "gui.game.new");
     private GuiButton options = new GuiButton(this, 1, 20, 20, "gui.options");
     private GuiButton credits = new GuiButton(this, 2, 20, 20, "gui.credits");
-    private GuiButton test = new GuiButton(this, 2, 20, 20, "gui.offline");
     private GuiButton exit = new GuiButton(this, -1, 20, 20, "gui.exit");
 
     public GuiMainMenu() {
 	controlList.add(newGame);
 	controlList.add(options);
 	controlList.add(credits);
-	controlList.add(test);
 	controlList.add(exit);
     }
 
@@ -32,13 +30,12 @@ public class GuiMainMenu extends GuiScreen {
 	newGame = new GuiButton(this, 0, 20, 20, "gui.game.new");
 	options = new GuiButton(this, 1, 20, 20, "gui.options");
 	credits = new GuiButton(this, 2, 20, 20, "gui.credits");
-	test = new GuiButton(this, 2, 20, 20, "gui.test");
+	credits = new GuiButton(this, 2, 20, 20, "tutorial");
 	exit = new GuiButton(this, -1, 20, 20, "gui.exit");
 	controlList.clear();
 	controlList.add(newGame);
 	controlList.add(options);
 	controlList.add(credits);
-	controlList.add(test);
 	controlList.add(exit);
     }
 
@@ -88,11 +85,6 @@ public class GuiMainMenu extends GuiScreen {
 	credits.setWidth(buttonWidth);
 	credits.setHeight(buttonHeight);
 
-	test.setX(leftMargin);
-	test.setY(height - buttonSpacing - buttonHeight);
-	test.setWidth(buttonWidthVerySmall);
-	test.setHeight(buttonHeight);
-
 	exit.setX(width - leftMargin - buttonWidthVerySmall);
 	exit.setY(height - buttonSpacing - buttonHeight);
 	exit.setWidth(buttonWidthVerySmall);
@@ -107,9 +99,7 @@ public class GuiMainMenu extends GuiScreen {
 	    if (e.getSource() instanceof GuiButton) {
 		GuiButton button = (GuiButton) e.getSource();
 		if (button == newGame)
-		    Client.instance.setGuiScreen(new GuiSelectServer(this));
-		else if (button == test)
-		    Client.instance.activateMap(true);
+		    Client.instance.setGuiScreen(new GuiNewGameMenu(this));
 		else if (button == options)
 		    Client.instance.setGuiScreen(new GuiOptions(this));
 		else if (button == credits)
@@ -121,8 +111,8 @@ public class GuiMainMenu extends GuiScreen {
 	    // Keys
 	    if (e.getSource() instanceof KeyEvent) {
 		int key = ((KeyEvent) e.getSource()).getKeyCode();
-		if (key == KeyEvent.VK_ESCAPE) {
-		}
+		if (key == KeyEvent.VK_ESCAPE)
+		    ;
 	    }
 	}
     }
