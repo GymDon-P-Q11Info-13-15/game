@@ -537,7 +537,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    List<String> rowText = new ArrayList<String>();
 	    int row = 0;
 	    int sRow = 0;
-	    boolean outOfScreen = false;
 	    BufferedImage tTextImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
 	    Graphics2D g2t = tTextImage.createGraphics();
 	    g2t.setFont(fontPlayer);
@@ -545,7 +544,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    for (int i = 0; i < tTextA.length; i++) {
 		tWidth = (int) (fontPlayer.getStringBounds(inrow + tTextA[i], frc).getWidth());
 		tHeight = (int) (fontPlayer.getStringBounds(inrow + tTextA[i], frc).getHeight());
-		if (rightSide && !outOfScreen) {
+		if (rightSide) {
 		    if (tPosX - tWidth > 0)
 			inrow += tTextA[i] + " ";
 		    else {
@@ -554,21 +553,19 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 			i--;
 			row++;
 		    }
-		    if (i == tTextA.length - 1)
-		    {
-			rowText.add(inrow);
+		    if (i == tTextA.length - 1) {
+			if (tPosY + tHeight / 2 + (tHeight * row) > height) {
+			    sRow = 0;
+			    while (tPosY + tHeight / 2 + (tHeight * (row - sRow)) > height)
+				sRow++;
+			    row = -sRow;
+			    inrow = "";
+			    rowText.clear();
+			    i = -1;
+			} else
+			    rowText.add(inrow);
 		    }
-		    if (tPosY + tHeight / 2 + (tHeight * row) > height)
-		    {
-			int rrr = row - 1;
-			while (tPosY + tHeight / 2 + (tHeight * rrr) > height);
-			{
-			    rrr--;
-			}
-			row += (row - rrr);
-			outOfScreen = true;
-		    }
-		} else if (!rightSide && !outOfScreen) {
+		} else if (!rightSide) {
 		    if (tPosX + tWidth <= width && !rightSide)
 			inrow += tTextA[i] + " ";
 		    else {
@@ -577,35 +574,30 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 			i--;
 			row++;
 		    }
-		    if (i == tTextA.length - 1)
-		    {
-			rowText.add(inrow);
+		    if (i == tTextA.length - 1) {
+			if (tPosY + (tHeight * row) > height) {
+			    sRow = 1;
+			    while (tPosY + (tHeight * (row - sRow)) > height) {
+				sRow++;
+			    }
+			    row = -sRow;
+			    System.out.println("Rows: " + row);
+			    System.out.println("Missinge Rows: " + sRow);
+			    inrow = "";
+			    rowText.clear();
+			    i = -1;
+			} else
+			    rowText.add(inrow);
 		    }
-		    if (tPosY + (tHeight * row) > height)
-			outOfScreen = true;
-		} else {
-		    inrow = "";
-		    rowText.clear();
-		    i = -1;
-		    row = -row;
-		    sRow = row;
-		    float alphaLevel = 0F;
-		    Composite newComposite = AlphaComposite.getInstance(AlphaComposite.CLEAR, alphaLevel);
-		    Composite c = g2t.getComposite();
-		    g2t.setComposite(newComposite);
-		    g2t.fillRect(0, 0, width, height);
-		    g2t.setComposite(c);
-		    outOfScreen = false;
 		}
 	    }
-	    
-	    for(int i = 0; i < rowText.size(); i++)
-	    {
+
+	    for (int i = 0; i < rowText.size(); i++) {
 		int inWidth = (int) (fontPlayer.getStringBounds(rowText.get(i), frc).getWidth());
 		if (rightSide)
-		    g2t.drawString(rowText.get(i), tPosX - inWidth, tPosY + tHeight / 2 + (tHeight * (i + sRow)));
+		    g2t.drawString(rowText.get(i), tPosX - inWidth, tPosY + tHeight / 2 + (tHeight * (i - sRow)));
 		else
-		    g2t.drawString(rowText.get(i), tPosX, tPosY + (tHeight * (i + sRow)));
+		    g2t.drawString(rowText.get(i), tPosX, tPosY + (tHeight * (i - sRow)));
 	    }
 	    g2t.dispose();
 	    g2do.drawImage(tTextImage, 0, 0, width, height, null);
@@ -634,7 +626,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    firstClick = true;
 	}
     }
-    
+
     public BufferedImage getMapBackground() {
 	return cache;
     }

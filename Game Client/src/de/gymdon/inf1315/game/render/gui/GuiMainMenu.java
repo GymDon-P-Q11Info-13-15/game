@@ -30,7 +30,6 @@ public class GuiMainMenu extends GuiScreen {
 	newGame = new GuiButton(this, 0, 20, 20, "gui.game.new");
 	options = new GuiButton(this, 1, 20, 20, "gui.options");
 	credits = new GuiButton(this, 2, 20, 20, "gui.credits");
-	credits = new GuiButton(this, 2, 20, 20, "tutorial");
 	exit = new GuiButton(this, -1, 20, 20, "gui.exit");
 	controlList.clear();
 	controlList.add(newGame);
