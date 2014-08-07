@@ -78,7 +78,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private int leftTime = phaseTime;
     private Timer phaseTimer;
     private int tutorialPhase = -1;
-    private int tutorialPhases = 5;
+    private int tutorialPhases = 50;
     public boolean attack = false;
     public boolean move = false;
     public boolean stack = false;
@@ -98,7 +98,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 
     @Override
     public void render(Graphics2D g2do, int width, int height) {
-	if (Client.instance.currentScreen == null && phaseTimer == null) {
+	if (Client.instance.currentScreen == null && phaseTimer == null && tutorialPhase == -1) {
 	    phaseTimer = new Timer();
 	    phaseTimer.schedule(new TimerTask() {
 		@Override
@@ -109,6 +109,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 			leftTime = phaseTime;
 			Client.instance.mapren.actionPerformed(new ActionEvent(gameStateButton, ActionEvent.ACTION_PERFORMED, null));
 		    }
+		    if (leftTime <= phaseTime - 8)
+			Client.instance.game.GoldDif = 0;
 		}
 	    }, 1000, 1000);
 	} else if (Client.instance.currentScreen != null && phaseTimer != null) {
@@ -231,6 +233,9 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	g2d.setColor(Color.WHITE);
 
 	// Rendering Units
+	if (tutorialPhase == 7 && Client.instance.game.units[5][18] == null)
+	    Client.instance.game.units[5][18] = new Miner(Client.instance.game.player1, 5, 18);
+
 	Unit[][] units = Client.instance.game.units;
 	for (int x = 0; x < units.length; x++) {
 	    for (int y = 0; y < units[x].length; y++) {
@@ -450,7 +455,30 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    g2do.setColor(Color.WHITE);
 	g2do.drawString(leftTime / 60 + ":" + ("00" + leftTime % 60).substring(Integer.toString(leftTime % 60).length()), 20, 200);
 
-	// Rendering TutorialText
+	int botMargin = height / 32;
+	int buttonWidth = width - width / 4;
+	int buttonHeight = height / 10;
+	int buttonSpacing = buttonHeight / 4;
+	int rightMargin = width / 32;
+	int buttonWidthSmall = (buttonWidth - buttonSpacing) / 2;
+	int buttonWidthVerySmall = (buttonWidthSmall - buttonSpacing) / 2;
+	gameStateButton.setX(width - rightMargin - buttonWidthVerySmall);
+	gameStateButton.setY(height - botMargin - buttonHeight);
+	gameStateButton.setWidth(buttonWidthVerySmall);
+	gameStateButton.setHeight(buttonHeight);
+	if (tutorialPhase >= 0)
+	    gameStateButton.setText("tutorial.goOn");
+	else
+	    gameStateButton.setText(Client.instance.game.gm.phaseButtonText());
+	if (tutorialPhase == tutorialPhases)
+	    gameStateButton.setText("gui.back.mainmenu");
+	if (tutorialPhase >= 4 && tutorialPhase <= 10)
+	    gameStateButton.setEnabled(false);
+	if (tutorialPhase == 6)
+	    gameStateButton.setEnabled(true);
+	super.render(g2do, width, height);
+
+	// Rendering Tutorial
 	g2do.setFont(fontPlayer);
 	g2do.setColor(Color.WHITE);
 	String toText = "";
@@ -488,6 +516,25 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    toY = (buildings[1][mapHeight / 2 - 1].y + buildings[1][mapHeight / 2 - 1].getSizeY()) * tileSize - scrollY;
 	}
 	if (tutorialPhase == 5) {
+	    tText = Client.instance.translation.translate("tutorial.action", Client.instance.translation.translate("game.option.spawn"));
+	    toX = (int) ((guiPosX + 500) * zoom) - scrollX;
+	    toY = (int) ((guiPosY + 50) * zoom) - scrollY;
+	}
+	if (tutorialPhase == 6) {
+	    int tileSize = (int) (this.tileSize * zoom);
+	    tText = Client.instance.translation.translate("tutorial.win");
+	    toX = (buildings[mapWidth - 3][mapHeight / 2 - 1].x) * tileSize - scrollX;
+	    toY = (buildings[mapWidth - 3][mapHeight / 2 - 1].y) * tileSize - scrollY;
+	}
+	if (tutorialPhase == 7) {
+	    Client.instance.game.phase = 1;
+	    int tileSize = (int) (this.tileSize * zoom);
+	    tText = Client.instance.translation.translate("tutorial.build", Client.instance.translation.translate("game.phase.move"), Client.instance.translation.translate("game.option.build"));
+	    toX = 6 * tileSize - scrollX;
+	    toY = 19 * tileSize - scrollY;
+	}
+	if (tutorialPhase == 8);
+	if (tutorialPhase == 9) {
 	    tText = Client.instance.translation.translate("tutorial.button", Client.instance.translation.translate("game.phase.build"), Client.instance.translation.translate("game.phase.move"), Client.instance.translation.translate("game.phase.attack"));
 	    toX = gameStateButton.getX();
 	    toY = gameStateButton.getY();
@@ -518,7 +565,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		rightSide = false;
 	    }
 	    if (toX > width / 2 && toY < height / 2) {
-		sW = -(180 - 11 - 2);
+		sW = -180 + 11 + 2;
 		bW = -2;
 		tPosX = -(tSize / 2) + toX - toWidth;
 		tPosY = tt + toY;
@@ -540,52 +587,114 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    BufferedImage tTextImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
 	    Graphics2D g2t = tTextImage.createGraphics();
 	    g2t.setFont(fontPlayer);
-	    g2t.setColor(Color.WHITE);
+	    g2t.setColor(Color.BLACK);
+	    int timesOutOfScreen = 0;
+	    int lNotFitting = -1;
 	    for (int i = 0; i < tTextA.length; i++) {
+		if (timesOutOfScreen > 15)
+		    break;
+
 		tWidth = (int) (fontPlayer.getStringBounds(inrow + tTextA[i], frc).getWidth());
 		tHeight = (int) (fontPlayer.getStringBounds(inrow + tTextA[i], frc).getHeight());
 		if (rightSide) {
+		    if (i == 0 && tPosX - tWidth < 0)
+			break;
 		    if (tPosX - tWidth > 0)
 			inrow += tTextA[i] + " ";
 		    else {
-			rowText.add(inrow);
-			inrow = "";
-			i--;
-			row++;
+			if (i == lNotFitting) {
+			    inrow = tTextA[i];
+			    String a = inrow.substring(0, inrow.length() / 2) + "-";
+			    String b = inrow.substring(inrow.length() / 2);
+			    String[] Backup = tTextA.clone();
+			    tTextA = new String[Backup.length + 1];
+			    for (int j = 0; j < tTextA.length; j++) {
+				if (j < i)
+				    tTextA[j] = Backup[j];
+				else if (j == i) {
+				    tTextA[i] = a;
+				    tTextA[i + 1] = b;
+				    j++;
+				} else
+				    tTextA[j] = Backup[j - 1];
+			    }
+			    lNotFitting = -1;
+			    row = 0;
+			    inrow = "";
+			    rowText.clear();
+			    i = -1;
+			} else {
+			    rowText.add(inrow);
+			    inrow = "";
+			    lNotFitting = i;
+			    i--;
+			    row++;
+			}
 		    }
 		    if (i == tTextA.length - 1) {
 			if (tPosY + tHeight / 2 + (tHeight * row) > height) {
 			    sRow = 0;
-			    while (tPosY + tHeight / 2 + (tHeight * (row - sRow)) > height)
+			    while (tPosY + tHeight / 2 + (tHeight * (row - sRow)) > height) {
 				sRow++;
+				if (sRow > 50)
+				    break;
+			    }
 			    row = -sRow;
 			    inrow = "";
 			    rowText.clear();
 			    i = -1;
+			    timesOutOfScreen++;
 			} else
 			    rowText.add(inrow);
 		    }
 		} else if (!rightSide) {
+		    if (i == 0 && tPosX + tWidth > width)
+			break;
 		    if (tPosX + tWidth <= width && !rightSide)
 			inrow += tTextA[i] + " ";
 		    else {
-			rowText.add(inrow);
-			inrow = "";
-			i--;
-			row++;
+			if (i == lNotFitting) {
+			    inrow = tTextA[i];
+			    String a = inrow.substring(0, inrow.length() / 2) + "-";
+			    String b = inrow.substring(inrow.length() / 2);
+			    String[] Backup = tTextA.clone();
+			    tTextA = new String[Backup.length + 1];
+			    for (int j = 0; j < tTextA.length; j++) {
+				if (j < i)
+				    tTextA[j] = Backup[j];
+				else if (j == i) {
+				    tTextA[i] = a;
+				    tTextA[i + 1] = b;
+				    j++;
+				} else
+				    tTextA[j] = Backup[j - 1];
+			    }
+			    lNotFitting = -1;
+			    row = 0;
+			    inrow = "";
+			    rowText.clear();
+			    i = -1;
+			} else {
+			    lNotFitting = i;
+			    rowText.add(inrow);
+			    inrow = "";
+			    i--;
+			    row++;
+			}
 		    }
 		    if (i == tTextA.length - 1) {
 			if (tPosY + (tHeight * row) > height) {
 			    sRow = 1;
 			    while (tPosY + (tHeight * (row - sRow)) > height) {
 				sRow++;
+				if (sRow > 50)
+				    break;
 			    }
 			    row = -sRow;
-			    System.out.println("Rows: " + row);
-			    System.out.println("Missinge Rows: " + sRow);
 			    inrow = "";
 			    rowText.clear();
 			    i = -1;
+			    timesOutOfScreen++;
 			} else
 			    rowText.add(inrow);
 		    }
@@ -603,24 +712,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    g2do.drawImage(tTextImage, 0, 0, width, height, null);
 	}
 
-	int botMargin = height / 32;
-	int buttonWidth = width - width / 4;
-	int buttonHeight = height / 10;
-	int buttonSpacing = buttonHeight / 4;
-	int rightMargin = width / 32;
-	int buttonWidthSmall = (buttonWidth - buttonSpacing) / 2;
-	int buttonWidthVerySmall = (buttonWidthSmall - buttonSpacing) / 2;
-	gameStateButton.setX(width - rightMargin - buttonWidthVerySmall);
-	gameStateButton.setY(height - botMargin - buttonHeight);
-	gameStateButton.setWidth(buttonWidthVerySmall);
-	gameStateButton.setHeight(buttonHeight);
-	if (tutorialPhase >= 0)
-	    gameStateButton.setText("tutorial.goOn");
-	else
-	    gameStateButton.setText(Client.instance.game.gm.phaseButtonText());
-	if (tutorialPhase == tutorialPhases)
-	    gameStateButton.setText("gui.back.mainmenu");
-	super.render(g2do, width, height);
 	if (Client.instance.game.gm.won) {
 	    Client.instance.setGuiScreen(new GuiEndMenu());
 	    firstClick = true;
@@ -736,6 +827,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		e.printStackTrace();
 	    }
 	    this.removeGui();
+	    if (tutorialPhase == 8)
+		tutorialPhase++;
 	}
 
 	// Spawning
@@ -747,6 +840,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		e.printStackTrace();
 	    }
 	    this.removeGui();
+	    if (tutorialPhase == 5)
+		tutorialPhase++;
 	}
 
 	// Upgrade
@@ -773,10 +868,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Clicking on Button
 	int bx = gameStateButton.getX();
 	int by = gameStateButton.getY();
-	if (e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight()) {
-	    this.removeGui();
+	if (e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight())
 	    return;
-	}
 
 	// Clicking on guiGameObject
 	int gx = (int) ((e.getX() + scrollX) / zoom);
@@ -805,6 +898,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    field = new boolean[mapWidth][mapHeight];
 	    // Clicking on Unit
 	    if (units[x][y] != null && units[x][y].owner == Client.instance.game.activePlayer) {
+		if (tutorialPhase == 7 && x == 5 && y == 18)
+		    tutorialPhase++;
 		field[x][y] = true;
 		Unit u = units[x][y];
 		selected = u;
@@ -820,6 +915,8 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 		for (int y1 = y; y1 > y1 - 6 && y1 >= 0; y1--) {
 		    Building b = buildings[x1][y1];
 		    if (b != null && b.getSizeX() + x1 > x && b.getSizeY() + y1 > y && b.owner == Client.instance.game.activePlayer) {
+			if (tutorialPhase == 4 && b.x == 1 && b.y == buildings[x].length / 2 - 1)
+			    tutorialPhase++;
 			field[x1][y1] = true;
 			selected = b;
 			actionPerformed(new ActionEvent(selected, ActionEvent.ACTION_PERFORMED, null));
@@ -858,7 +955,6 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	int by = gameStateButton.getY();
 	if (e.getX() >= bx && e.getX() <= bx + gameStateButton.getWidth() && e.getY() >= by && e.getY() <= by + gameStateButton.getHeight())
 	    return;
-	Client.instance.game.GoldDif = 0;
 
 	// Hovering over guiGameObject
 	int gx = (int) ((e.getX() + scrollX) / zoom);
@@ -937,6 +1033,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    if (e.getSource() instanceof GuiButton) {
 		GuiButton button = (GuiButton) e.getSource();
 		if (button == gameStateButton) {
+		    this.removeGui();
 		    if (tutorialPhase >= 0)
 			tutorialPhase++;
 		    else
