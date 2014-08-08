@@ -1,9 +1,7 @@
 package de.gymdon.inf1315.game.render;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Composite;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -78,7 +76,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     private int leftTime = phaseTime;
     private Timer phaseTimer;
     private int tutorialPhase = -1;
-    private int tutorialPhases = 50;
+    private int tutorialPhases = 9;
     public boolean attack = false;
     public boolean move = false;
     public boolean stack = false;
@@ -472,7 +470,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	    gameStateButton.setText(Client.instance.game.gm.phaseButtonText());
 	if (tutorialPhase == tutorialPhases)
 	    gameStateButton.setText("gui.back.mainmenu");
-	if (tutorialPhase >= 4 && tutorialPhase <= 10)
+	if (tutorialPhase >= 4 && tutorialPhase <= 8)
 	    gameStateButton.setEnabled(false);
 	if (tutorialPhase == 6)
 	    gameStateButton.setEnabled(true);
@@ -788,6 +786,10 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	if (attack && u != null && u.owner != selected.owner) {
 	    Client.instance.game.gm.combat((Unit) selected, u, 0);
 	    Client.instance.game.units[selected.x][selected.y].attacked = true;
+	    if (selected instanceof Archer && (Math.abs(selected.x - u.x) > 1 || Math.abs(selected.y - u.y) > 1))
+		Sounds.play("archer_shot");
+	    else
+		Sounds.play("battle");
 	    this.removeGui();
 	}
 
