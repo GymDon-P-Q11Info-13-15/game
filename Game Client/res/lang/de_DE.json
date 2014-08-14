@@ -71,7 +71,7 @@
 		"game.gold": "Gold",
 		"game.gold.missing": "Zu wenig Gold!",
 		"game.stack.wrongClass": "Falsche Klasse!",
-		"game.stack.hpErr": "Zusammen zu viel HP!",
+		"game.stack.hpErr": "Zusammen zu viele HP!",
 		"game.round": "Runde",
 		"game.phase.build": "Rekrutierungsphase",
 		"game.phase.move": "Bewegungsphase",
