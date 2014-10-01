@@ -340,6 +340,8 @@ public class GameMechanics implements ActionListener {
 	if (b instanceof Mine && b.owner == null) {
 	    if (1 >= Math.abs(u.x - b.x) && 1 >= Math.abs(u.y - b.y))
 		b.setHP(0);
+	    else
+		game.units[u.x][u.y].attacked = false;
 	    return;
 	}
 	else {
