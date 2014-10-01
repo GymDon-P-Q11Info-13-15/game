@@ -802,7 +802,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Moving
 	if (move && u == null && b == null) {
 	    Client.instance.game.gm.move((Unit) selected, x, y);
-	    this.removeGui();
+	    this.removeGui();v
 	}
 
 	// Stacking
@@ -1105,9 +1105,15 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
     public void keyReleased(KeyEvent e) {
 	super.keyReleased(e);
 
+	try {
 	if (e.getKeyCode() == Client.instance.preferences.game.absoluteKey.getKeyCode() && e.getModifiers() == Client.instance.preferences.game.absoluteKey.getModifiers()) {
 	    Client.instance.preferences.game.health = healthOptionRAM;
 	    healthUpToDate = false;
+	}
+	}
+	catch (NullPointerException ne)
+	{
+	    ne.printStackTrace();
 	}
     }
 
