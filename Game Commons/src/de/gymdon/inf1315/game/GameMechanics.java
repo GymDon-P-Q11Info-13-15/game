@@ -343,7 +343,7 @@ public class GameMechanics implements ActionListener {
 	    return;
 	}
 	else {
-	    b.setHP(b.hp - r.nextInt(u.attack) * u.hp / 100 * 125 * (int) ((75 + r.nextInt(51)) / 100));
+	    b.setHP(b.hp - u.attack * u.hp / 100 * 125 * (int) ((75 + r.nextInt(51)) / 100));
 	    return;
 	}
     }
