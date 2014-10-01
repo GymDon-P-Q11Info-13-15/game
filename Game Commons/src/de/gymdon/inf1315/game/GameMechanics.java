@@ -338,11 +338,14 @@ public class GameMechanics implements ActionListener {
 
     public void pillage(Unit u, Building b) {
 	if (b instanceof Mine && b.owner == null) {
-	    b.setHP(0);
+	    if (1 >= Math.abs(u.x - b.x) && 1 >= Math.abs(u.y - b.y))
+		b.setHP(0);
 	    return;
 	}
-	b.setHP(b.hp - r.nextInt(u.attack) * u.hp / 100 * 125 * (int) ((75 + r.nextInt(51)) / 100));
-
+	else {
+	    b.setHP(b.hp - r.nextInt(u.attack) * u.hp / 100 * 125 * (int) ((75 + r.nextInt(51)) / 100));
+	    return;
+	}
     }
 
     public void create(Player p, Unit u, Building b) {
