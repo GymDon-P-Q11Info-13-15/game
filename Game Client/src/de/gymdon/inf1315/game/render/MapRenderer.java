@@ -802,7 +802,7 @@ public class MapRenderer extends GuiScreen implements Renderable, ActionListener
 	// Moving
 	if (move && u == null && b == null) {
 	    Client.instance.game.gm.move((Unit) selected, x, y);
-	    this.removeGui();v
+	    this.removeGui();
 	}
 
 	// Stacking
