@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Game Client/Game Client.iml" filepath="$PROJECT_DIR$/Game Client/Game Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Game Commons/Game Commons.iml" filepath="$PROJECT_DIR$/Game Commons/Game Commons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Game Server/Game Server.iml" filepath="$PROJECT_DIR$/Game Server/Game Server.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,8 +1,8 @@
 package de.gymdon.inf1315.game.render.gui;
 
-import java.awt.Graphics2D;
-
 import de.gymdon.inf1315.game.render.Renderable;
+
+import java.awt.*;
 
 public abstract class Gui implements Renderable {
 

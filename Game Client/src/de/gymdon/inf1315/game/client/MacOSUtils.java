@@ -1,6 +1,6 @@
 package de.gymdon.inf1315.game.client;
 
-import java.awt.Window;
+import java.awt.*;
 import java.lang.reflect.Method;
 
 //import com.apple.eawt.*;
@@ -11,11 +11,11 @@ public class MacOSUtils {
     private Window window;
 
     public MacOSUtils(Window window) {
-	try {
-	    Class<?> fullScreenUtils = Class.forName("com.apple.eawt.FullScreenUtilities");
-	    Method setWindowCanFullScreen = fullScreenUtils.getMethod("setWindowCanFullScreen", Window.class, Boolean.TYPE);
-	    setWindowCanFullScreen.invoke(null, window, true);
-	    /*
+        try {
+            Class<?> fullScreenUtils = Class.forName("com.apple.eawt.FullScreenUtilities");
+            Method setWindowCanFullScreen = fullScreenUtils.getMethod("setWindowCanFullScreen", Window.class, Boolean.TYPE);
+            setWindowCanFullScreen.invoke(null, window, true);
+        /*
 	     * Can this be done with reflection?
 	     * FullScreenUtilities.addFullScreenListenerTo(window, new
 	     * FullScreenListener() {
@@ -33,27 +33,27 @@ public class MacOSUtils {
 	     * arg0) { Client.instance.preferences.video.fullscreen = true; }
 	     * });
 	     */
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	this.window = window;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        this.window = window;
+    }
+
+    public static boolean isMacOS() {
+        return System.getProperty("os.name").equals("Mac OS X");
     }
 
     public void setFullscreen(boolean fullscreen) {
-	if (Client.instance.preferences.video.fullscreen == fullscreen) {
-	    try {
-		Class<?> application = Class.forName("com.apple.eawt.Application");
-		Method getApplication = application.getMethod("getApplication");
-		Object app = getApplication.invoke(null);
-		Method requestToggleFullScreen = application.getMethod("requestToggleFullScreen", Window.class);
-		requestToggleFullScreen.invoke(app, window);
-	    } catch (Exception e) {
-		e.printStackTrace();
-	    }
-	}
-    }
-
-    public static boolean iMacOS() {
-	return System.getProperty("os.name").equals("Mac OS X");
+        if (Client.instance.preferences.video.fullscreen == fullscreen) {
+            try {
+                Class<?> application = Class.forName("com.apple.eawt.Application");
+                Method getApplication = application.getMethod("getApplication");
+                Object app = getApplication.invoke(null);
+                Method requestToggleFullScreen = application.getMethod("requestToggleFullScreen", Window.class);
+                requestToggleFullScreen.invoke(app, window);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

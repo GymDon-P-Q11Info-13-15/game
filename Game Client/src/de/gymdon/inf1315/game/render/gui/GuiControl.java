@@ -1,9 +1,8 @@
 package de.gymdon.inf1315.game.render.gui;
 
+import javax.swing.event.MouseInputListener;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-
-import javax.swing.event.MouseInputListener;
 
 public abstract class GuiControl extends Gui implements MouseInputListener {
     public abstract int getId();

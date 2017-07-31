@@ -1,10 +1,10 @@
 package de.gymdon.inf1315.game.packet;
 
+import de.gymdon.inf1315.game.Self;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
-import de.gymdon.inf1315.game.Self;
 
 public class PacketHello extends Packet {
 
@@ -15,40 +15,40 @@ public class PacketHello extends Packet {
     public boolean ping;
 
     public PacketHello(Remote r) {
-	super(r);
+        super(r);
     }
 
     @Override
     public void handlePacket() throws IOException {
-	super.handlePacket();
-	DataInput in = remote.getInputStream();
-	serverHello = in.readBoolean();
-	if (serverHello)
-	    serverName = in.readUTF();
-	else {
-	    PacketHello resp = new PacketHello(remote);
-	    resp.serverHello = true;
-	    resp.serverName = Self.instance.getName();
-	    resp.ping = false;
-	    resp.send();
-	}
-	protocolVersion = in.readInt();
-	ping = in.readBoolean();
-	remote.setPing(ping);
-	if (protocolVersion != Packet.PROTOCOL_VERSION) {
-	    remote.kick("protocol.version.incompatible", protocolVersion, Packet.PROTOCOL_VERSION);
-	}
+        super.handlePacket();
+        DataInput in = remote.getInputStream();
+        serverHello = in.readBoolean();
+        if (serverHello)
+            serverName = in.readUTF();
+        else {
+            PacketHello resp = new PacketHello(remote);
+            resp.serverHello = true;
+            resp.serverName = Self.instance.getName();
+            resp.ping = false;
+            resp.send();
+        }
+        protocolVersion = in.readInt();
+        ping = in.readBoolean();
+        remote.setPing(ping);
+        if (protocolVersion != Packet.PROTOCOL_VERSION) {
+            remote.kick("protocol.version.incompatible", protocolVersion, Packet.PROTOCOL_VERSION);
+        }
     }
 
     @Override
     public void send() throws IOException {
-	DataOutputStream out = remote.getOutputStream();
-	out.writeShort(ID);
-	out.writeBoolean(serverHello);
-	if (serverHello)
-	    out.writeUTF(serverName);
-	out.writeInt(Packet.PROTOCOL_VERSION);
-	out.writeBoolean(ping);
-	super.send();
+        DataOutputStream out = remote.getOutputStream();
+        out.writeShort(ID);
+        out.writeBoolean(serverHello);
+        if (serverHello)
+            out.writeUTF(serverName);
+        out.writeInt(Packet.PROTOCOL_VERSION);
+        out.writeBoolean(ping);
+        super.send();
     }
 }
